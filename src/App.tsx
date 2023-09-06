@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 import logo from "./assets/logo.svg";
 import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
 import * as d3 from "d3";
 
 function App() {
@@ -68,6 +67,9 @@ function App() {
       </form>
 
       <p>{greetMsg()}</p>
+      <h1 class="text-3xl font-bold underline">
+        Hello tailwindcss !
+      </h1>
       <LinePlot/>
     </div>
   );
