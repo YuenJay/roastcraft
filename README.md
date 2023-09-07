@@ -1,35 +1,33 @@
-# Tauri + Solid + Typescript
+[Roastcraft](https://roastcraft.app/)
+==========
 
-This template should help get you started developing with Tauri, Solid and Typescript in Vite.
+Roastcraft is a cross-platform software to log and profile coffee roasting, much like the amazing Artisan, but implemented in modern Web Technology
 
-## Recommended IDE Setup
+# Web stack
+- Tauri
+- Solid.js
+- Typescript
+- TailwindCSS
+- Vite
+- D3.js
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+# Features
+## small program footprint
+  - single executable, no installation needed
+  - config in TOML
+  - data in json
 
+## scrollable view
+  - don't need to open dialog to enter notes
 
-# windows setup
-## 1. install visual c++ build tools
-https://visualstudio.microsoft.com/visual-cpp-build-tools/
+## supported device and roaster
+  - TASI TA612C thermometer
+  - Kapok K501
 
-ensure "C++ build tools" and the "Windows 10 SDK" are selected.
+## cross-platform
+  - Windows
+  - MacOS
+  - Linux
 
-## 2. install rust
-https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
-
-## 3. install create-tauri-app and tauri-cli
-cargo install create-tauri-app --locked
-cargo install tauri-cli
-
-# 4. install node
-https://nodejs.org/en/download
-
-# 5. install pnpm using powershell
-iwr https://get.pnpm.io/install.ps1 -useb | iex
-
-# 6. install node_modules
-pnpm install
-
-# 7. run app
-cargo tauri dev
-
+## able to import artisan log as reference
 
