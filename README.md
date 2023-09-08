@@ -1,13 +1,14 @@
 [Roastcraft](https://roastcraft.app/)
 ==========
 
-Roastcraft is a cross-platform software to log and profile coffee roasting, much like the amazing Artisan, but implemented in modern Web Technology
+Roastcraft is a cross-platform software to log and analyze coffee roasting, much like the amazing Artisan, but implemented in modern Web Technology
 
 # Web stack
 - Tauri
 - Solid.js
 - Typescript
 - TailwindCSS
+- daisyUI
 - Vite
 - D3.js
 
