@@ -17,39 +17,107 @@ function App() {
     marginTop = 20,
     marginRight = 20,
     marginBottom = 20,
-    marginLeft = 20
+    marginLeft = 20,
   }) {
-    const x = d3.scaleLinear([0, data.length - 1], [marginLeft, width - marginRight]);
-    const y = d3.scaleLinear(d3.extent(data) as [number, number], [height - marginBottom, marginTop]);
+    const x = d3.scaleLinear(
+      [0, data.length - 1],
+      [marginLeft, width - marginRight]
+    );
+    const y = d3.scaleLinear(d3.extent(data) as [number, number], [
+      height - marginBottom,
+      marginTop,
+    ]);
     const line = d3.line((_d, i) => x(i), y);
     return (
       <svg width={width} height={height}>
-        <path fill="none" stroke="currentColor" stroke-width="1.5" d={line(data) as string | undefined} />
+        <path
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          d={line(data) as string | undefined}
+        />
         <g fill="white" stroke="currentColor" stroke-width="1.5">
-          {data.map((d, i) => (<circle cx={x(i)} cy={y(d)} r="2.5" />))}
+          {data.map((d, i) => (
+            <circle cx={x(i)} cy={y(d)} r="2.5" />
+          ))}
         </g>
       </svg>
     );
   }
 
   return (
-    <div class="h-screen grid grid-cols-[200px_1fr] grid-rows-[80px_1fr] gap-1" >
+    <div class="h-screen grid grid-cols-[200px_1fr] grid-rows-[80px_1fr] gap-1">
+      {/* header start*/}
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 bg-cyan-300">
         <p>header</p>
       </div>
-      <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300">
+      {/* header end*/}
+      {/* sidebar start*/}
+      <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300 overflow-y-auto p-1 ">
         <p>sidebar</p>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">BT</div>
+          <div class="collapse-content">
+            <p>195.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">ET</div>
+          <div class="collapse-content">
+            <p>195.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">inlet</div>
+          <div class="collapse-content">
+            <p>195.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-content">
+            <p>15.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-content">
+            <p>15.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-content">
+            <p>15.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" checked />
+          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-content">
+            <p>15.1</p>
+          </div>
+        </div>
       </div>
+      {/* sidebar end*/}
+      {/* main start*/}
       <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-blue-200">
         <p>main</p>
-          <form
+        <LinePlot />
+        <form
           class="row"
           onSubmit={(e) => {
             e.preventDefault();
             greet();
           }}
         >
-        <input
+          <input
             id="greet-input"
             onChange={(e) => setName(e.currentTarget.value)}
             placeholder="Enter a name..."
@@ -58,16 +126,9 @@ function App() {
         </form>
 
         <p>{greetMsg()}</p>
-          <h1 class="text-3xl font-bold underline">
-            Hello tailwindcss !
-          </h1>
-          <button class="btn btn-primary">
-            daisyUI Button
-          </button>
-          <LinePlot/>
-        </div>
+      </div>
+      {/* main start*/}
     </div>
-      
   );
 }
 
