@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js";
-import logo from "./assets/logo.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import * as d3 from "d3";
 
@@ -34,47 +33,41 @@ function App() {
   }
 
   return (
-    <div class="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div class="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://solidjs.com" target="_blank">
-          <img src={logo} class="logo solid" alt="Solid logo" />
-        </a>
+    <div class="h-screen grid grid-cols-[200px_1fr] grid-rows-[80px_1fr] gap-1" >
+      <div class="col-start-1 col-end-3 row-start-1 row-end-2 bg-cyan-300">
+        <p>header</p>
       </div>
-
-      <p>Click on the Tauri, Vite, and Solid logos to learn more.</p>
-
-      <form
-        class="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
+      <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300">
+        <p>sidebar</p>
+      </div>
+      <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-blue-200">
+        <p>main</p>
+          <form
+          class="row"
+          onSubmit={(e) => {
+            e.preventDefault();
+            greet();
+          }}
+        >
         <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
+            id="greet-input"
+            onChange={(e) => setName(e.currentTarget.value)}
+            placeholder="Enter a name..."
+          />
+          <button type="submit">Greet</button>
+        </form>
 
-      <p>{greetMsg()}</p>
-      <h1 class="text-3xl font-bold underline">
-        Hello tailwindcss !
-      </h1>
-      <button class="btn btn-primary">
-        daisyUI Button
-      </button>
-      <LinePlot/>
+        <p>{greetMsg()}</p>
+          <h1 class="text-3xl font-bold underline">
+            Hello tailwindcss !
+          </h1>
+          <button class="btn btn-primary">
+            daisyUI Button
+          </button>
+          <LinePlot/>
+        </div>
     </div>
+      
   );
 }
 
