@@ -46,7 +46,7 @@ function App() {
   }
 
   return (
-    <div class="h-screen grid grid-cols-[200px_1fr] grid-rows-[60px_1fr] gap-1">
+    <div class="h-screen grid grid-cols-[160px_1fr] grid-rows-[60px_1fr] ">
       {/* header start*/}
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 bg-cyan-300 flex justify-end p-1">
         <button class="btn ">Reset</button>
@@ -58,14 +58,21 @@ function App() {
       {/* sidebar start*/}
       <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300 overflow-y-auto p-1 ">
         <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">08:45</div>
+          <div class="collapse-content">
+            <p>195.1</p>
+          </div>
+        </div>
+        <div class="collapse bg-base-200 my-1">
+          <input type="checkbox" />
           <div class="collapse-title text-xl font-medium">BT</div>
           <div class="collapse-content">
             <p>195.1</p>
           </div>
         </div>
         <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
+          <input type="checkbox" />
           <div class="collapse-title text-xl font-medium">ET</div>
           <div class="collapse-content">
             <p>195.1</p>
@@ -110,10 +117,9 @@ function App() {
       {/* sidebar end*/}
       {/* main start*/}
       <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-blue-200">
-        <p>main</p>
         <LinePlot />
 
-        <ul class="steps w-4/5 ">
+        <ul class="steps w-full ">
           <li data-content="✓" class="step ">
             Charge
           </li>
@@ -133,7 +139,52 @@ function App() {
             Drop
           </li>
         </ul>
-
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="40"
+          class="range range-primary range-xs w-1/2 "
+        />
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="60"
+          class="range range-secondary range-xs w-1/2 "
+        />
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="40"
+          class="range range-primary range-xs w-1/2 "
+        />
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="60"
+          class="range range-secondary range-xs w-1/2 "
+        />
+        <div>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+          <button class="btn ">custom</button>
+        </div>
+        <div>
+          <textarea
+            placeholder="Logs"
+            class="textarea textarea-bordered textarea-xs w-full max-w-md"
+          ></textarea>
+        </div>
+        {/*         
         <form
           class="row"
           onSubmit={(e) => {
@@ -149,7 +200,7 @@ function App() {
           <button type="submit">Greet</button>
         </form>
 
-        <p>{greetMsg()}</p>
+        <p>{greetMsg()}</p> */}
       </div>
       {/* main start*/}
     </div>
