@@ -12,7 +12,7 @@ function App() {
   }
   function LinePlot({
     data = [1, 2, 3, 4],
-    width = 640,
+    width = 800,
     height = 400,
     marginTop = 20,
     marginRight = 20,
@@ -46,15 +46,17 @@ function App() {
   }
 
   return (
-    <div class="h-screen grid grid-cols-[200px_1fr] grid-rows-[80px_1fr] gap-1">
+    <div class="h-screen grid grid-cols-[200px_1fr] grid-rows-[60px_1fr] gap-1">
       {/* header start*/}
-      <div class="col-start-1 col-end-3 row-start-1 row-end-2 bg-cyan-300">
-        <p>header</p>
+      <div class="col-start-1 col-end-3 row-start-1 row-end-2 bg-cyan-300 flex justify-end p-1">
+        <button class="btn ">Reset</button>
+
+        <button class="btn ">On</button>
+        <button class="btn ">Start</button>
       </div>
       {/* header end*/}
       {/* sidebar start*/}
       <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300 overflow-y-auto p-1 ">
-        <p>sidebar</p>
         <div class="collapse bg-base-200 my-1">
           <input type="checkbox" checked />
           <div class="collapse-title text-xl font-medium">BT</div>
@@ -85,21 +87,21 @@ function App() {
         </div>
         <div class="collapse bg-base-200 my-1">
           <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-title text-xl font-medium">DRY %</div>
           <div class="collapse-content">
             <p>15.1</p>
           </div>
         </div>
         <div class="collapse bg-base-200 my-1">
           <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-title text-xl font-medium">&gt&gt DRY</div>
           <div class="collapse-content">
             <p>15.1</p>
           </div>
         </div>
         <div class="collapse bg-base-200 my-1">
           <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">delta BT</div>
+          <div class="collapse-title text-xl font-medium">&gt&gt FC</div>
           <div class="collapse-content">
             <p>15.1</p>
           </div>
@@ -110,6 +112,28 @@ function App() {
       <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-blue-200">
         <p>main</p>
         <LinePlot />
+
+        <ul class="steps w-4/5 ">
+          <li data-content="✓" class="step ">
+            Charge
+          </li>
+          <li data-content="✓" class="step step-accent">
+            Dry End
+          </li>
+          <li data-content="✓" class="step step-secondary">
+            FC Start
+          </li>
+          <li data-content="✓" class="step step-secondary">
+            FC End
+          </li>
+          <li data-content="✓" class="step step-accent">
+            SC Start
+          </li>
+          <li data-content="✓" class="step step-error">
+            Drop
+          </li>
+        </ul>
+
         <form
           class="row"
           onSubmit={(e) => {
