@@ -57,61 +57,47 @@ function App() {
       {/* header end*/}
       {/* sidebar start*/}
       <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300 overflow-y-auto p-1 ">
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" />
-          <div class="collapse-title text-xl font-medium">08:45</div>
-          <div class="collapse-content">
-            <p>195.1</p>
-          </div>
+        <div class="bg-base-200 rounded mb-1 p-1 text-center bg-black">
+          <p class="text-4xl font-extrabold  text-white">08:45</p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" />
-          <div class="collapse-title text-xl font-medium">BT</div>
-          <div class="collapse-content">
-            <p>195.1</p>
-          </div>
+        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+          <p>BT</p>
+          <p class="text-2xl font-medium text-red-600">195.1</p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" />
-          <div class="collapse-title text-xl font-medium">ET</div>
-          <div class="collapse-content">
-            <p>195.1</p>
-          </div>
+        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+          <p>Δ BT</p>
+          <p class="text-2xl font-medium text-green-600">15.4</p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">inlet</div>
-          <div class="collapse-content">
-            <p>195.1</p>
-          </div>
+
+        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+          <p>ET</p>
+          <p class="text-2xl font-medium text-red-600">205.2</p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">delta BT</div>
-          <div class="collapse-content">
-            <p>15.1</p>
-          </div>
+        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+          <p>inlet</p>
+          <p class="text-2xl font-medium text-red-600">350.3</p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">DRY %</div>
-          <div class="collapse-content">
-            <p>15.1</p>
-          </div>
+
+        <div class="collapse collapse-arrow rounded bg-base-300 mb-1 p-1 text-right">
+          <input type="checkbox" class="min-h-0" checked />
+          <p class="collapse-title p-0 min-h-0">DRY %</p>
+          <p class="collapse-content p-0 min-h-0 text-2xl font-medium text-red-600">
+            15.1
+          </p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">&gt&gt DRY</div>
-          <div class="collapse-content">
-            <p>15.1</p>
-          </div>
+        <div class="collapse collapse-arrow rounded bg-base-300 mb-1 p-1 text-right">
+          <input type="checkbox" class="min-h-0" />
+          <p class="collapse-title p-0 min-h-0">RAMP %</p>
+          <p class="collapse-content p-0 min-h-0 text-2xl font-medium text-red-600">
+            15.1
+          </p>
         </div>
-        <div class="collapse bg-base-200 my-1">
-          <input type="checkbox" checked />
-          <div class="collapse-title text-xl font-medium">&gt&gt FC</div>
-          <div class="collapse-content">
-            <p>15.1</p>
-          </div>
+        <div class="collapse collapse-arrow rounded bg-base-300 mb-1 p-1 text-right">
+          <input type="checkbox" class="min-h-0" />
+          <p class="collapse-title p-0 min-h-0">DEV %</p>
+          <p class="collapse-content p-0 min-h-0 text-2xl font-medium text-red-600">
+            15.1
+          </p>
         </div>
       </div>
       {/* sidebar end*/}

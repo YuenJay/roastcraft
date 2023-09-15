@@ -23,3 +23,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.collapse:not(.collapse-close)
+  > :where(input[type="checkbox"]:checked ~ .collapse-content) {
+  padding-bottom: 0;
+}
+
+.collapse-arrow > .collapse-title:after {
+  left: 0.5rem;
+}
