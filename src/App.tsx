@@ -46,63 +46,96 @@ function App() {
   }
 
   return (
-    <div class="h-screen grid grid-cols-[160px_1fr] grid-rows-[60px_1fr] ">
+    <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] ">
       {/* header start*/}
-      <div class="col-start-1 col-end-3 row-start-1 row-end-2 bg-cyan-300 flex justify-end p-1">
-        <button class="btn ">Reset</button>
+      <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
+        <button class="btn btn-accent mr-2">reset</button>
 
-        <button class="btn ">On</button>
-        <button class="btn ">Start</button>
+        <button class="btn btn-accent mr-2">on</button>
+        <button class="btn btn-accent mr-2">start</button>
       </div>
       {/* header end*/}
       {/* sidebar start*/}
-      <div class="col-start-1 col-end-2 row-start-2 row-end-3 bg-sky-300 overflow-y-auto p-1 ">
-        <div class="bg-base-200 rounded mb-1 p-1 text-center bg-black">
+      <div class="col-start-1 col-end-2 row-start-2 row-end-3 overflow-y-auto px-1">
+        <div class="border bg-black rounded mb-1 py-2 text-center sticky top-0">
           <p class="text-4xl font-extrabold  text-white">08:45</p>
         </div>
-        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded mb-1 p-1 text-right ">
           <p>BT</p>
           <p class="text-2xl font-medium text-red-600">195.1</p>
         </div>
-        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-green-600">15.4</p>
         </div>
 
-        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>ET</p>
           <p class="text-2xl font-medium text-red-600">205.2</p>
         </div>
-        <div class="bg-base-200 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>inlet</p>
           <p class="text-2xl font-medium text-red-600">350.3</p>
         </div>
 
-        <div class="collapse collapse-arrow rounded bg-base-300 mb-1 p-1 text-right">
+        <div class="border bg-base-300 collapse collapse-arrow rounded mb-1 p-1 text-right">
           <input type="checkbox" class="min-h-0" checked />
-          <p class="collapse-title p-0 min-h-0">DRY %</p>
-          <p class="collapse-content p-0 min-h-0 text-2xl font-medium text-red-600">
-            15.1
-          </p>
+          <p class="collapse-title p-0 min-h-0 text-sm font-bold">Drying</p>
+          <div class="collapse-content p-0 min-h-0 ">
+            <div>
+              <span class="text-sm">time</span> &nbsp
+              <span class="text-xl font-medium text-red-600">1:30</span>
+            </div>
+            <div>
+              <span class="text-sm">temp</span> &nbsp
+              <span class="text-xl font-medium text-red-600">10.3</span>
+            </div>
+            <div>
+              <span class="text-sm">ratio</span> &nbsp
+              <span class="text-xl font-medium text-red-600">30 %</span>
+            </div>
+          </div>
         </div>
-        <div class="collapse collapse-arrow rounded bg-base-300 mb-1 p-1 text-right">
-          <input type="checkbox" class="min-h-0" />
-          <p class="collapse-title p-0 min-h-0">RAMP %</p>
-          <p class="collapse-content p-0 min-h-0 text-2xl font-medium text-red-600">
-            15.1
-          </p>
+        <div class="border bg-base-300 collapse collapse-arrow rounded mb-1 p-1 text-right">
+          <input type="checkbox" class="min-h-0" checked />
+          <p class="collapse-title p-0 min-h-0 text-sm font-bold">Maillard</p>
+          <div class="collapse-content p-0 min-h-0 ">
+            <div>
+              <span class="text-sm">time</span> &nbsp
+              <span class="text-xl font-medium text-red-600">1:30</span>
+            </div>
+            <div>
+              <span class="text-sm">temp</span> &nbsp
+              <span class="text-xl font-medium text-red-600">10.3</span>
+            </div>
+            <div>
+              <span class="text-sm">ratio</span> &nbsp
+              <span class="text-xl font-medium text-red-600">30 %</span>
+            </div>
+          </div>
         </div>
-        <div class="collapse collapse-arrow rounded bg-base-300 mb-1 p-1 text-right">
-          <input type="checkbox" class="min-h-0" />
-          <p class="collapse-title p-0 min-h-0">DEV %</p>
-          <p class="collapse-content p-0 min-h-0 text-2xl font-medium text-red-600">
-            15.1
-          </p>
+        <div class="border bg-base-300 collapse collapse-arrow rounded mb-1 p-1 text-right">
+          <input type="checkbox" class="min-h-0" checked />
+          <p class="collapse-title p-0 min-h-0 text-sm font-bold">Develop</p>
+          <div class="collapse-content p-0 min-h-0 ">
+            <div>
+              <span class="text-sm">time</span> &nbsp
+              <span class="text-xl font-medium text-red-600">1:30</span>
+            </div>
+            <div>
+              <span class="text-sm">temp</span> &nbsp
+              <span class="text-xl font-medium text-red-600">10.3</span>
+            </div>
+            <div>
+              <span class="text-sm">ratio</span> &nbsp
+              <span class="text-xl font-medium text-red-600">30 %</span>
+            </div>
+          </div>
         </div>
       </div>
       {/* sidebar end*/}
       {/* main start*/}
-      <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-blue-200">
+      <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-base-200 p-1">
         <LinePlot />
 
         <ul class="steps w-full ">
