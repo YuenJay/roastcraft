@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
+import { emit, listen } from "@tauri-apps/api/event";
 import * as d3 from "d3";
 
 function App() {
@@ -15,8 +16,11 @@ function App() {
   async function buttonOnClicked() {
     trace("buttonOnClicked");
     await invoke("button_on_clicked");
-    
   }
+
+  const unlisten = listen("synchronized", (event) => {
+    trace("event synchronized catched");
+  });
 
   function LinePlot({
     data = [1, 2, 3, 4],

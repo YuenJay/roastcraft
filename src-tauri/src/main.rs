@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu, Manager};
 use tauri_plugin_log::{LogTarget};
 use log::{error, warn, info, debug, trace};
 
@@ -12,9 +12,11 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn button_on_clicked() -> () {
+fn button_on_clicked(app: tauri::AppHandle) -> () {
     
     trace!("button_on_clicked");
+    app.emit_all("synchronized", ()).unwrap();
+    trace!("event synchronized emitted");
 }
 
 fn main() {
