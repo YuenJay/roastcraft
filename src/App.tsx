@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
+import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import * as d3 from "d3";
 
 function App() {
@@ -10,6 +11,13 @@ function App() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
     setGreetMsg(await invoke("greet", { name: name() }));
   }
+
+  async function buttonOnClicked() {
+    trace("buttonOnClicked");
+    await invoke("button_on_clicked");
+    
+  }
+
   function LinePlot({
     data = [1, 2, 3, 4],
     width = 800,
@@ -51,7 +59,9 @@ function App() {
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
         <button class="btn btn-accent mr-2">reset</button>
 
-        <button class="btn btn-accent mr-2">on</button>
+        <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>
+          on
+        </button>
         <button class="btn btn-accent mr-2">start</button>
       </div>
       {/* header end*/}
@@ -66,7 +76,7 @@ function App() {
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>Δ BT</p>
-          <p class="text-2xl font-medium text-green-600">15.4</p>
+          <p class="text-2xl font-medium text-blue-600">15.4</p>
         </div>
 
         <div class="border bg-base-300 rounded mb-1 p-1 text-right">
@@ -200,10 +210,10 @@ function App() {
         <div>
           <textarea
             placeholder="Logs"
-            class="textarea textarea-bordered textarea-xs w-full max-w-md"
+            class="textarea textarea-bordered textarea-xs w-full max-w-lg"
           ></textarea>
         </div>
-        {/*         
+
         <form
           class="row"
           onSubmit={(e) => {
@@ -219,7 +229,7 @@ function App() {
           <button type="submit">Greet</button>
         </form>
 
-        <p>{greetMsg()}</p> */}
+        <p>{greetMsg()}</p>
       </div>
       {/* main start*/}
     </div>

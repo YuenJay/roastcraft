@@ -14,7 +14,8 @@
     "@tauri-apps/api": "^1.4.0",
     "@types/d3": "^7.4.0",
     "d3": "^7.8.5",
-    "solid-js": "^1.7.8"
+    "solid-js": "^1.7.8",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",
