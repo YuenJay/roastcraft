@@ -4,6 +4,7 @@
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu, Manager};
 use tauri_plugin_log::{LogTarget};
 use log::{error, warn, info, debug, trace};
+use tokio::time::{sleep, Duration};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -36,6 +37,18 @@ fn main() {
             LogTarget::Stdout,
             LogTarget::Webview,
         ]).build())
+        .setup(|app| {
+            let app_handle = app.handle();
+            tauri::async_runtime::spawn(async move {
+                loop {
+                    
+                    sleep(Duration::from_millis(5000)).await;
+                    info!("i am inside async process, 5 sec passed");
+                }
+            });
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
