@@ -22,6 +22,11 @@ function App() {
     await invoke("button_on_clicked");
   }
 
+  async function buttonOffClicked() {
+    trace("buttonOffClicked");
+    await invoke("button_off_clicked");
+  }
+
   function LinePlot({
     data = [1, 2, 3, 4],
     width = 800,
@@ -66,7 +71,9 @@ function App() {
         <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>
           on
         </button>
-        <button class="btn btn-accent mr-2">start</button>
+        <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>
+          off
+        </button>
       </div>
       {/* header end*/}
       {/* sidebar start*/}
