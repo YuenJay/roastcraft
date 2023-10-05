@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu, Manager, State};
-use tauri_plugin_log::{LogTarget};
+use tauri_plugin_log::{LogTarget, fern::colors::ColoredLevelConfig};
 use log::{error, warn, info, debug, trace};
 use tokio::time::{sleep, Duration};
 use std::sync::Mutex;
@@ -28,28 +28,10 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn button_on_clicked(app: tauri::AppHandle) -> () {
+async fn button_on_clicked(app: tauri::AppHandle) -> () {
     
-    trace!("button_on_clicked");
-    app.emit_all("synchronized", ()).unwrap();
-    trace!("event synchronized emitted");
+    trace!("command called : button_on_clicked");
 
-    let state_mutex = app.state::<Mutex<RoastCraftState>>();
-    let mut state = state_mutex.lock().unwrap();
-
-    state.join_handle = Some(spawn(async move {
-        loop {
-            
-            sleep(Duration::from_millis(5000)).await;
-            info!("i am inside async process 1, 5 sec passed");
-        }
-    }));
-}
-
-#[tauri::command]
-fn button_off_clicked(app: tauri::AppHandle) -> () {
-    
-    trace!("button_on_clicked");
     app.emit_all("synchronized", ()).unwrap();
     trace!("event synchronized emitted");
 
@@ -57,10 +39,40 @@ fn button_off_clicked(app: tauri::AppHandle) -> () {
     let mut state = state_mutex.lock().unwrap();
 
     match &state.join_handle {
-        Some(handle) => handle.abort(),
-        None => error!("join_handle is None")
+        Some(_handle) =>  warn!("join_handle already exist"),
+        None =>{
+            state.join_handle = Some(spawn(async move {
+                loop {
+                    
+                    sleep(Duration::from_millis(3000)).await;
+                    info!("i am inside async process, 3 sec passed");
+                }
+            }));
+        
+            debug!("spawned join_handle : {:?}", state.join_handle.as_ref().unwrap())
+        }
     }
+
+   
 }
+
+#[tauri::command]
+async fn button_off_clicked(app: tauri::AppHandle) -> () {
+    
+    trace!("command called : button_off_clicked");
+    
+    let state_mutex = app.state::<Mutex<RoastCraftState>>();
+    let mut state = state_mutex.lock().unwrap();
+
+    match &state.join_handle {
+        Some(handle) => {
+            handle.abort();
+            debug!("aborted join_handle : {:?}", state.join_handle.as_ref().unwrap());
+            state.join_handle = None;
+        }        
+        None => warn!("join_handle is None")
+    }
+}    
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -75,23 +87,13 @@ fn main() {
         .menu(menu)
         .invoke_handler(tauri::generate_handler![greet, button_on_clicked, button_off_clicked])
         .plugin(tauri_plugin_log::Builder::default().targets([
-            LogTarget::LogDir,
-            LogTarget::Stdout,
-            LogTarget::Webview,
-        ]).build())
+                LogTarget::LogDir,
+                LogTarget::Stdout,
+                LogTarget::Webview,
+            ])
+            .with_colors(ColoredLevelConfig::default())
+            .build())
         .manage(Mutex::new(RoastCraftState::default()))
-        // .setup(|app| {
-        //     let app_handle = app.handle();
-        //     tauri::async_runtime::spawn(async move {
-        //         loop {
-                    
-        //             sleep(Duration::from_millis(5000)).await;
-        //             info!("i am inside async process, 5 sec passed");
-        //         }
-        //     });
-
-        //     Ok(())
-        // })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

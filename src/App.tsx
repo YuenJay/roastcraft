@@ -4,6 +4,9 @@ import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { emit, listen } from "@tauri-apps/api/event";
 import * as d3 from "d3";
 
+// with LogTarget::Webview enabled this function will print logs to the browser console
+const detach = await attachConsole();
+
 const unlisten = await listen("synchronized", (event) => {
   trace("event synchronized catched");
 });
@@ -18,13 +21,13 @@ function App() {
   }
 
   async function buttonOnClicked() {
-    trace("buttonOnClicked");
     await invoke("button_on_clicked");
+    trace("buttonOnClicked");
   }
 
   async function buttonOffClicked() {
-    trace("buttonOffClicked");
     await invoke("button_off_clicked");
+    trace("buttonOffClicked");
   }
 
   function LinePlot({
@@ -74,6 +77,8 @@ function App() {
         <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>
           off
         </button>
+        <button class="btn btn-accent mr-2">start</button>
+        <button class="btn btn-accent mr-2">stop </button>
       </div>
       {/* header end*/}
       {/* sidebar start*/}

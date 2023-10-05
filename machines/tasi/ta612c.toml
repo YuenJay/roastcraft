@@ -1,0 +1,17 @@
+[machine]
+brand = "tasi"
+model = "ta612c"
+
+[connection]
+# serial, tcp
+type = "serial"
+
+[connection.serial]
+port = "COM4"
+baud_rate = 9600
+data_bits = 8
+parity = "none"
+stop_bits = 1
+
+
+

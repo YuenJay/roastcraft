@@ -1,0 +1,41 @@
+[machine]
+brand = "kapok"
+model = "501_inlet"
+
+[connection]
+# serial, tcp
+type = "serial"
+
+[connection.serial]
+port = "COM4"
+baud_rate = 9600
+data_bits = 8
+parity = "none"
+stop_bits = 1
+
+[connection.tcp]
+ip = "127.0.0.1"
+port = 502
+
+[modbus]
+# modbus-ascii, modbus-rtu, modbus-tcp
+protocol = "modbus-tcp"
+
+[[modbus.slave]]
+id = 1
+function = 3
+registry = 18176
+multiplier = 0.1
+
+[[modbus.slave]]
+id = 2
+function = 3
+registry = 18176
+multiplier = 0.1
+
+[[modbus.slave]]
+id = 3
+function = 3
+registry = 18176
+multiplier = 0.1
+
