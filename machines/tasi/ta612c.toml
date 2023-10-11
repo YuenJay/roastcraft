@@ -1,6 +1,7 @@
 [machine]
 brand = "tasi"
 model = "ta612c"
+metrics_ids = ["T1", "T2", "T3", "T4"]
 
 [connection]
 # serial, tcp
@@ -12,6 +13,3 @@ baud_rate = 9600
 data_bits = 8
 parity = "none"
 stop_bits = 1
-
-
-

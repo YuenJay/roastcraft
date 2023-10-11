@@ -1,6 +1,7 @@
 [machine]
 brand = "kapok"
 model = "501_inlet"
+metrics_ids = ["bean_temp", "exhaust_temp", "inlet_temp"]
 
 [connection]
 # serial, tcp
@@ -38,4 +39,3 @@ id = 3
 function = 3
 registry = 18176
 multiplier = 0.1
-

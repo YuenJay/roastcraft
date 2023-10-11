@@ -7,6 +7,7 @@ use tauri::async_runtime::{spawn, JoinHandle};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, State, Submenu};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
 use tokio::time::{interval, sleep, Duration};
+use tokio_modbus::prelude::*;
 
 struct RoastCraftState {
     join_handle: Option<JoinHandle<()>>,
@@ -39,9 +40,20 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
         None => {
             state.join_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
+                let tty_path = "COM3";
+                let slave = Slave(1);
+
+                let builder = tokio_serial::new(tty_path, 9600);
+                let port = tokio_serial::SerialStream::open(&builder).unwrap();
+
+                let mut ctx = rtu::attach_slave(port, slave);
+
                 loop {
                     interval.tick().await;
                     info!("i am inside async process, 3 sec interval");
+
+                    let rsp = ctx.read_holding_registers(18176, 1).await;
+                    println!("Sensor value is: {rsp:?}");
                 }
             }));
 
