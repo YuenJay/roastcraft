@@ -1,19 +1,28 @@
-import { createSignal } from "solid-js";
+import { createSignal, onMount, onCleanup } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { emit, listen } from "@tauri-apps/api/event";
 import * as d3 from "d3";
 
 // with LogTarget::Webview enabled this function will print logs to the browser console
-const detach = await attachConsole();
+const detach_handle = await attachConsole();
 
-const unlisten = await listen("synchronized", (event) => {
-  trace("event synchronized catched");
-});
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
   const [name, setName] = createSignal("");
+
+  const [BT, setBT] = createSignal(0);
+
+  onMount(async () => {
+    const unlisten = await listen("read_metrics", (event) => {
+      trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload as object));
+      setBT((event.payload as any).bean_temp as number);
+    });
+
+  });
+
+
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -88,7 +97,7 @@ function App() {
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right ">
           <p>BT</p>
-          <p class="text-2xl font-medium text-red-600">195.1</p>
+          <p class="text-2xl font-medium text-red-600">{BT()}</p>
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>Δ BT</p>
