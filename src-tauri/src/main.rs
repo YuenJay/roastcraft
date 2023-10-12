@@ -2,11 +2,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::{debug, error, info, trace, warn};
+
 use std::sync::Mutex;
 use tauri::async_runtime::{spawn, JoinHandle};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, State, Submenu};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
 use tokio::time::{interval, Duration};
+
+use crate::devices::Device;
 
 mod devices;
 
@@ -44,7 +47,7 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
             state.join_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
 
-                let mut dd = devices::modbus::Device::new();
+                let mut dd: Box<dyn Device + Send> = Box::new(devices::modbus::ModbusDevice::new());
 
                 loop {
                     interval.tick().await;

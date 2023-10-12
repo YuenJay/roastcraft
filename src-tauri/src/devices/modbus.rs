@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use log::{debug, error};
 use serde_json::{Map, Value};
 use tokio_modbus::{
@@ -7,19 +8,21 @@ use tokio_modbus::{
     Slave,
 };
 
-pub struct Device {
+use super::Device;
+
+pub struct ModbusDevice {
     ctx: Context,
     metrics_count: usize,
     vec_metrics_ids: Vec<String>,
     vec_slaves: Vec<Slave>,
 }
 
-impl Device {
-    pub fn new() -> Device {
+impl ModbusDevice {
+    pub fn new() -> ModbusDevice {
         let tty = "COM3";
         let builder = tokio_serial::new(tty, 9600);
         let port = tokio_serial::SerialStream::open(&builder).unwrap();
-        let mut ctx = rtu::attach(port);
+        let ctx = rtu::attach(port);
 
         let mut vec_metrics_ids: Vec<String> = Vec::new();
         vec_metrics_ids.push("exhaust_temp".to_string());
@@ -31,15 +34,20 @@ impl Device {
         vec_slaves.push(Slave(2));
         vec_slaves.push(Slave(3));
 
-        Device {
+        ModbusDevice {
             ctx: ctx,
             metrics_count: 3,
             vec_metrics_ids: vec_metrics_ids,
             vec_slaves: vec_slaves,
         }
     }
+}
 
-    pub async fn read(&mut self) -> Value {
+#[async_trait]
+impl Device for ModbusDevice {
+    async fn read(self: &mut Self) -> Value
+
+    {
         println!("called devices::modbus::read()");
 
         let mut map = Map::new();
@@ -49,7 +57,7 @@ impl Device {
             match self.ctx.read_holding_registers(18176, 1).await {
                 Ok(v) => {
                     let result = *v.get(0).unwrap() as f32 * 0.1;
-                    // vec_results.push(result);
+
                     debug!("Sensor value is: {:.1}", result);
                     map.insert(
                         self.vec_metrics_ids[i].clone(),
