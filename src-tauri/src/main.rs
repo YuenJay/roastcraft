@@ -2,12 +2,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::{debug, error, info, trace, warn};
-use serde_json::json;
+use serde_json::{json, Map, Value};
 use std::sync::Mutex;
 use tauri::async_runtime::{spawn, JoinHandle};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, State, Submenu};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
-use tokio::time::{interval, sleep, Duration};
+use tokio::time::{interval, Duration};
 use tokio_modbus::prelude::*;
 
 struct RoastCraftState {
@@ -44,56 +44,48 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
             state.join_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
                 let tty_path = "COM3";
-                let slave1 = Slave(1);
-                let slave2 = Slave(2);
-                let slave3 = Slave(3);
-
                 let builder = tokio_serial::new(tty_path, 9600);
                 let port = tokio_serial::SerialStream::open(&builder).unwrap();
                 let mut ctx = rtu::attach(port);
 
+                let metrics_count = 3;
+
+                let mut vec_metrics_ids: Vec<String> = Vec::new();
+                vec_metrics_ids.push("exhaust_temp".to_string());
+                vec_metrics_ids.push("bean_temp".to_string());
+                vec_metrics_ids.push("inlet_temp".to_string());
+
+                let mut vec_slaves: Vec<Slave> = Vec::new();
+                vec_slaves.push(Slave(1));
+                vec_slaves.push(Slave(2));
+                vec_slaves.push(Slave(3));
+
                 loop {
                     interval.tick().await;
                     info!("i am inside async process, 3 sec interval");
+                    // let mut vec_results: Vec<f32> = Vec::new();
+                    let mut map = Map::new();
 
-                    ctx.set_slave(slave1);
-                    let rsp1 = ctx.read_holding_registers(18176, 1).await;
-                    match rsp1 {
-                        Ok(v) => {
-                            debug!("Sensor value is: {}", v.get(0).unwrap());
-                        }
-                        Err(_) => {
-                            error!("read_holding_registers failed");
+                    for i in 0..metrics_count {
+                        ctx.set_slave(vec_slaves[i]);
+                        match ctx.read_holding_registers(18176, 1).await {
+                            Ok(v) => {
+                                let result = *v.get(0).unwrap() as f32 * 0.1;
+                                // vec_results.push(result);
+                                debug!("Sensor value is: {:.1}", result);
+                                map.insert(
+                                    vec_metrics_ids[i].clone(),
+                                    Value::String(format!("{:.1}", result)),
+                                );
+                            }
+                            Err(_) => {
+                                error!("read_holding_registers failed");
+                            }
                         }
                     }
 
-                    ctx.set_slave(slave2);
-                    let rsp2 = ctx.read_holding_registers(18176, 1).await;
-                    match rsp2 {
-                        Ok(v) => {
-                            debug!("Sensor value is: {}", v.get(0).unwrap());
-                        }
-                        Err(_) => {
-                            error!("read_holding_registers failed");
-                        }
-                    }
+                    let payload = Value::Object(map);
 
-                    ctx.set_slave(slave3);
-                    let rsp3 = ctx.read_holding_registers(18176, 1).await;
-                    let mut v3: u16 = 0;
-                    match rsp3 {
-                        Ok(v) => {
-                            v3 = *v.get(0).unwrap();
-                            debug!("Sensor value is: {}", v3);
-                        }
-                        Err(_) => {
-                            error!("read_holding_registers failed");
-                        }
-                    }
-
-                    let payload = json!({
-                        "bean_temp": v3 as f64 * 0.1
-                    });
                     app2.emit_all("read_metrics", payload).unwrap();
                     trace!("event read_metrics emitted");
                 }

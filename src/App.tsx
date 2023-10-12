@@ -1,28 +1,33 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
-import { emit, listen } from "@tauri-apps/api/event";
+import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import * as d3 from "d3";
-
-// with LogTarget::Webview enabled this function will print logs to the browser console
-const detach_handle = await attachConsole();
-
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
   const [name, setName] = createSignal("");
 
-  const [BT, setBT] = createSignal(0);
+  const [BT, setBT] = createSignal(0.0);
 
+  let detach: UnlistenFn;
+  let unlisten: UnlistenFn;
   onMount(async () => {
-    const unlisten = await listen("read_metrics", (event) => {
+
+    // with LogTarget::Webview enabled this function will print logs to the browser console
+    detach = await attachConsole();
+
+    unlisten = await listen("read_metrics", (event) => {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload as object));
       setBT((event.payload as any).bean_temp as number);
     });
 
   });
 
-
+  onCleanup(() => {
+    detach();
+    unlisten();
+  })
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
