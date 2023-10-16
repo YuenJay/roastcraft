@@ -1,25 +1,30 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
+import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import * as d3 from "d3";
 
 function App() {
-  const [greetMsg, setGreetMsg] = createSignal("");
-  const [name, setName] = createSignal("");
 
-  const [BT, setBT] = createSignal(0.0);
+  const [appState, setAppState] = createStore({
+    timer: 0,
+    BT: 0.0
+  })
 
   let detach: UnlistenFn;
   let unlisten: UnlistenFn;
+  let intervalId: number;
   onMount(async () => {
 
     // with LogTarget::Webview enabled this function will print logs to the browser console
     detach = await attachConsole();
 
-    unlisten = await listen("read_metrics", (event) => {
-      trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload as object));
-      setBT((event.payload as any).bean_temp as number);
+    unlisten = await listen("read_metrics", (event: any) => {
+      trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
+
+      setAppState({ BT: event.payload.bean_temp as number });
+
     });
 
   });
@@ -29,11 +34,6 @@ function App() {
     unlisten();
   })
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name: name() }));
-  }
-
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
     trace("buttonOnClicked");
@@ -42,6 +42,16 @@ function App() {
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
     trace("buttonOffClicked");
+  }
+
+  async function buttonStartClicked() {
+    trace("buttonStartClicked");
+    intervalId = setInterval(() => { setAppState({ timer: appState.timer + 1 }) }, 1000);
+  }
+
+  async function buttonStopClicked() {
+    trace("buttonStopClicked");
+    clearInterval(intervalId);
   }
 
   function LinePlot({
@@ -85,24 +95,20 @@ function App() {
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
         <button class="btn btn-accent mr-2">reset</button>
 
-        <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>
-          on
-        </button>
-        <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>
-          off
-        </button>
-        <button class="btn btn-accent mr-2">start</button>
-        <button class="btn btn-accent mr-2">stop </button>
+        <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>on</button>
+        <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>off</button>
+        <button class="btn btn-accent mr-2" onClick={buttonStartClicked}>start</button>
+        <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
       </div>
       {/* header end*/}
       {/* sidebar start*/}
       <div class="col-start-1 col-end-2 row-start-2 row-end-3 overflow-y-auto px-1">
         <div class="border bg-black rounded mb-1 py-2 text-center sticky top-0">
-          <p class="text-4xl font-extrabold  text-white">08:45</p>
+          <p class="text-4xl font-extrabold  text-white">{Math.floor(appState.timer / 60).toString().padStart(2, '0') + ":" + (appState.timer % 60).toString().padStart(2, '0')}</p>
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right ">
           <p>BT</p>
-          <p class="text-2xl font-medium text-red-600">{BT()}</p>
+          <p class="text-2xl font-medium text-red-600">{appState.BT}</p>
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>Δ BT</p>
@@ -244,22 +250,6 @@ function App() {
           ></textarea>
         </div>
 
-        <form
-          class="row"
-          onSubmit={(e) => {
-            e.preventDefault();
-            greet();
-          }}
-        >
-          <input
-            id="greet-input"
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter a name..."
-          />
-          <button type="submit">Greet</button>
-        </form>
-
-        <p>{greetMsg()}</p>
       </div>
       {/* main start*/}
     </div>
