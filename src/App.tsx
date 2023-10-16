@@ -1,5 +1,5 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
-import { createStore } from 'solid-js/store'
+import { createStore, produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
@@ -9,12 +9,13 @@ function App() {
 
   const [appState, setAppState] = createStore({
     timer: 0,
-    BT: 0.0
+    BT: 0.0,
+    metrics: [{ id: "BT", label: "Bean Temp", unit: "celcius", data: new Array() }]
   })
 
   let detach: UnlistenFn;
   let unlisten: UnlistenFn;
-  let intervalId: number;
+  let intervalId: number = 0;
   onMount(async () => {
 
     // with LogTarget::Webview enabled this function will print logs to the browser console
@@ -24,6 +25,15 @@ function App() {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
       setAppState({ BT: event.payload.bean_temp as number });
+
+      let input = { "timestamp": appState.timer, "value": event.payload.bean_temp };
+
+      // localized mutation
+      setAppState(
+        produce((appState) => {
+          appState.metrics[0].data.push(input)
+        })
+      )
 
     });
 
@@ -46,12 +56,19 @@ function App() {
 
   async function buttonStartClicked() {
     trace("buttonStartClicked");
-    intervalId = setInterval(() => { setAppState({ timer: appState.timer + 1 }) }, 1000);
+    // allow only 1 setInterval running
+    if (intervalId == 0) {
+      intervalId = setInterval(() => {
+        setAppState({ timer: appState.timer + 1 });
+
+      }, 1000);
+    }
   }
 
   async function buttonStopClicked() {
     trace("buttonStopClicked");
     clearInterval(intervalId);
+    intervalId = 0;
   }
 
   function LinePlot({
