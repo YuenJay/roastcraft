@@ -72,7 +72,7 @@ function App() {
   }
 
   function LinePlot({
-    data = [1, 2, 3, 4],
+    data = appState.metrics[0].data,
     width = 800,
     height = 400,
     marginTop = 20,
@@ -81,14 +81,18 @@ function App() {
     marginLeft = 20,
   }) {
     const x = d3.scaleLinear(
-      [0, data.length - 1],
+      [0, 600],
       [marginLeft, width - marginRight]
     );
-    const y = d3.scaleLinear(d3.extent(data) as [number, number], [
+    const y = d3.scaleLinear([0, 300], [
       height - marginBottom,
       marginTop,
     ]);
-    const line = d3.line((_d, i) => x(i), y);
+
+    const line = d3.line()
+      .x((d: any) => x(d.timestamp))
+      .y((d: any) => y(d.value));
+
     return (
       <svg width={width} height={height}>
         <path
@@ -98,8 +102,8 @@ function App() {
           d={line(data) as string | undefined}
         />
         <g fill="white" stroke="currentColor" stroke-width="1.5">
-          {data.map((d, i) => (
-            <circle cx={x(i)} cy={y(d)} r="2.5" />
+          {data.map((d: any) => (
+            <circle cx={x(d.timestamp)} cy={y(d.value)} r="2.5" />
           ))}
         </g>
       </svg>
