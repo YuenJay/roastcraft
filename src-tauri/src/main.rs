@@ -53,10 +53,13 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
                     interval.tick().await;
                     info!("i am inside async process, 3 sec interval");
 
-                    let payload = dd.read().await;
-
-                    app2.emit_all("read_metrics", payload).unwrap();
-                    trace!("event read_metrics emitted");
+                    match dd.read().await {
+                        Ok(payload) => {
+                            app2.emit_all("read_metrics", payload).unwrap();
+                            trace!("event read_metrics emitted");
+                        }
+                        Err(_) => {}
+                    }
                 }
             }));
 

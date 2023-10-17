@@ -1,14 +1,16 @@
+use std::io::{Error, ErrorKind};
+
+use super::Device;
 use async_trait::async_trait;
 use log::{debug, error};
 use serde_json::{Map, Value};
+use tokio::time;
 use tokio_modbus::{
     client::{rtu, Context},
     prelude::Reader,
     slave::SlaveContext,
     Slave,
 };
-
-use super::Device;
 
 pub struct ModbusDevice {
     ctx: Context,
@@ -45,31 +47,42 @@ impl ModbusDevice {
 
 #[async_trait]
 impl Device for ModbusDevice {
-    async fn read(self: &mut Self) -> Value
-
-    {
+    async fn read(self: &mut Self) -> Result<Value, Error> {
         println!("called devices::modbus::read()");
 
         let mut map = Map::new();
 
-        for i in 0..self.metrics_count {
-            self.ctx.set_slave(self.vec_slaves[i]);
-            match self.ctx.read_holding_registers(18176, 1).await {
-                Ok(v) => {
-                    let result = *v.get(0).unwrap() as f32 * 0.1;
+        // 10 seconds timeout
+        let res = tokio::time::timeout(time::Duration::from_secs(10), async {
+            // read registers
+            for i in 0..self.metrics_count {
+                self.ctx.set_slave(self.vec_slaves[i]);
 
-                    debug!("Sensor value is: {:.1}", result);
-                    map.insert(
-                        self.vec_metrics_ids[i].clone(),
-                        Value::String(format!("{:.1}", result)),
-                    );
+                match self.ctx.read_holding_registers(18176, 1).await {
+                    Ok(v) => {
+                        let result = *v.get(0).unwrap() as f32 * 0.1;
+
+                        debug!("Sensor value is: {:.1}", result);
+                        map.insert(
+                            self.vec_metrics_ids[i].clone(),
+                            Value::String(format!("{:.1}", result)),
+                        );
+                    }
+                    Err(_) => {
+                        error!("read_holding_registers failed");
+                    }
                 }
-                Err(_) => {
-                    error!("read_holding_registers failed");
-                }
+            }
+        });
+
+        match res.await {
+            Ok(_) => (),
+            Err(_) => {
+                error!("read_holding_registers timeout");
+                return Err(Error::new(ErrorKind::Other, "oh no!"));
             }
         }
 
-        Value::Object(map)
+        Ok(Value::Object(map))
     }
 }

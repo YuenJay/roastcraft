@@ -60,7 +60,6 @@ function App() {
     if (intervalId == 0) {
       intervalId = setInterval(() => {
         setAppState({ timer: appState.timer + 1 });
-
       }, 1000);
     }
   }
@@ -101,9 +100,9 @@ function App() {
           stroke-width="1.5"
           d={line(data) as string | undefined}
         />
-        <g fill="white" stroke="currentColor" stroke-width="1.5">
+        <g fill="white" stroke="currentColor" stroke-width="1">
           {data.map((d: any) => (
-            <circle cx={x(d.timestamp)} cy={y(d.value)} r="2.5" />
+            <circle cx={x(d.timestamp)} cy={y(d.value)} r="2" />
           ))}
         </g>
       </svg>
@@ -125,7 +124,9 @@ function App() {
       {/* sidebar start*/}
       <div class="col-start-1 col-end-2 row-start-2 row-end-3 overflow-y-auto px-1">
         <div class="border bg-black rounded mb-1 py-2 text-center sticky top-0">
-          <p class="text-4xl font-extrabold  text-white">{Math.floor(appState.timer / 60).toString().padStart(2, '0') + ":" + (appState.timer % 60).toString().padStart(2, '0')}</p>
+          <p class="text-4xl font-extrabold  text-white">
+            {Math.floor(appState.timer / 60).toString().padStart(2, '0') + ":" + (appState.timer % 60).toString().padStart(2, '0')}
+          </p>
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right ">
           <p>BT</p>
