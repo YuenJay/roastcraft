@@ -1,4 +1,4 @@
-import { createSignal, onMount, onCleanup } from "solid-js";
+import { createSignal, onMount, onCleanup, Show } from "solid-js";
 import { createStore, produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
@@ -7,7 +7,15 @@ import * as d3 from "d3";
 
 function App() {
 
-  const [appState, setAppState] = createStore({
+  enum AppState {
+    OFF,
+    ON,
+    RECORDING,
+    RECORDED
+  }
+
+  const [appStore, setAppStore] = createStore({
+    appState: AppState.OFF,
     timer: 0,
     BT: 0.0,
     metrics: [{ id: "BT", label: "Bean Temp", unit: "celcius", data: new Array() }]
@@ -24,14 +32,14 @@ function App() {
     unlisten = await listen("read_metrics", (event: any) => {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
-      setAppState({ BT: event.payload.bean_temp as number });
+      setAppStore({ BT: event.payload.bean_temp as number });
 
-      let input = { "timestamp": appState.timer, "value": event.payload.bean_temp };
+      let input = { "timestamp": appStore.timer, "value": event.payload.bean_temp };
 
       // localized mutation
-      setAppState(
-        produce((appState) => {
-          appState.metrics[0].data.push(input)
+      setAppStore(
+        produce((appStore) => {
+          appStore.metrics[0].data.push(input)
         })
       )
 
@@ -46,32 +54,49 @@ function App() {
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
+    setAppStore({ appState: AppState.ON });
     trace("buttonOnClicked");
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
+    setAppStore({ appState: AppState.OFF });
     trace("buttonOffClicked");
   }
 
   async function buttonStartClicked() {
-    trace("buttonStartClicked");
+
     // allow only 1 setInterval running
     if (intervalId == 0) {
       intervalId = setInterval(() => {
-        setAppState({ timer: appState.timer + 1 });
+        setAppStore({ timer: appStore.timer + 1 });
       }, 1000);
     }
+
+    setAppStore({ appState: AppState.RECORDING });
+    trace("buttonStartClicked");
   }
 
   async function buttonStopClicked() {
+
+    if (intervalId != 0) {
+      clearInterval(intervalId);
+      intervalId = 0;
+    }
+
+    setAppStore({ appState: AppState.RECORDED });
     trace("buttonStopClicked");
-    clearInterval(intervalId);
-    intervalId = 0;
   }
 
+  async function buttonResetClicked() {
+    // todo: clear appStore
+    setAppStore({ appState: AppState.ON });
+    trace("buttonResetClicked");
+  }
+
+
   function LinePlot({
-    data = appState.metrics[0].data,
+    data = appStore.metrics[0].data,
     width = 800,
     height = 400,
     marginTop = 20,
@@ -113,24 +138,36 @@ function App() {
     <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] ">
       {/* header start*/}
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
-        <button class="btn btn-accent mr-2">reset</button>
 
-        <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>on</button>
-        <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>off</button>
-        <button class="btn btn-accent mr-2" onClick={buttonStartClicked}>start</button>
-        <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
+
+        <Show when={appStore.appState == AppState.OFF}>
+          <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>on</button>
+        </Show>
+
+        <Show when={appStore.appState == AppState.ON}>
+          <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>off</button>
+          <button class="btn btn-accent mr-2" onClick={buttonStartClicked}>start</button>
+        </Show>
+
+        <Show when={appStore.appState == AppState.RECORDING}>
+          <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
+        </Show>
+
+        <Show when={appStore.appState == AppState.RECORDED}>
+          <button class="btn btn-accent mr-2" onClick={buttonResetClicked}>reset</button>
+        </Show>
       </div>
       {/* header end*/}
       {/* sidebar start*/}
       <div class="col-start-1 col-end-2 row-start-2 row-end-3 overflow-y-auto px-1">
         <div class="border bg-black rounded mb-1 py-2 text-center sticky top-0">
           <p class="text-4xl font-extrabold  text-white">
-            {Math.floor(appState.timer / 60).toString().padStart(2, '0') + ":" + (appState.timer % 60).toString().padStart(2, '0')}
+            {Math.floor(appStore.timer / 60).toString().padStart(2, '0') + ":" + (appStore.timer % 60).toString().padStart(2, '0')}
           </p>
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right ">
           <p>BT</p>
-          <p class="text-2xl font-medium text-red-600">{appState.BT}</p>
+          <p class="text-2xl font-medium text-red-600">{appStore.BT}</p>
         </div>
         <div class="border bg-base-300 rounded mb-1 p-1 text-right">
           <p>Δ BT</p>

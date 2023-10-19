@@ -2,7 +2,7 @@ use std::io::{Error, ErrorKind};
 
 use super::Device;
 use async_trait::async_trait;
-use log::{debug, error};
+use log::{debug, error, trace};
 use serde_json::{Map, Value};
 use tokio::time;
 use tokio_modbus::{
@@ -48,7 +48,7 @@ impl ModbusDevice {
 #[async_trait]
 impl Device for ModbusDevice {
     async fn read(self: &mut Self) -> Result<Value, Error> {
-        println!("called devices::modbus::read()");
+        debug!("called devices::modbus::read()");
 
         let mut map = Map::new();
 
@@ -62,7 +62,7 @@ impl Device for ModbusDevice {
                     Ok(v) => {
                         let result = *v.get(0).unwrap() as f32 * 0.1;
 
-                        debug!("Sensor value is: {:.1}", result);
+                        trace!("Sensor value is: {:.1}", result);
                         map.insert(
                             self.vec_metrics_ids[i].clone(),
                             Value::String(format!("{:.1}", result)),
@@ -79,7 +79,10 @@ impl Device for ModbusDevice {
             Ok(_) => (),
             Err(_) => {
                 error!("read_holding_registers timeout");
-                return Err(Error::new(ErrorKind::Other, "oh no!"));
+                return Err(Error::new(
+                    ErrorKind::Other,
+                    "read_holding_registers timeout",
+                ));
             }
         }
 
