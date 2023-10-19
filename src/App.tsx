@@ -1,4 +1,4 @@
-import { createSignal, onMount, onCleanup, Show } from "solid-js";
+import { createSignal, onMount, onCleanup, Show, createEffect } from "solid-js";
 import { createStore, produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
@@ -104,42 +104,66 @@ function App() {
     marginBottom = 20,
     marginLeft = 20,
   }) {
-    const x = d3.scaleLinear(
+    const xScale = d3.scaleLinear(
       [0, 600],
       [marginLeft, width - marginRight]
     );
-    const y = d3.scaleLinear([0, 300], [
+    const yScale = d3.scaleLinear([0, 300], [
       height - marginBottom,
       marginTop,
     ]);
 
     const line = d3.line()
-      .x((d: any) => x(d.timestamp))
-      .y((d: any) => y(d.value));
+      .x((d: any) => xScale(d.timestamp))
+      .y((d: any) => yScale(d.value));
 
-    return (
-      <svg width={width} height={height}>
-        <path
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          d={line(data) as string | undefined}
-        />
-        <g fill="white" stroke="currentColor" stroke-width="1">
-          {data.map((d: any) => (
-            <circle cx={x(d.timestamp)} cy={y(d.value)} r="2" />
-          ))}
-        </g>
-      </svg>
-    );
+    const svg = d3.create("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    svg.append("path")
+      .attr("fill", "none")
+      .attr("stroke", "currentColor")
+      .attr("stroke-width", 1.5)
+
+
+    svg.append("g")
+      .attr("fill", "white")
+      .attr("stroke", "currentColor")
+      .attr("stroke-width", 1)
+      .append("circle")
+      .attr("r", 2)
+
+    createEffect(() => {
+      svg.select("path")
+        .attr("d", line(data));
+      svg.select("g").select("circle")
+        .attr("cx", xScale(data[data.length - 1].timestamp))
+        .attr("cy", yScale(data[data.length - 1].value));
+    });
+
+    return svg.node();
+    // return (
+    //   <svg width={width} height={height}>
+    //     <path
+    //       fill="none"
+    //       stroke="currentColor"
+    //       stroke-width="1.5"
+    //       d={line(data) as string | undefined}
+    //     />
+    //     <g fill="white" stroke="currentColor" stroke-width="1">
+    //       {data.map((d: any) => (
+    //         <circle cx={xScale(d.timestamp)} cy={yScale(d.value)} r="2" />
+    //       ))}
+    //     </g>
+    //   </svg>
+    // );
   }
 
   return (
     <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] ">
       {/* header start*/}
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
-
-
         <Show when={appStore.appState == AppState.OFF}>
           <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>on</button>
         </Show>
