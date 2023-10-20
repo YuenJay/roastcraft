@@ -36,12 +36,15 @@ function App() {
 
       let input = { "timestamp": appStore.timer, "value": event.payload.bean_temp };
 
-      // localized mutation
-      setAppStore(
-        produce((appStore) => {
-          appStore.metrics[0].data.push(input)
-        })
-      )
+      if (appStore.appState == AppState.RECORDING) {
+        // localized mutation
+        setAppStore(
+          produce((appStore) => {
+            appStore.metrics[0].data.push(input)
+          })
+        )
+      }
+
 
     });
 
@@ -134,7 +137,7 @@ function App() {
     });
 
     return (
-      <svg ref={svgRef} width={width} height={height}>
+      <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 400">
         <path
           fill="none"
           stroke="currentColor"
