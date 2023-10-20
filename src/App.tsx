@@ -99,10 +99,10 @@ function App() {
     data = appStore.metrics[0].data,
     width = 800,
     height = 400,
-    marginTop = 20,
-    marginRight = 20,
-    marginBottom = 20,
-    marginLeft = 20,
+    marginTop = 30,
+    marginRight = 30,
+    marginBottom = 30,
+    marginLeft = 30,
   }) {
     const xScale = d3.scaleLinear(
       [0, 600],
@@ -133,6 +133,8 @@ function App() {
       .attr("stroke-width", 1)
       .append("circle")
       .attr("r", 2)
+      .attr("cx", xScale(0))
+      .attr("cy", yScale(0));
 
     createEffect(() => {
       svg.select("path")
@@ -141,6 +143,13 @@ function App() {
         .attr("cx", xScale(data[data.length - 1].timestamp))
         .attr("cy", yScale(data[data.length - 1].value));
     });
+
+    svg.append("g")
+      .attr("transform", `translate(0,${height - marginBottom})`)
+      .call(d3.axisBottom(xScale));
+    svg.append("g")
+      .attr("transform", `translate(${marginLeft}, 0)`)
+      .call(d3.axisLeft(yScale));
 
     return svg.node();
     // return (
