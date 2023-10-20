@@ -3,7 +3,7 @@ import { createStore, produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
-import * as d3 from "d3";
+import LinePlot from "./LinePlot";
 
 function App() {
 
@@ -97,62 +97,6 @@ function App() {
     trace("buttonResetClicked");
   }
 
-
-  function LinePlot({
-    data = appStore.metrics[0].data,
-  }) {
-
-    const width = 800;
-    const height = 400;
-    const marginTop = 30;
-    const marginRight = 30;
-    const marginBottom = 30;
-    const marginLeft = 30;
-
-    const xScale = d3.scaleLinear(
-      [0, 600],
-      [marginLeft, width - marginRight]
-    );
-    const yScale = d3.scaleLinear([0, 300], [
-      height - marginBottom,
-      marginTop,
-    ]);
-
-    const line = d3.line()
-      .x((d: any) => xScale(d.timestamp))
-      .y((d: any) => yScale(d.value));
-
-    let svgRef: SVGSVGElement | undefined;
-
-    onMount(() => {
-      if (svgRef) {
-        d3.select(svgRef).append("g")
-          .attr("transform", `translate(0,${height - marginBottom})`)
-          .call(d3.axisBottom(xScale));
-
-        d3.select(svgRef).append("g")
-          .attr("transform", `translate(${marginLeft}, 0)`)
-          .call(d3.axisLeft(yScale));
-      }
-    });
-
-    return (
-      <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 400">
-        <path
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          d={line(data) as string | undefined}
-        />
-        <g fill="white" stroke="currentColor" stroke-width="1">
-
-          <Show when={data.length > 0}>
-            <circle cx={xScale(data[data.length - 1].timestamp)} cy={yScale(data[data.length - 1].value)} r="2" />
-          </Show>
-        </g>
-      </svg>
-    );
-  }
 
   return (
     <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] ">
@@ -259,7 +203,7 @@ function App() {
       {/* sidebar end*/}
       {/* main start*/}
       <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-base-200 p-1">
-        <LinePlot />
+        <LinePlot data={appStore.metrics[0].data} />
 
         <ul class="steps w-full ">
           <li data-content="✓" class="step ">
