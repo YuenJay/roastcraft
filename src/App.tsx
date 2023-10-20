@@ -97,13 +97,15 @@ function App() {
 
   function LinePlot({
     data = appStore.metrics[0].data,
-    width = 800,
-    height = 400,
-    marginTop = 30,
-    marginRight = 30,
-    marginBottom = 30,
-    marginLeft = 30,
   }) {
+
+    const width = 800;
+    const height = 400;
+    const marginTop = 30;
+    const marginRight = 30;
+    const marginBottom = 30;
+    const marginLeft = 30;
+
     const xScale = d3.scaleLinear(
       [0, 600],
       [marginLeft, width - marginRight]
@@ -117,56 +119,36 @@ function App() {
       .x((d: any) => xScale(d.timestamp))
       .y((d: any) => yScale(d.value));
 
-    const svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height);
+    let svgRef: SVGSVGElement | undefined;
 
-    svg.append("path")
-      .attr("fill", "none")
-      .attr("stroke", "currentColor")
-      .attr("stroke-width", 1.5)
+    onMount(() => {
+      if (svgRef) {
+        d3.select(svgRef).append("g")
+          .attr("transform", `translate(0,${height - marginBottom})`)
+          .call(d3.axisBottom(xScale));
 
-
-    svg.append("g")
-      .attr("fill", "white")
-      .attr("stroke", "currentColor")
-      .attr("stroke-width", 1)
-      .append("circle")
-      .attr("r", 2)
-      .attr("cx", xScale(0))
-      .attr("cy", yScale(0));
-
-    createEffect(() => {
-      svg.select("path")
-        .attr("d", line(data));
-      svg.select("g").select("circle")
-        .attr("cx", xScale(data[data.length - 1].timestamp))
-        .attr("cy", yScale(data[data.length - 1].value));
+        d3.select(svgRef).append("g")
+          .attr("transform", `translate(${marginLeft}, 0)`)
+          .call(d3.axisLeft(yScale));
+      }
     });
 
-    svg.append("g")
-      .attr("transform", `translate(0,${height - marginBottom})`)
-      .call(d3.axisBottom(xScale));
-    svg.append("g")
-      .attr("transform", `translate(${marginLeft}, 0)`)
-      .call(d3.axisLeft(yScale));
+    return (
+      <svg ref={svgRef} width={width} height={height}>
+        <path
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          d={line(data) as string | undefined}
+        />
+        <g fill="white" stroke="currentColor" stroke-width="1">
 
-    return svg.node();
-    // return (
-    //   <svg width={width} height={height}>
-    //     <path
-    //       fill="none"
-    //       stroke="currentColor"
-    //       stroke-width="1.5"
-    //       d={line(data) as string | undefined}
-    //     />
-    //     <g fill="white" stroke="currentColor" stroke-width="1">
-    //       {data.map((d: any) => (
-    //         <circle cx={xScale(d.timestamp)} cy={yScale(d.value)} r="2" />
-    //       ))}
-    //     </g>
-    //   </svg>
-    // );
+          <Show when={data.length > 0}>
+            <circle cx={xScale(data[data.length - 1].timestamp)} cy={yScale(data[data.length - 1].value)} r="2" />
+          </Show>
+        </g>
+      </svg>
+    );
   }
 
   return (
