@@ -1,25 +1,14 @@
-import { createSignal, onMount, onCleanup, Show, createEffect } from "solid-js";
-import { createStore, produce } from 'solid-js/store'
+import { onMount, onCleanup, Show } from "solid-js";
+import { produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import LinePlot from "./LinePlot";
+import useAppStore, { AppState } from "./AppStore";
 
 function App() {
 
-  enum AppState {
-    OFF,
-    ON,
-    RECORDING,
-    RECORDED
-  }
-
-  const [appStore, setAppStore] = createStore({
-    appState: AppState.OFF,
-    timer: 0,
-    BT: 0.0,
-    metrics: [{ id: "BT", label: "Bean Temp", unit: "celcius", data: new Array() }]
-  })
+  const [appStore, setAppStore] = useAppStore;
 
   let detach: UnlistenFn;
   let unlisten: UnlistenFn;
@@ -203,7 +192,7 @@ function App() {
       {/* sidebar end*/}
       {/* main start*/}
       <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-base-200 p-1">
-        <LinePlot data={appStore.metrics[0].data} />
+        <LinePlot />
 
         <ul class="steps w-full ">
           <li data-content="✓" class="step ">

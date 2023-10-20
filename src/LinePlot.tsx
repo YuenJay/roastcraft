@@ -1,7 +1,12 @@
 import { onMount, Show } from "solid-js";
 import * as d3 from "d3";
+import useAppStore from "./AppStore";
 
-export default function LinePlot({ data }: { data: any[] }) {
+export default function LinePlot() {
+
+    const [appStore, setAppStore] = useAppStore;
+
+    let data = appStore.metrics[0].data;
 
     const width = 800;
     const height = 400;
