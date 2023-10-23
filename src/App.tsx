@@ -3,7 +3,8 @@ import { produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
-import LinePlot from "./LinePlot";
+import MainChart from "./MainChart";
+import InputChart from "./InputChart";
 import useAppStore, { AppState } from "./AppStore";
 
 function App() {
@@ -88,7 +89,7 @@ function App() {
 
 
   return (
-    <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] ">
+    <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] max-w-screen-xl ">
       {/* header start*/}
       <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
         <Show when={appStore.appState == AppState.OFF}>
@@ -191,9 +192,9 @@ function App() {
       </div>
       {/* sidebar end*/}
       {/* main start*/}
-      <div class="col-start-2 col-end-3 row-start-2 row-end-3 bg-base-200 p-1">
-        <LinePlot />
+      <div class="col-start-2 col-end-3 row-start-2 row-end-3 p-1 ">
 
+        <MainChart />
         <ul class="steps w-full ">
           <li data-content="✓" class="step ">
             Charge
@@ -214,34 +215,8 @@ function App() {
             Drop
           </li>
         </ul>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value="40"
-          class="range range-primary range-xs w-1/2 "
-        />
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value="60"
-          class="range range-secondary range-xs w-1/2 "
-        />
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value="40"
-          class="range range-primary range-xs w-1/2 "
-        />
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value="60"
-          class="range range-secondary range-xs w-1/2 "
-        />
+        <InputChart />
+        <InputChart />
         <div>
           <button class="btn ">custom</button>
           <button class="btn ">custom</button>
@@ -259,9 +234,8 @@ function App() {
             class="textarea textarea-bordered textarea-xs w-full max-w-lg"
           ></textarea>
         </div>
-
       </div>
-      {/* main start*/}
+      {/* main end*/}
     </div>
   );
 }
