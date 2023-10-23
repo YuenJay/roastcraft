@@ -89,110 +89,55 @@ function App() {
 
 
   return (
-    <div class="h-screen grid grid-cols-[140px_1fr] grid-rows-[60px_1fr] max-w-screen-xl ">
+    // responsive design breakpoint : lg
+    <div class="grid grid-cols-9 lg:grid-cols-12">
       {/* header start*/}
-      <div class="col-start-1 col-end-3 row-start-1 row-end-2 flex justify-end items-center">
-        <Show when={appStore.appState == AppState.OFF}>
-          <button class="btn btn-accent mr-2" onClick={buttonOnClicked}>on</button>
-        </Show>
-
-        <Show when={appStore.appState == AppState.ON}>
-          <button class="btn btn-accent mr-2" onClick={buttonOffClicked}>off</button>
-          <button class="btn btn-accent mr-2" onClick={buttonStartClicked}>start</button>
-        </Show>
-
-        <Show when={appStore.appState == AppState.RECORDING}>
-          <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
-        </Show>
-
-        <Show when={appStore.appState == AppState.RECORDED}>
-          <button class="btn btn-accent mr-2" onClick={buttonResetClicked}>reset</button>
-        </Show>
-      </div>
-      {/* header end*/}
-      {/* sidebar start*/}
-      <div class="col-start-1 col-end-2 row-start-2 row-end-3 overflow-y-auto px-1">
-        <div class="border bg-black rounded mb-1 py-2 text-center sticky top-0">
-          <p class="text-4xl font-extrabold  text-white">
+      <div class="col-span-9 flex sticky top-0 m-1 gap-1">
+        <div class="border bg-black rounded px-1 py-3">
+          <p class="text-4xl font-extrabold text-white text-center ">
             {Math.floor(appStore.timer / 60).toString().padStart(2, '0') + ":" + (appStore.timer % 60).toString().padStart(2, '0')}
           </p>
         </div>
-        <div class="border bg-base-300 rounded mb-1 p-1 text-right ">
+        <div class="border bg-base-300 rounded text-right p-1">
           <p>BT</p>
           <p class="text-2xl font-medium text-red-600">{appStore.BT}</p>
         </div>
-        <div class="border bg-base-300 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded text-right p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">15.4</p>
         </div>
 
-        <div class="border bg-base-300 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded text-right p-1">
           <p>ET</p>
           <p class="text-2xl font-medium text-red-600">205.2</p>
         </div>
-        <div class="border bg-base-300 rounded mb-1 p-1 text-right">
+        <div class="border bg-base-300 rounded text-right p-1">
           <p>inlet</p>
           <p class="text-2xl font-medium text-red-600">350.3</p>
         </div>
+        <div class="ml-auto self-center flex gap-1">
+          <Show when={appStore.appState == AppState.OFF}>
+            <button class="btn btn-accent " onClick={buttonOnClicked}>on</button>
+          </Show>
 
-        <div class="border bg-base-300 collapse collapse-arrow rounded mb-1 p-1 text-right">
-          <input type="checkbox" class="min-h-0" checked />
-          <p class="collapse-title p-0 min-h-0 text-sm font-bold">Drying</p>
-          <div class="collapse-content p-0 min-h-0 ">
-            <div>
-              <span class="text-sm">time</span> &nbsp
-              <span class="text-xl font-medium text-red-600">1:30</span>
-            </div>
-            <div>
-              <span class="text-sm">temp</span> &nbsp
-              <span class="text-xl font-medium text-red-600">10.3</span>
-            </div>
-            <div>
-              <span class="text-sm">ratio</span> &nbsp
-              <span class="text-xl font-medium text-red-600">30 %</span>
-            </div>
-          </div>
-        </div>
-        <div class="border bg-base-300 collapse collapse-arrow rounded mb-1 p-1 text-right">
-          <input type="checkbox" class="min-h-0" checked />
-          <p class="collapse-title p-0 min-h-0 text-sm font-bold">Maillard</p>
-          <div class="collapse-content p-0 min-h-0 ">
-            <div>
-              <span class="text-sm">time</span> &nbsp
-              <span class="text-xl font-medium text-red-600">1:30</span>
-            </div>
-            <div>
-              <span class="text-sm">temp</span> &nbsp
-              <span class="text-xl font-medium text-red-600">10.3</span>
-            </div>
-            <div>
-              <span class="text-sm">ratio</span> &nbsp
-              <span class="text-xl font-medium text-red-600">30 %</span>
-            </div>
-          </div>
-        </div>
-        <div class="border bg-base-300 collapse collapse-arrow rounded mb-1 p-1 text-right">
-          <input type="checkbox" class="min-h-0" checked />
-          <p class="collapse-title p-0 min-h-0 text-sm font-bold">Develop</p>
-          <div class="collapse-content p-0 min-h-0 ">
-            <div>
-              <span class="text-sm">time</span> &nbsp
-              <span class="text-xl font-medium text-red-600">1:30</span>
-            </div>
-            <div>
-              <span class="text-sm">temp</span> &nbsp
-              <span class="text-xl font-medium text-red-600">10.3</span>
-            </div>
-            <div>
-              <span class="text-sm">ratio</span> &nbsp
-              <span class="text-xl font-medium text-red-600">30 %</span>
-            </div>
-          </div>
+          <Show when={appStore.appState == AppState.ON}>
+            <button class="btn btn-accent " onClick={buttonOffClicked}>off</button>
+            <button class="btn btn-accent " onClick={buttonStartClicked}>start</button>
+          </Show>
+
+          <Show when={appStore.appState == AppState.RECORDING}>
+            <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
+          </Show>
+
+          <Show when={appStore.appState == AppState.RECORDED}>
+            <button class="btn btn-accent mr-2" onClick={buttonResetClicked}>reset</button>
+          </Show>
         </div>
       </div>
-      {/* sidebar end*/}
+      {/* header end*/}
+
       {/* main start*/}
-      <div class="col-start-2 col-end-3 row-start-2 row-end-3 p-1 ">
+      <div class="col-span-9 m-1">
 
         <MainChart />
         <ul class="steps w-full ">
@@ -215,27 +160,23 @@ function App() {
             Drop
           </li>
         </ul>
+
+      </div>
+      {/* main end*/}
+
+      {/* side bar start*/}
+      <div class="col-span-9 lg:col-span-3 m-1">
         <InputChart />
         <InputChart />
-        <div>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-          <button class="btn ">custom</button>
-        </div>
+
         <div>
           <textarea
             placeholder="Logs"
-            class="textarea textarea-bordered textarea-xs w-full max-w-lg"
+            class="textarea textarea-bordered  w-full "
           ></textarea>
         </div>
       </div>
-      {/* main end*/}
+      {/* side bar end*/}
     </div>
   );
 }
