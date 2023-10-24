@@ -9,7 +9,7 @@ export default function InputChart() {
     let data = appStore.metrics[0].data;
 
     const width = 800;
-    const height = 100;
+    const height = 200;
     const marginTop = 10;
     const marginRight = 10;
     const marginBottom = 20;
@@ -46,7 +46,7 @@ export default function InputChart() {
 
     return (
         <div>
-            <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 100" >
+            <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 200" >
                 <path
                     fill="none"
                     stroke="currentColor"

@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
+import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
 import useAppStore, { AppState } from "./AppStore";
 
@@ -90,28 +91,28 @@ function App() {
 
   return (
     // responsive design breakpoint : lg
-    <div class="grid grid-cols-9 lg:grid-cols-12">
+    <div class="grid grid-cols-8 lg:grid-cols-12">
       {/* header start*/}
-      <div class="col-span-9 flex sticky top-0 m-1 gap-1">
-        <div class="border bg-black rounded px-1 py-3">
-          <p class="text-4xl font-extrabold text-white text-center ">
+      <div class="col-span-8 flex sticky top-0 m-1 gap-1">
+        <div class="bg-black rounded flex items-center px-1">
+          <p class="text-4xl font-extrabold text-white ">
             {Math.floor(appStore.timer / 60).toString().padStart(2, '0') + ":" + (appStore.timer % 60).toString().padStart(2, '0')}
           </p>
         </div>
-        <div class="border bg-base-300 rounded text-right p-1">
+        <div class="bg-base-300 rounded text-right w-20 p-1 ">
           <p>BT</p>
           <p class="text-2xl font-medium text-red-600">{appStore.BT}</p>
         </div>
-        <div class="border bg-base-300 rounded text-right p-1">
+        <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">15.4</p>
         </div>
 
-        <div class="border bg-base-300 rounded text-right p-1">
+        <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>ET</p>
           <p class="text-2xl font-medium text-red-600">205.2</p>
         </div>
-        <div class="border bg-base-300 rounded text-right p-1">
+        <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>inlet</p>
           <p class="text-2xl font-medium text-red-600">350.3</p>
         </div>
@@ -137,7 +138,7 @@ function App() {
       {/* header end*/}
 
       {/* main start*/}
-      <div class="col-span-9 m-1">
+      <div class="col-span-8 m-1">
 
         <MainChart />
         <ul class="steps w-full ">
@@ -160,12 +161,12 @@ function App() {
             Drop
           </li>
         </ul>
-
+        <PhaseChart />
       </div>
       {/* main end*/}
 
       {/* side bar start*/}
-      <div class="col-span-9 lg:col-span-3 m-1">
+      <div class="col-span-8 lg:col-span-4 m-1">
         <InputChart />
         <InputChart />
 
