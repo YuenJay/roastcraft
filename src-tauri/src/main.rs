@@ -14,44 +14,41 @@ use crate::devices::Device;
 mod devices;
 
 struct RoastCraftState {
-    join_handle: Option<JoinHandle<()>>,
+    reader_handle: Option<JoinHandle<()>>,
+    timer_handle: Option<JoinHandle<()>>,
+    timer: u32,
 }
 
 impl Default for RoastCraftState {
     fn default() -> Self {
-        Self { join_handle: None }
+        Self {
+            reader_handle: None,
+            timer_handle: None,
+            timer: 0,
+        }
     }
-}
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
 async fn button_on_clicked(app: tauri::AppHandle) -> () {
     trace!("command called : button_on_clicked");
 
-    app.emit_all("synchronized", ()).unwrap();
-    trace!("event synchronized emitted");
-
     let app2 = app.clone();
 
     let state_mutex = app.state::<Mutex<RoastCraftState>>();
     let mut state = state_mutex.lock().unwrap();
 
-    match &state.join_handle {
-        Some(_handle) => warn!("join_handle already exist"),
+    match &state.reader_handle {
+        Some(_handle) => warn!("reader_handle already exist"),
         None => {
-            state.join_handle = Some(spawn(async move {
+            state.reader_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
 
                 let mut dd: Box<dyn Device + Send> = Box::new(devices::modbus::ModbusDevice::new());
 
                 loop {
                     interval.tick().await;
-                    info!("i am inside async process, 3 sec interval");
+                    trace!("i am inside async process, 3 sec interval");
 
                     match dd.read().await {
                         Ok(payload) => {
@@ -64,8 +61,8 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
             }));
 
             debug!(
-                "spawned join_handle : {:?}",
-                state.join_handle.as_ref().unwrap()
+                "spawned reader_handle : {:?}",
+                state.reader_handle.as_ref().unwrap()
             )
         }
     }
@@ -78,16 +75,72 @@ async fn button_off_clicked(app: tauri::AppHandle) -> () {
     let state_mutex = app.state::<Mutex<RoastCraftState>>();
     let mut state = state_mutex.lock().unwrap();
 
-    match &state.join_handle {
+    match &state.reader_handle {
         Some(handle) => {
             handle.abort();
             debug!(
-                "aborted join_handle : {:?}",
-                state.join_handle.as_ref().unwrap()
+                "aborted reader_handle : {:?}",
+                state.reader_handle.as_ref().unwrap()
             );
-            state.join_handle = None;
+            state.reader_handle = None;
         }
-        None => warn!("join_handle is None"),
+        None => warn!("reader_handle is None"),
+    }
+}
+
+#[tauri::command]
+async fn button_start_clicked(app: tauri::AppHandle) -> () {
+    trace!("command called : button_start_clicked");
+
+    let app2 = app.clone();
+
+    let state_mutex = app.state::<Mutex<RoastCraftState>>();
+    let mut state = state_mutex.lock().unwrap();
+
+    match &state.timer_handle {
+        Some(_handle) => warn!("timer_handle already exist"),
+        None => {
+            state.timer_handle = Some(spawn(async move {
+                let mut interval = interval(Duration::from_secs(1));
+
+                loop {
+                    interval.tick().await;
+                    trace!("i am inside async process, 1 sec interval");
+
+                    let state_mutex2 = app2.state::<Mutex<RoastCraftState>>();
+                    let mut state2 = state_mutex2.lock().unwrap();
+
+                    state2.timer = state2.timer + 1;
+
+                    app2.emit_all("timer", state2.timer).unwrap();
+                }
+            }));
+
+            debug!(
+                "spawned timer_handle : {:?}",
+                state.timer_handle.as_ref().unwrap()
+            )
+        }
+    }
+}
+
+#[tauri::command]
+async fn button_stop_clicked(app: tauri::AppHandle) -> () {
+    trace!("command called : button_stop_clicked");
+
+    let state_mutex = app.state::<Mutex<RoastCraftState>>();
+    let mut state = state_mutex.lock().unwrap();
+
+    match &state.timer_handle {
+        Some(handle) => {
+            handle.abort();
+            debug!(
+                "aborted timer_handle : {:?}",
+                state.timer_handle.as_ref().unwrap()
+            );
+            state.timer_handle = None;
+        }
+        None => warn!("timer_handle is None"),
     }
 }
 
@@ -103,9 +156,10 @@ fn main() {
     tauri::Builder::default()
         .menu(menu)
         .invoke_handler(tauri::generate_handler![
-            greet,
             button_on_clicked,
-            button_off_clicked
+            button_off_clicked,
+            button_start_clicked,
+            button_stop_clicked
         ])
         .plugin(
             tauri_plugin_log::Builder::default()

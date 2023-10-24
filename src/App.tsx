@@ -13,14 +13,15 @@ function App() {
   const [appStore, setAppStore] = useAppStore;
 
   let detach: UnlistenFn;
-  let unlisten: UnlistenFn;
-  let intervalId: number = 0;
+  let unlisten_reader: UnlistenFn;
+  let unlisten_timer: UnlistenFn;
+
   onMount(async () => {
 
     // with LogTarget::Webview enabled this function will print logs to the browser console
     detach = await attachConsole();
 
-    unlisten = await listen("read_metrics", (event: any) => {
+    unlisten_reader = await listen("read_metrics", (event: any) => {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
       setAppStore({ BT: event.payload.bean_temp as number });
@@ -39,53 +40,43 @@ function App() {
 
     });
 
+    unlisten_timer = await listen("timer", (event: any) => {
+      trace("event \"timer\" catched :" + JSON.stringify(event.payload));
+      setAppStore({ timer: event.payload });
+    });
+
   });
 
   onCleanup(() => {
     detach();
-    unlisten();
+    unlisten_reader();
+    unlisten_timer();
   })
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
     setAppStore({ appState: AppState.ON });
-    trace("buttonOnClicked");
+
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
     setAppStore({ appState: AppState.OFF });
-    trace("buttonOffClicked");
   }
 
   async function buttonStartClicked() {
-
-    // allow only 1 setInterval running
-    if (intervalId == 0) {
-      intervalId = setInterval(() => {
-        setAppStore({ timer: appStore.timer + 1 });
-      }, 1000);
-    }
-
+    await invoke("button_start_clicked");
     setAppStore({ appState: AppState.RECORDING });
-    trace("buttonStartClicked");
   }
 
   async function buttonStopClicked() {
-
-    if (intervalId != 0) {
-      clearInterval(intervalId);
-      intervalId = 0;
-    }
-
+    await invoke("button_stop_clicked");
     setAppStore({ appState: AppState.RECORDED });
-    trace("buttonStopClicked");
   }
 
   async function buttonResetClicked() {
     // todo: clear appStore
     setAppStore({ appState: AppState.ON });
-    trace("buttonResetClicked");
   }
 
 
