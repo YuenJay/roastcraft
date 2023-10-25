@@ -45,10 +45,6 @@ function App() {
       setAppStore({ timer: event.payload });
     });
 
-    await invoke("get_flash_message").then((message: any) => {
-      setAppStore({ flashMessage: message });
-    });
-
 
 
   });
@@ -167,13 +163,14 @@ function App() {
         <InputChart />
         <InputChart />
 
-        <div>
-          <textarea
-            placeholder="Logs"
-            class="textarea textarea-bordered  w-full "
-          ></textarea>
+        <div class="grid gap-0.5 overflow-y-auto max-h-36">
+          <div class="alert alert-error text-sm rounded p-1 ">
+            <span>this is a line of log</span>
+          </div>
+
         </div>
-        <p>{appStore.flashMessage}</p>
+
+
       </div>
       {/* side bar end*/}
     </div>

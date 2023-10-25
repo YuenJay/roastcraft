@@ -19,16 +19,14 @@ struct RoastCraftState {
     reader_handle: Option<JoinHandle<()>>,
     timer_handle: Option<JoinHandle<()>>,
     timer: u32,
-    flash_msg: String,
 }
 
 impl RoastCraftState {
-    fn init(flash_msg: String) -> Self {
+    fn new() -> Self {
         Self {
             reader_handle: None,
             timer_handle: None,
             timer: 0,
-            flash_msg: flash_msg,
         }
     }
 }
@@ -148,31 +146,26 @@ async fn button_stop_clicked(app: tauri::AppHandle) -> () {
     }
 }
 
-#[tauri::command]
-async fn get_flash_message(app: tauri::AppHandle) -> String {
-    let state_mutex = app.state::<Mutex<RoastCraftState>>();
-    let mut state = state_mutex.lock().unwrap();
-    state.flash_msg.clone()
-}
-
 fn main() {
     // in dev mode, put config.toml in /src-tauri
-    let mut flash_message: String = String::new();
+    let mut read_config_message: String = String::new();
+    let mut read_config_ok = false;
     match File::open("config.toml") {
         Ok(mut file) => {
             let mut contents = String::new();
             match file.read_to_string(&mut contents) {
                 Ok(_) => {
                     // At this point, `contents` contains the content of the TOML file
-                    println!("{}", contents);
+                    // println!("{}", contents);
+                    read_config_ok = true;
                 }
                 Err(_) => {
-                    flash_message = "Failed to read config.toml".to_string();
+                    read_config_message = "Failed to read config.toml".to_string();
                 }
             }
         }
         Err(_) => {
-            flash_message = "Failed to open config.toml".to_string();
+            read_config_message = "Failed to open config.toml".to_string();
         }
     }
 
@@ -191,7 +184,6 @@ fn main() {
             button_off_clicked,
             button_start_clicked,
             button_stop_clicked,
-            get_flash_message
         ])
         .plugin(
             tauri_plugin_log::Builder::default()
@@ -199,7 +191,15 @@ fn main() {
                 .with_colors(ColoredLevelConfig::default())
                 .build(),
         )
-        .manage(Mutex::new(RoastCraftState::init(flash_message)))
+        .manage(Mutex::new(RoastCraftState::new()))
+        .setup(move |app| {
+            if !read_config_ok {
+                let main_window = app.get_window("main").unwrap();
+                tauri::api::dialog::message(Some(&main_window), "RoastCraft", read_config_message);
+            }
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
