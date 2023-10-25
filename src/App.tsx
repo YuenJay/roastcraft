@@ -45,6 +45,12 @@ function App() {
       setAppStore({ timer: event.payload });
     });
 
+    await invoke("get_flash_message").then((message: any) => {
+      setAppStore({ flashMessage: message });
+    });
+
+
+
   });
 
   onCleanup(() => {
@@ -167,6 +173,7 @@ function App() {
             class="textarea textarea-bordered  w-full "
           ></textarea>
         </div>
+        <p>{appStore.flashMessage}</p>
       </div>
       {/* side bar end*/}
     </div>
