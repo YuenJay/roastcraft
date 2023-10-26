@@ -1,15 +1,14 @@
-[machine]
+version = "v1"
 brand = "tasi"
 model = "ta612c"
-metrics_ids = ["T1", "T2", "T3", "T4"]
+metrics_ids = [
+    "bean_temp",
+    "exhaust_temp",
+]
 
-[connection]
-# serial, tcp
-type = "serial"
-
-[connection.serial]
-port = "COM4"
-baud_rate = 9600
-data_bits = 8
-parity = "none"
-stop_bits = 1
+[serial]
+    port      = "COM4"
+    baud_rate = 9600
+    data_bits = 8
+    parity    = "none"
+    stop_bits = 1

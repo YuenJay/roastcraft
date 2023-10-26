@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^10.4.15
     version: 10.4.15(postcss@8.4.29)
   daisyui:
-    specifier: ^3.7.3
-    version: 3.7.3
+    specifier: ^3.9.3
+    version: 3.9.3
   postcss:
     specifier: ^8.4.29
     version: 8.4.29
@@ -1384,8 +1384,8 @@ packages:
       d3-zoom: 3.0.0
     dev: false
 
-  /daisyui@3.7.3:
-    resolution: {integrity: sha512-gKlz3RwfaukZxf8nQZsDAZ7quUSi7F8HjGGB34tkHruvfQB9cgVDQsmqUqSQtkAJYvzbrg/3dLUa9+5jF4iC1A==}
+  /daisyui@3.9.3:
+    resolution: {integrity: sha512-8li177QCu6dqlEOzE3h/dAV1y9Movbjx5bzJIO/hNqMNZtJkbHM0trjTzbDejV7N57eNGdjBvAGtxZYKzS4jow==}
     engines: {node: '>=16.9.0'}
     dependencies:
       colord: 2.9.3

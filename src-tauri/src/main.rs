@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::{debug, error, info, trace, warn};
+use serde::Deserialize;
 
 use std::fs::File;
 use std::io::Read;
@@ -10,6 +11,7 @@ use tauri::async_runtime::{spawn, JoinHandle};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, State, Submenu};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
 use tokio::time::{interval, Duration};
+use toml;
 
 use crate::devices::Device;
 
@@ -29,6 +31,13 @@ impl RoastCraftState {
             timer: 0,
         }
     }
+}
+
+#[derive(Deserialize)]
+struct RoastCraftConfig {
+    version: String,
+    brand: String,
+    model: String,
 }
 
 #[tauri::command]
@@ -147,12 +156,12 @@ async fn button_stop_clicked(app: tauri::AppHandle) -> () {
 }
 
 fn main() {
-    // in dev mode, put config.toml in /src-tauri
+    // in dev mode, put roastcraft.config.toml in /src-tauri
     let mut read_config_message: String = String::new();
     let mut read_config_ok = false;
-    match File::open("config.toml") {
+    let mut contents = String::new();
+    match File::open("roastcraft.config.toml") {
         Ok(mut file) => {
-            let mut contents = String::new();
             match file.read_to_string(&mut contents) {
                 Ok(_) => {
                     // At this point, `contents` contains the content of the TOML file
@@ -160,14 +169,19 @@ fn main() {
                     read_config_ok = true;
                 }
                 Err(_) => {
-                    read_config_message = "Failed to read config.toml".to_string();
+                    read_config_message = "Failed to read roastcraft.config.toml".to_string();
                 }
             }
         }
         Err(_) => {
-            read_config_message = "Failed to open config.toml".to_string();
+            read_config_message = "Failed to open roastcraft.config.toml".to_string();
         }
     }
+
+    let config: RoastCraftConfig = toml::from_str(contents.as_str()).unwrap();
+    println!("{}", config.version);
+    println!("{}", config.brand);
+    println!("{}", config.model);
 
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let close = CustomMenuItem::new("close".to_string(), "Close");
