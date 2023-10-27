@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::{debug, error, info, trace, warn};
-use serde::Deserialize;
 
 use std::fs::File;
 use std::io::Read;
@@ -13,8 +12,10 @@ use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
 use tokio::time::{interval, Duration};
 use toml;
 
+use crate::config::Config;
 use crate::devices::Device;
 
+mod config;
 mod devices;
 
 struct RoastCraftState {
@@ -31,13 +32,6 @@ impl RoastCraftState {
             timer: 0,
         }
     }
-}
-
-#[derive(Deserialize)]
-struct RoastCraftConfig {
-    version: String,
-    brand: String,
-    model: String,
 }
 
 #[tauri::command]
@@ -160,13 +154,22 @@ fn main() {
     let mut read_config_message: String = String::new();
     let mut read_config_ok = false;
     let mut contents = String::new();
+    let mut config = Config::new();
     match File::open("roastcraft.config.toml") {
         Ok(mut file) => {
             match file.read_to_string(&mut contents) {
                 Ok(_) => {
                     // At this point, `contents` contains the content of the TOML file
-                    // println!("{}", contents);
-                    read_config_ok = true;
+                    match toml::from_str::<Config>(contents.as_str()) {
+                        Ok(c) => {
+                            read_config_ok = true;
+                            config = c;
+                        }
+                        Err(_) => {
+                            read_config_message =
+                                "Failed to parse roastcraft.config.toml".to_string();
+                        }
+                    }
                 }
                 Err(_) => {
                     read_config_message = "Failed to read roastcraft.config.toml".to_string();
@@ -178,10 +181,11 @@ fn main() {
         }
     }
 
-    let config: RoastCraftConfig = toml::from_str(contents.as_str()).unwrap();
-    println!("{}", config.version);
-    println!("{}", config.brand);
-    println!("{}", config.model);
+    println!("parsed Config: ");
+    println!("{}", toml::to_string(&config).unwrap());
+    let m = config.serial.as_ref().unwrap().modbus.as_ref().unwrap();
+    let s = m.slave.get(0).unwrap();
+    println!("{}", s["function"]);
 
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let close = CustomMenuItem::new("close".to_string(), "Close");
