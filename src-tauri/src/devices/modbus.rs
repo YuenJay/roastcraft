@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 use std::io::{Error, ErrorKind};
 
 use super::Device;
@@ -14,33 +16,20 @@ use tokio_modbus::{
 
 pub struct ModbusDevice {
     ctx: Context,
-    metrics_count: usize,
-    vec_metrics_ids: Vec<String>,
-    vec_slaves: Vec<Slave>,
+    config: toml::Table,
 }
 
 impl ModbusDevice {
-    pub fn new() -> ModbusDevice {
-        let tty = "COM3";
-        let builder = tokio_serial::new(tty, 9600);
+    pub fn new(config: toml::Table) -> ModbusDevice {
+        let tty = config["serial"]["port"].as_str().unwrap();
+        let baud_rate = config["serial"]["baud_rate"].as_integer().unwrap() as u32;
+        let builder = tokio_serial::new(tty, baud_rate);
         let port = tokio_serial::SerialStream::open(&builder).unwrap();
         let ctx = rtu::attach(port);
 
-        let mut vec_metrics_ids: Vec<String> = Vec::new();
-        vec_metrics_ids.push("exhaust_temp".to_string());
-        vec_metrics_ids.push("bean_temp".to_string());
-        vec_metrics_ids.push("inlet_temp".to_string());
-
-        let mut vec_slaves: Vec<Slave> = Vec::new();
-        vec_slaves.push(Slave(1));
-        vec_slaves.push(Slave(2));
-        vec_slaves.push(Slave(3));
-
         ModbusDevice {
             ctx: ctx,
-            metrics_count: 3,
-            vec_metrics_ids: vec_metrics_ids,
-            vec_slaves: vec_slaves,
+            config: config,
         }
     }
 }
@@ -55,16 +44,21 @@ impl Device for ModbusDevice {
         // 10 seconds timeout
         let res = tokio::time::timeout(time::Duration::from_secs(10), async {
             // read registers
-            for i in 0..self.metrics_count {
-                self.ctx.set_slave(self.vec_slaves[i]);
+            for slave in self.config["serial"]["modbus"]["slave"].as_array().unwrap() {
+                self.ctx
+                    .set_slave(Slave(slave["id"].as_integer().unwrap() as u8));
 
-                match self.ctx.read_holding_registers(18176, 1).await {
+                match self
+                    .ctx
+                    .read_holding_registers(slave["registry"].as_integer().unwrap() as u16, 1)
+                    .await
+                {
                     Ok(v) => {
                         let result = *v.get(0).unwrap() as f32 * 0.1;
 
                         trace!("Sensor value is: {:.1}", result);
                         map.insert(
-                            self.vec_metrics_ids[i].clone(),
+                            slave["metrics_id"].as_str().unwrap().to_string(),
                             Value::String(format!("{:.1}", result)),
                         );
                     }

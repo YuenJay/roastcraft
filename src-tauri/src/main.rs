@@ -22,14 +22,16 @@ struct RoastCraftState {
     reader_handle: Option<JoinHandle<()>>,
     timer_handle: Option<JoinHandle<()>>,
     timer: u32,
+    config: toml::Table,
 }
 
 impl RoastCraftState {
-    fn new() -> Self {
+    fn new(config: toml::Table) -> Self {
         Self {
             reader_handle: None,
             timer_handle: None,
             timer: 0,
+            config: config,
         }
     }
 }
@@ -43,13 +45,15 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
     let state_mutex = app.state::<Mutex<RoastCraftState>>();
     let mut state = state_mutex.lock().unwrap();
 
+    let config = state.config.clone();
     match &state.reader_handle {
         Some(_handle) => warn!("reader_handle already exist"),
         None => {
             state.reader_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
 
-                let mut dd: Box<dyn Device + Send> = Box::new(devices::modbus::ModbusDevice::new());
+                let mut dd: Box<dyn Device + Send> =
+                    Box::new(devices::modbus::ModbusDevice::new(config));
 
                 loop {
                     interval.tick().await;
@@ -154,7 +158,7 @@ fn main() {
     let mut parse_config_err_msg: String = String::new();
     let mut parse_config_ok = false;
     let mut toml_content = String::new();
-    let mut config = Table::new();
+    let mut config: toml::Table = toml::Table::new();
     match File::open("roastcraft.config.toml") {
         Ok(mut file) => {
             match file.read_to_string(&mut toml_content) {
@@ -204,10 +208,10 @@ fn main() {
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .with_colors(ColoredLevelConfig::default())
-                .level(LevelFilter::Info)
+                .level(LevelFilter::Trace)
                 .build(),
         )
-        .manage(Mutex::new(RoastCraftState::new()))
+        .manage(Mutex::new(RoastCraftState::new(config)))
         .setup(move |app| {
             if !parse_config_ok {
                 let main_window = app.get_window("main").unwrap();
