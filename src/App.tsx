@@ -1,8 +1,10 @@
-import { onMount, onCleanup, Show } from "solid-js";
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import { onMount, onCleanup, Show, For } from "solid-js";
 import { produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
-import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
-import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
+import { trace, attachConsole } from "tauri-plugin-log-api";
+import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
@@ -45,7 +47,7 @@ function App() {
       setAppStore({ timer: event.payload });
     });
 
-
+    setAppStore("logs", [...appStore.logs, "RoastCraft is ready"]);
 
   });
 
@@ -57,23 +59,24 @@ function App() {
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
-    setAppStore({ appState: AppState.ON });
+    setAppStore({ appState: AppState.ON, logs: [...appStore.logs, "start reading metrics"] });
 
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
-    setAppStore({ appState: AppState.OFF });
+    setAppStore({ appState: AppState.OFF, logs: [...appStore.logs, "stop reading metrics"] });
+
   }
 
   async function buttonStartClicked() {
     await invoke("button_start_clicked");
-    setAppStore({ appState: AppState.RECORDING });
+    setAppStore({ appState: AppState.RECORDING, logs: [...appStore.logs, "start recording"] });
   }
 
   async function buttonStopClicked() {
     await invoke("button_stop_clicked");
-    setAppStore({ appState: AppState.RECORDED });
+    setAppStore({ appState: AppState.RECORDED, logs: [...appStore.logs, "stop recording"] });
   }
 
   async function buttonResetClicked() {
@@ -92,7 +95,7 @@ function App() {
             {Math.floor(appStore.timer / 60).toString().padStart(2, '0') + ":" + (appStore.timer % 60).toString().padStart(2, '0')}
           </p>
         </div>
-        <div class="bg-base-300 rounded text-right w-20 p-1 ">
+        <div class="bg-base-300 rounded text-right p-1 ">
           <p>BT</p>
           <p class="text-2xl font-medium text-red-600">{appStore.BT}</p>
         </div>
@@ -163,12 +166,16 @@ function App() {
         <InputChart />
         <InputChart />
 
-        <div class="grid gap-0.5 overflow-y-auto max-h-36">
-          <div class="alert alert-error text-sm rounded p-1 ">
-            <span>this is a line of log</span>
-          </div>
+        <Show when={appStore.logs.length > 0}>
 
-        </div>
+          <div class="text-sm">
+            {/* show 5 lines of logs, newest on top */}
+            <For each={appStore.logs.slice(-5).reverse()}>
+              {(item) => <p class="px-1 border-b first:bg-base-200">{item.toString()}</p>}
+            </For>
+
+          </div>
+        </Show>
 
 
       </div>

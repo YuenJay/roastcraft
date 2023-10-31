@@ -52,16 +52,16 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
             state.reader_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
 
-                let mut dd: Box<dyn Device + Send> =
+                let mut device: Box<dyn Device + Send> =
                     Box::new(devices::modbus::ModbusDevice::new(config));
 
                 loop {
                     interval.tick().await;
                     trace!("i am inside async process, 3 sec interval");
 
-                    match dd.read().await {
-                        Ok(payload) => {
-                            app2.emit_all("read_metrics", payload).unwrap();
+                    match device.read().await {
+                        Ok(json_value) => {
+                            app2.emit_all("read_metrics", json_value).unwrap();
                             trace!("event read_metrics emitted");
                         }
                         Err(_) => {}
