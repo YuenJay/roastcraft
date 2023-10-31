@@ -14,41 +14,41 @@ use tokio_modbus::{
     Slave,
 };
 
+use crate::config::Config;
+
 pub struct ModbusDevice {
     ctx: Context,
-    config: toml::Table,
+    config: Config,
 }
 
 impl ModbusDevice {
-    pub fn new(config: toml::Table) -> ModbusDevice {
-        let tty = config["serial"]["port"].as_str().unwrap();
-        let baud_rate = config["serial"]["baud_rate"].as_integer().unwrap() as u32;
-        let mut builder = tokio_serial::new(tty, baud_rate);
+    pub fn new(config: Config) -> ModbusDevice {
+        let serial = config.serial.as_ref().unwrap();
 
-        let data_bits = config["serial"]["data_bits"].as_integer().unwrap();
-        if data_bits == 8 {
+        let mut builder = tokio_serial::new(serial.port.clone(), serial.baud_rate);
+
+        if serial.data_bits == 8 {
             builder = builder.data_bits(tokio_serial::DataBits::Eight);
-        } else if data_bits == 7 {
+        } else if serial.data_bits == 7 {
             builder = builder.data_bits(tokio_serial::DataBits::Seven);
-        } else if data_bits == 6 {
+        } else if serial.data_bits == 6 {
             builder = builder.data_bits(tokio_serial::DataBits::Six);
-        } else if data_bits == 5 {
+        } else if serial.data_bits == 5 {
             builder = builder.data_bits(tokio_serial::DataBits::Five);
         }
 
-        let parity = config["serial"]["parity"].as_str().unwrap().to_lowercase();
-        if parity == "none" {
+        let parity_lowercase = serial.parity.to_lowercase();
+        if parity_lowercase == "none" {
             builder = builder.parity(tokio_serial::Parity::None);
-        } else if parity == "even" {
+        } else if parity_lowercase == "even" {
             builder = builder.parity(tokio_serial::Parity::Even);
-        } else if parity == "odd" {
+        } else if parity_lowercase == "odd" {
             builder = builder.parity(tokio_serial::Parity::Odd);
         }
 
-        let stop_bits = config["serial"]["stop_bits"].as_integer().unwrap();
-        if stop_bits == 1 {
+        if serial.stop_bits == 1 {
             builder = builder.stop_bits(tokio_serial::StopBits::One)
-        } else if stop_bits == 2 {
+        } else if serial.stop_bits == 2 {
             builder = builder.stop_bits(tokio_serial::StopBits::Two)
         }
 
@@ -57,10 +57,7 @@ impl ModbusDevice {
         let port = tokio_serial::SerialStream::open(&builder).unwrap();
         let ctx = rtu::attach(port);
 
-        ModbusDevice {
-            ctx: ctx,
-            config: config,
-        }
+        ModbusDevice { ctx, config }
     }
 }
 
@@ -74,21 +71,22 @@ impl Device for ModbusDevice {
         // 10 seconds timeout
         let res = tokio::time::timeout(time::Duration::from_secs(10), async {
             // read registers
-            for slave in self.config["serial"]["modbus"]["slave"].as_array().unwrap() {
-                self.ctx
-                    .set_slave(Slave(slave["id"].as_integer().unwrap() as u8));
+            let config = &self.config;
+            let serial = config.serial.as_ref().unwrap();
+            let modbus = serial.modbus.as_ref().unwrap();
+            let slaves = &modbus.slave;
 
-                match self
-                    .ctx
-                    .read_holding_registers(slave["registry"].as_integer().unwrap() as u16, 1)
-                    .await
-                {
+            for slave in slaves {
+                self.ctx.set_slave(Slave(slave.id));
+
+                // only support function = 3 (read holding register)
+                match self.ctx.read_holding_registers(slave.registry, 1).await {
                     Ok(v) => {
-                        let result = *v.get(0).unwrap() as f32 * 0.1;
+                        let result = *v.get(0).unwrap() as f32 * slave.multiplier;
 
                         trace!("Sensor value is: {:.1}", result);
                         map.insert(
-                            slave["metrics_id"].as_str().unwrap().to_string(),
+                            slave.metrics_id.clone(),
                             Value::String(format!("{:.1}", result)),
                         );
                     }

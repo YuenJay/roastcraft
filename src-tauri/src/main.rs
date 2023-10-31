@@ -4,7 +4,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::{debug, trace, warn, LevelFilter};
-
 use std::fs::File;
 use std::io::Read;
 use std::sync::Mutex;
@@ -12,21 +11,22 @@ use tauri::async_runtime::{spawn, JoinHandle};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
 use tokio::time::{interval, Duration};
-use toml::{self, Table};
 
+use crate::config::Config;
 use crate::devices::Device;
 
+mod config;
 mod devices;
 
 struct RoastCraftState {
     reader_handle: Option<JoinHandle<()>>,
     timer_handle: Option<JoinHandle<()>>,
     timer: u32,
-    config: toml::Table,
+    config: Config,
 }
 
 impl RoastCraftState {
-    fn new(config: toml::Table) -> Self {
+    fn new(config: Config) -> Self {
         Self {
             reader_handle: None,
             timer_handle: None,
@@ -158,13 +158,13 @@ fn main() {
     let mut parse_config_err_msg: String = String::new();
     let mut parse_config_ok = false;
     let mut toml_content = String::new();
-    let mut config: toml::Table = toml::Table::new();
+    let mut config = Config::new();
     match File::open("roastcraft.config.toml") {
         Ok(mut file) => {
             match file.read_to_string(&mut toml_content) {
                 Ok(_) => {
                     // At this point, `contents` contains the content of the TOML file
-                    match toml::from_str::<Table>(toml_content.as_str()) {
+                    match toml::from_str::<Config>(toml_content.as_str()) {
                         Ok(c) => {
                             parse_config_ok = true;
                             config = c;
