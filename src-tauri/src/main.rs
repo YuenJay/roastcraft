@@ -153,6 +153,13 @@ async fn button_stop_clicked(app: tauri::AppHandle) -> () {
     }
 }
 
+#[tauri::command]
+async fn get_config(app: tauri::AppHandle) -> Config {
+    let state_mutex = app.state::<Mutex<RoastCraftState>>();
+    let state = state_mutex.lock().unwrap();
+    state.config.clone()
+}
+
 fn main() {
     // in dev mode, put roastcraft.config.toml in /src-tauri
     let mut parse_config_err_msg: String = String::new();
@@ -203,6 +210,7 @@ fn main() {
             button_off_clicked,
             button_start_clicked,
             button_stop_clicked,
+            get_config,
         ])
         .plugin(
             tauri_plugin_log::Builder::default()

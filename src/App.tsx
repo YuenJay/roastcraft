@@ -20,15 +20,21 @@ function App() {
 
   onMount(async () => {
 
+    // get config from backend
+    await invoke("get_config").then((config) => setAppStore({ config: config }));
+    console.log(appStore.config)
+
+    // tauri-plugin-log-api
     // with LogTarget::Webview enabled this function will print logs to the browser console
     detach = await attachConsole();
 
+    // event listener
     unlisten_reader = await listen("read_metrics", (event: any) => {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
-      setAppStore({ BT: event.payload.bean_temp as number });
+      setAppStore({ BT: event.payload.BT as number });
 
-      let input = { "timestamp": appStore.timer, "value": event.payload.bean_temp };
+      let input = { "timestamp": appStore.timer, "value": event.payload.BT };
 
       if (appStore.appState == AppState.RECORDING) {
         // localized mutation
@@ -42,13 +48,13 @@ function App() {
 
     });
 
+    // event listener
     unlisten_timer = await listen("timer", (event: any) => {
       trace("event \"timer\" catched :" + JSON.stringify(event.payload));
       setAppStore({ timer: event.payload });
     });
 
     setAppStore("logs", [...appStore.logs, "RoastCraft is ready"]);
-
   });
 
   onCleanup(() => {
@@ -59,13 +65,13 @@ function App() {
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
-    setAppStore({ appState: AppState.ON, logs: [...appStore.logs, "start reading metrics"] });
+    setAppStore({ appState: AppState.ON, logs: [...appStore.logs, "start reading metrics..."] });
 
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
-    setAppStore({ appState: AppState.OFF, logs: [...appStore.logs, "stop reading metrics"] });
+    setAppStore({ appState: AppState.OFF, logs: [...appStore.logs, "stopped reading metrics"] });
 
   }
 
@@ -76,7 +82,7 @@ function App() {
 
   async function buttonStopClicked() {
     await invoke("button_stop_clicked");
-    setAppStore({ appState: AppState.RECORDED, logs: [...appStore.logs, "stop recording"] });
+    setAppStore({ appState: AppState.RECORDED, logs: [...appStore.logs, "stopped recording"] });
   }
 
   async function buttonResetClicked() {

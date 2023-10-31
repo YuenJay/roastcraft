@@ -47,3 +47,8 @@
     custom-protocol = [
         "tauri/custom-protocol",
     ]
+
+# for devtools
+[profile.release.package.wry]
+    debug            = true
+    debug-assertions = true
