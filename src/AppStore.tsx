@@ -17,16 +17,23 @@ async function init_store() {
     let config: any;
     await invoke("get_config").then((c) => (config = c))
 
+    let metrics: any[] = config.serial.modbus.slave.map((s: any) => ({
+        id: s.metrics_id,
+        label: s.label,
+        unit: s.unit,
+        data: []
+    }));
+
+    // move BT to be the first element
+    let bt_index = metrics.findIndex((m: any) => (m.id == "BT"));
+    metrics.unshift(metrics.splice(bt_index, 1)[0]);
+
     return {
         appState: AppState.OFF,
         config: config,
         timer: 0,
         BT: 0.0,
-        // metrics: [{ id: "BT", label: "Bean Temp", unit: "celcius", data: new Array() }],
-        metrics: config.serial.modbus.slave.map((s: any) => ({
-            id: s.metrics_id,
-            data: []
-        })),
+        metrics: metrics,
         logs: new Array<String>()
     }
 }

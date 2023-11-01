@@ -50,11 +50,13 @@ pub struct Modbus {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Slave {
     pub metrics_id: String,
+    pub label: String,
     pub id: u16,
     pub function: u16,
     pub registry: u16,
     pub divisor: u16,
     pub number_type: String,
+    pub unit: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
