@@ -25,7 +25,7 @@ impl ModbusDevice {
     pub fn new(config: Config) -> ModbusDevice {
         let serial = config.serial.as_ref().unwrap();
 
-        let mut builder = tokio_serial::new(serial.port.clone(), serial.baud_rate);
+        let mut builder = tokio_serial::new(serial.port.clone(), serial.baud_rate as u32);
 
         if serial.data_bits == 8 {
             builder = builder.data_bits(tokio_serial::DataBits::Eight);
@@ -77,14 +77,18 @@ impl Device for ModbusDevice {
             let slaves = &modbus.slave;
 
             for slave in slaves {
-                self.ctx.set_slave(Slave(slave.id));
+                self.ctx.set_slave(Slave(slave.id as u8));
 
                 // only support function = 3 (read holding register)
-                match self.ctx.read_holding_registers(slave.registry, 1).await {
+                match self
+                    .ctx
+                    .read_holding_registers(slave.registry as u16, 1)
+                    .await
+                {
                     Ok(v) => {
-                        let result = *v.get(0).unwrap() as f32 * slave.multiplier;
+                        let result = *v.get(0).unwrap() as f32 / slave.divisor as f32;
 
-                        trace!("Sensor value is: {:.1}", result);
+                        trace!("{} : {:.1}", slave.metrics_id, result);
                         map.insert(
                             slave.metrics_id.clone(),
                             Value::String(format!("{:.1}", result)),

@@ -176,9 +176,10 @@ fn main() {
                             parse_config_ok = true;
                             config = c;
                         }
-                        Err(_) => {
-                            parse_config_err_msg =
-                                "Failed to parse roastcraft.config.toml".to_string();
+                        Err(e) => {
+                            parse_config_err_msg
+                                .push_str("Failed to parse roastcraft.config.toml \n");
+                            parse_config_err_msg.push_str(e.message());
                         }
                     }
                 }
