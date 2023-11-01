@@ -1,6 +1,12 @@
 version = "v1"
-brand   = "roastcraft"
-model   = "modbus"
+brand = "roastcraft"
+model = "modbus"
+metrics_ids = [
+    "exhaust_temp",
+    "bean_temp",
+    "inlet_temp",
+    "air",
+]
 
 [serial]
     port      = "COM4"
@@ -9,50 +15,41 @@ model   = "modbus"
     parity    = "none"
     stop_bits = 1
 
-    # [[serial.ta612c]]
-    #     metrics_id = "BT"
-    #     id         = 1
+    [serial.modbus]
+        # modbus-ascii, modbus-rtu
+        protocol = "modbus-ascii"
 
-    # [[serial.ta612c]]
-    #     metrics_id = "ET"
-    #     id         = 2
+        [[serial.modbus.slave]]
+            metrics_id = "exhaust_temp"
+            id         = 1
+            function   = 3
+            registry   = 18176
+            multiplier = 0.1
 
-    [[serial.modbus]]
-        protocol    = "rtu" # rtu, ascii, tcp
-        metrics_id  = "ET"
-        id          = 1
-        function    = 3
-        registry    = 18176
-        divisor     = 10    # 1, 10, 100
-        number_type = "u16" # u16, u32, i16, i32, f32
+        [[serial.modbus.slave]]
+            metrics_id = "bean_temp"
+            id         = 2
+            function   = 3
+            registry   = 18176
+            multiplier = 0.1
 
-    [[serial.modbus]]
-        protocol    = "rtu" # rtu, ascii, tcp
-        metrics_id  = "BT"
-        id          = 2
-        function    = 3
-        registry    = 18176
-        divisor     = 10    # 1, 10, 100
-        number_type = "u16" # u16, u32, i16, i32, f32
-
-    [[serial.modbus]]
-        protocol    = "rtu"   # rtu, ascii, tcp
-        metrics_id  = "inlet"
-        id          = 3
-        function    = 3
-        registry    = 18176
-        divisor     = 10      # 1, 10, 100
-        number_type = "u16"   # u16, u32, i16, i32, f32
+        [[serial.modbus.slave]]
+            metrics_id = "inlet_temp"
+            id         = 3
+            function   = 3
+            registry   = 18176
+            multiplier = 0.1
 
 [tcp]
     ip   = "127.0.0.1"
     port = 502
 
-    [[tcp.modbus]]
-        protocol    = "tcp"     # rtu, ascii, tcp
-        metrics_id  = "em2000h"
-        id          = 4
-        function    = 3
-        registry    = 20
-        divisor     = 1         # 1, 10, 100
-        number_type = "f32"     # u16, u32, i16, i32, f32
+    [tcp.modbus]
+        protocol = "modbus-tcp"
+
+        [[tcp.modbus.slave]]
+            metrics_id = "air"
+            id         = 4
+            function   = 3
+            registry   = 18176
+            multiplier = 0.1

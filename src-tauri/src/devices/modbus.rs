@@ -25,7 +25,7 @@ impl ModbusDevice {
     pub fn new(config: Config) -> ModbusDevice {
         let serial = config.serial.as_ref().unwrap();
 
-        let mut builder = tokio_serial::new(serial.port.clone(), serial.baud_rate as u32);
+        let mut builder = tokio_serial::new(serial.port.clone(), serial.baud_rate);
 
         if serial.data_bits == 8 {
             builder = builder.data_bits(tokio_serial::DataBits::Eight);
@@ -64,6 +64,8 @@ impl ModbusDevice {
 #[async_trait]
 impl Device for ModbusDevice {
     async fn read(self: &mut Self) -> Result<Value, Error> {
+        debug!("called devices::modbus::read()");
+
         let mut map = Map::new();
 
         // 10 seconds timeout
@@ -72,16 +74,17 @@ impl Device for ModbusDevice {
             let config = &self.config;
             let serial = config.serial.as_ref().unwrap();
             let modbus = serial.modbus.as_ref().unwrap();
+            let slaves = &modbus.slave;
 
-            for slave in modbus {
-                self.ctx.set_slave(Slave(slave.id as u8));
+            for slave in slaves {
+                self.ctx.set_slave(Slave(slave.id));
 
                 // only support function = 3 (read holding register)
                 match self.ctx.read_holding_registers(slave.registry, 1).await {
                     Ok(v) => {
-                        let result = *v.get(0).unwrap() as f32 / slave.divisor as f32;
+                        let result = *v.get(0).unwrap() as f32 * slave.multiplier;
 
-                        trace!("{} : {:.1}", slave.metrics_id, result);
+                        trace!("Sensor value is: {:.1}", result);
                         map.insert(
                             slave.metrics_id.clone(),
                             Value::String(format!("{:.1}", result)),
