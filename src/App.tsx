@@ -20,9 +20,8 @@ function App() {
 
   onMount(async () => {
 
-    // get config from backend
-    await invoke("get_config").then((config) => setAppStore({ config: config }));
     console.log(appStore.config)
+    console.log(appStore.metrics)
 
     // tauri-plugin-log-api
     // with LogTarget::Webview enabled this function will print logs to the browser console

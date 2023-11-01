@@ -64,8 +64,6 @@ impl ModbusDevice {
 #[async_trait]
 impl Device for ModbusDevice {
     async fn read(self: &mut Self) -> Result<Value, Error> {
-        debug!("called devices::modbus::read()");
-
         let mut map = Map::new();
 
         // 10 seconds timeout
