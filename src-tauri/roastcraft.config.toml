@@ -9,45 +9,50 @@ model   = "modbus"
     parity    = "none"
     stop_bits = 1
 
-    # [serial.ta612c]
-    #     metrics_id_list = [
-    #         "BT",
-    #         "ET",
-    #     ]
+    [[serial.ta612c.channel]]
+        metrics_id = "ET"
+        label      = "exhaust temp"
+        id         = 1
+        unit       = "celcius"
+    [[serial.ta612c.channel]]
+        metrics_id = "BT"
+        label      = "bean temp"
+        id         = 2
+        unit       = "celcius"
 
-    [serial.modbus]
-        # modbus-ascii, modbus-rtu
-        protocol = "modbus-rtu"
+[serial.modbus]
+    # modbus-ascii, modbus-rtu
+    protocol = "modbus-rtu"
 
-        [[serial.modbus.slave]]
-            metrics_id  = "ET"
-            label       = "exhaust temp"
-            id          = 1
-            function    = 3
-            registry    = 18176          # = 4700h
-            divisor     = 10             # 1, 10, 100
-            number_type = "u16"          # u16, u32, i16, i32, f32
-            unit        = "celcius"
+    [[serial.modbus.slave]]
+        metrics_id  = "ET"
+        label       = "exhaust temp"
+        id          = 1
+        function    = 3
+        registry    = 18176          # = 4700h
+        divisor     = 10             # 1, 10, 100
+        decode_type = "u16"          # u16, u32, i16, i32, f32
+        unit        = "celcius"
 
-        [[serial.modbus.slave]]
-            metrics_id  = "BT"
-            label       = "bean temp"
-            id          = 2
-            function    = 3
-            registry    = 18176       # = 4700h
-            divisor     = 10          # 1, 10, 100
-            number_type = "u16"       # u16, u32, i16, i32, f32
-            unit        = "celcius"
+    [[serial.modbus.slave]]
+        metrics_id  = "BT"
+        label       = "bean temp"
+        id          = 2
+        function    = 3
+        registry    = 18176       # = 4700h
+        divisor     = 10          # 1, 10, 100
+        decode_type = "u16"       # u16, u32, i16, i32, f32
+        unit        = "celcius"
 
-        [[serial.modbus.slave]]
-            metrics_id  = "inlet"
-            label       = "inlet temp"
-            id          = 3
-            function    = 3
-            registry    = 18176        # = 4700h
-            divisor     = 10           # 1, 10, 100
-            number_type = "u16"        # u16, u32, i16, i32, f32
-            unit        = "celcius"
+    [[serial.modbus.slave]]
+        metrics_id  = "inlet"
+        label       = "inlet temp"
+        id          = 3
+        function    = 3
+        registry    = 18176        # = 4700h
+        divisor     = 10           # 1, 10, 100
+        decode_type = "u16"        # u16, u32, i16, i32, f32
+        unit        = "celcius"
 
 [tcp]
     ip   = "127.0.0.1"
@@ -64,5 +69,5 @@ model   = "modbus"
             function    = 3
             registry    = 20             # = 14h
             divisor     = 1              # 1, 10, 100
-            number_type = "f32"          # u16, u32, i16, i32, f32
+            decode_type = "f32"          # u16, u32, i16, i32, f32
             unit        = "pa"

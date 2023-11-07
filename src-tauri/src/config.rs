@@ -55,11 +55,19 @@ pub struct Slave {
     pub function: u16,
     pub registry: u16,
     pub divisor: u16,
-    pub number_type: String,
+    pub decode_type: String,
     pub unit: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Ta612c {
-    pub metrics_id_list: Vec<String>,
+    pub channel: Vec<Channel>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Channel {
+    pub metrics_id: String,
+    pub label: String,
+    pub id: u16,
+    pub unit: String,
 }
