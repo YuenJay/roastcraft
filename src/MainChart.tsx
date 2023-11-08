@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, createEffect, Index, Show } from "solid-js";
+import { onMount, createEffect, Index, Show, For } from "solid-js";
 import * as d3 from "d3";
 import useAppStore from "./AppStore";
 
@@ -19,7 +19,7 @@ export default function MainChart() {
         [0, 600],
         [marginLeft, width - marginRight]
     );
-    const yScale = d3.scaleLinear([0, 300], [
+    const yScale = d3.scaleLinear([0, 400], [
         height - marginBottom,
         marginTop,
     ]);
@@ -54,30 +54,38 @@ export default function MainChart() {
             <g ref={axisBottomRef} transform={`translate(0, ${height - marginBottom} )`}></g>
             <g ref={axisLeftRef} transform={`translate(${marginLeft}, 0)`}></g>
 
-            <Index each={appStore.metrics_id_list}>
+            {/* a reversed key array : [2,1,0] 
+              draw BT (at index 0) last so that it is on the top */}
+            <For each={[...appStore.metrics_id_list.keys()].reverse()}>
                 {
-                    (item, index) => (
+                    (item) => (
                         <>
                             <path
                                 fill="none"
-                                stroke={appStore.metrics[index].color}
+                                stroke={appStore.metrics[item].color}
                                 stroke-width="1.5"
-                                d={line(appStore.metrics[index].data) as string | undefined}
+                                d={line(appStore.metrics[item].data) as string | undefined}
                             />
                             <g
-                                fill={appStore.metrics[index].color}
-                                stroke={appStore.metrics[index].color}
+                                fill={appStore.metrics[item].color}
+                                stroke={appStore.metrics[item].color}
                                 stroke-width="1">
-                                <Show when={appStore.metrics[index].latest.timestamp > 0}>
-                                    <circle cx={xScale(appStore.metrics[index].latest.timestamp)}
-                                        cy={yScale(appStore.metrics[index].latest.value)}
+                                <Show when={appStore.metrics[item].latest.timestamp > 0}>
+                                    <circle
+                                        cx={xScale(appStore.metrics[item].latest.timestamp)}
+                                        cy={yScale(appStore.metrics[item].latest.value)}
                                         r="2" />
+                                    <text
+                                        x={xScale(appStore.metrics[item].latest.timestamp) + 4}
+                                        y={yScale(appStore.metrics[item].latest.value)}>
+                                        {appStore.metrics[item].latest.value}
+                                    </text>
                                 </Show>
                             </g>
                         </>
                     )
                 }
-            </Index>
+            </For>
         </svg >
     );
 }
