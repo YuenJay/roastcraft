@@ -1,12 +1,12 @@
-import { onMount, Show, createEffect } from "solid-js";
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import { onMount, createEffect, Index } from "solid-js";
 import * as d3 from "d3";
 import useAppStore from "./AppStore";
 
 export default function MainChart() {
 
     const [appStore, setAppStore] = useAppStore;
-
-    let data = appStore.metrics[0].data;
 
     const width = 800;
     const height = 500;
@@ -54,7 +54,22 @@ export default function MainChart() {
             <g ref={axisBottomRef} transform={`translate(0, ${height - marginBottom} )`}></g>
             <g ref={axisLeftRef} transform={`translate(${marginLeft}, 0)`}></g>
 
-            <path
+            <Index each={appStore.metrics_id_list}>
+                {
+                    (item, index) => (
+                        <>
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                d={line(appStore.metrics[index].data) as string | undefined}
+                            />
+                        </>
+                    )
+                }
+            </Index>
+
+            {/* <path
                 fill="none"
                 stroke="currentColor"
                 stroke-width="1.5"
@@ -64,7 +79,7 @@ export default function MainChart() {
                 <Show when={data.length > 0}>
                     <circle cx={xScale(data[data.length - 1].timestamp)} cy={yScale(data[data.length - 1].value)} r="2" />
                 </Show>
-            </g>
+            </g> */}
 
 
         </svg >

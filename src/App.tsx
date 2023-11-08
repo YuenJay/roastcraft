@@ -20,8 +20,7 @@ function App() {
 
   onMount(async () => {
 
-    console.log(appStore.config)
-    console.log(appStore.metrics)
+    console.log(appStore)
 
     // tauri-plugin-log-api
     // with LogTarget::Webview enabled this function will print logs to the browser console
@@ -33,17 +32,22 @@ function App() {
 
       setAppStore({ BT: event.payload.BT as number });
 
-      let input = { "timestamp": appStore.timer, "value": event.payload.BT };
-
       if (appStore.appState == AppState.RECORDING) {
         // localized mutation
         setAppStore(
           produce((appStore) => {
-            appStore.metrics[0].data.push(input)
+            let i;
+            for (i = 0; i < appStore.metrics_id_list.length; i++) {
+              appStore.metrics[i].data.push(
+                {
+                  "timestamp": appStore.timer,
+                  "value": event.payload[appStore.metrics_id_list[i]]
+                }
+              );
+            }
           })
         )
       }
-
 
     });
 
