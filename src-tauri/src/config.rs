@@ -57,6 +57,7 @@ pub struct Slave {
     pub divisor: u16,
     pub decode_type: String,
     pub unit: String,
+    pub color: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]

@@ -33,6 +33,7 @@ model   = "modbus"
         divisor     = 10             # 1, 10, 100
         decode_type = "u16"          # u16, u32, i16, i32, f32
         unit        = "celcius"
+        color       = "#ff0000"
 
     [[serial.modbus.slave]]
         metrics_id  = "BT"
@@ -43,6 +44,7 @@ model   = "modbus"
         divisor     = 10          # 1, 10, 100
         decode_type = "u16"       # u16, u32, i16, i32, f32
         unit        = "celcius"
+        color       = "#00007f"
 
     [[serial.modbus.slave]]
         metrics_id  = "inlet"
@@ -53,6 +55,7 @@ model   = "modbus"
         divisor     = 10           # 1, 10, 100
         decode_type = "u16"        # u16, u32, i16, i32, f32
         unit        = "celcius"
+        color       = "#007f00"
 
 [tcp]
     ip   = "127.0.0.1"
@@ -71,3 +74,4 @@ model   = "modbus"
             divisor     = 1              # 1, 10, 100
             decode_type = "f32"          # u16, u32, i16, i32, f32
             unit        = "pa"
+            color       = "#00007f"

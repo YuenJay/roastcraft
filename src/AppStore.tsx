@@ -21,6 +21,7 @@ async function init_store() {
         id: s.metrics_id,
         label: s.label,
         unit: s.unit,
+        color: s.color,
         latest: {},
         data: []
     }));

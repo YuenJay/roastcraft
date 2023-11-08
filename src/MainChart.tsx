@@ -60,11 +60,14 @@ export default function MainChart() {
                         <>
                             <path
                                 fill="none"
-                                stroke="currentColor"
+                                stroke={appStore.metrics[index].color}
                                 stroke-width="1.5"
                                 d={line(appStore.metrics[index].data) as string | undefined}
                             />
-                            <g fill="white" stroke="currentColor" stroke-width="1">
+                            <g
+                                fill={appStore.metrics[index].color}
+                                stroke={appStore.metrics[index].color}
+                                stroke-width="1">
                                 <Show when={appStore.metrics[index].latest.timestamp > 0}>
                                     <circle cx={xScale(appStore.metrics[index].latest.timestamp)}
                                         cy={yScale(appStore.metrics[index].latest.value)}
