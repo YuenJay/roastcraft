@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, createEffect, Index } from "solid-js";
+import { onMount, createEffect, Index, Show } from "solid-js";
 import * as d3 from "d3";
 import useAppStore from "./AppStore";
 
@@ -64,25 +64,17 @@ export default function MainChart() {
                                 stroke-width="1.5"
                                 d={line(appStore.metrics[index].data) as string | undefined}
                             />
+                            <g fill="white" stroke="currentColor" stroke-width="1">
+                                <Show when={appStore.metrics[index].latest.timestamp > 0}>
+                                    <circle cx={xScale(appStore.metrics[index].latest.timestamp)}
+                                        cy={yScale(appStore.metrics[index].latest.value)}
+                                        r="2" />
+                                </Show>
+                            </g>
                         </>
                     )
                 }
             </Index>
-
-            {/* <path
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                d={line(data) as string | undefined}
-            />
-            <g fill="white" stroke="currentColor" stroke-width="1">
-                <Show when={data.length > 0}>
-                    <circle cx={xScale(data[data.length - 1].timestamp)} cy={yScale(data[data.length - 1].value)} r="2" />
-                </Show>
-            </g> */}
-
-
         </svg >
-
     );
 }

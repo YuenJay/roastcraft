@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, onCleanup, Show, For } from "solid-js";
+import { onMount, onCleanup, Show, For, Index } from "solid-js";
 import { produce } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, attachConsole } from "tauri-plugin-log-api";
@@ -30,7 +30,18 @@ function App() {
     unlisten_reader = await listen("read_metrics", (event: any) => {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
-      setAppStore({ BT: event.payload.BT as number });
+      setAppStore(
+        produce((appStore) => {
+          let i;
+          for (i = 0; i < appStore.metrics_id_list.length; i++) {
+            appStore.metrics[i].latest =
+            {
+              "timestamp": appStore.timer,
+              "value": event.payload[appStore.metrics_id_list[i]]
+            }
+          }
+        })
+      )
 
       if (appStore.appState == AppState.RECORDING) {
         // localized mutation
@@ -49,6 +60,7 @@ function App() {
         )
       }
 
+      console.log(appStore.metrics);
     });
 
     // event listener
@@ -104,23 +116,31 @@ function App() {
             {Math.floor(appStore.timer / 60).toString().padStart(2, '0') + ":" + (appStore.timer % 60).toString().padStart(2, '0')}
           </p>
         </div>
-        <div class="bg-base-300 rounded text-right p-1 ">
-          <p>BT</p>
-          <p class="text-2xl font-medium text-red-600">{appStore.BT}</p>
+
+        {/* BT */}
+        <div class="bg-base-300 rounded text-right w-20 p-1 ">
+          <p>{appStore.metrics[0].id}</p>
+          <p class="text-2xl font-medium text-red-600">{appStore.metrics[0].latest.value}</p>
         </div>
+
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">15.4</p>
         </div>
 
-        <div class="bg-base-300 rounded text-right w-20 p-1">
-          <p>ET</p>
-          <p class="text-2xl font-medium text-red-600">205.2</p>
-        </div>
-        <div class="bg-base-300 rounded text-right w-20 p-1">
-          <p>inlet</p>
-          <p class="text-2xl font-medium text-red-600">350.3</p>
-        </div>
+        <Index each={appStore.metrics_id_list}>
+          {
+            (item, index) => (
+              <Show when={index > 0}>
+                <div class="bg-base-300 rounded text-right w-20 p-1">
+                  <p>{appStore.metrics[index].id}</p>
+                  <p class="text-2xl font-medium text-red-600">{appStore.metrics[index].latest.value}</p>
+                </div>
+              </Show>
+            )
+          }
+        </Index>
+
         <div class="ml-auto self-center flex gap-1">
           <Show when={appStore.appState == AppState.OFF}>
             <button class="btn btn-accent " onClick={buttonOnClicked}>on</button>

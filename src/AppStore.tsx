@@ -21,6 +21,7 @@ async function init_store() {
         id: s.metrics_id,
         label: s.label,
         unit: s.unit,
+        latest: {},
         data: []
     }));
 
@@ -32,7 +33,6 @@ async function init_store() {
         appState: AppState.OFF,
         config: config,
         timer: 0,
-        BT: 0.0,
         metrics: metrics,
         metrics_id_list: metrics.map((m: any) => (m.id)), // metrics order is the same
         logs: new Array<String>()
