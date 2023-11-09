@@ -30,35 +30,48 @@ function App() {
     unlisten_reader = await listen("read_metrics", (event: any) => {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
+      // update current metrics reading and ror
       setAppStore(
         produce((appStore) => {
           let i;
           for (i = 0; i < appStore.metrics_id_list.length; i++) {
-            appStore.metrics[i].latest =
+
+            let previous_reading = appStore.metrics[i].current_reading;
+            appStore.metrics[i].current_reading =
             {
               "timestamp": appStore.timer,
-              "value": event.payload[appStore.metrics_id_list[i]]
+              "value": Number(event.payload[appStore.metrics_id_list[i]]),
+              "system_time": new Date().getTime()
+            };
+
+            // calculate ROR
+            let time_elapsed_sec = 0;
+            if (appStore.appState == AppState.RECORDING) {
+              time_elapsed_sec = appStore.metrics[i].current_reading.timestamp - previous_reading.timestamp;
+            } else {
+              time_elapsed_sec = (appStore.metrics[i].current_reading.system_time - previous_reading.system_time) / 1000;
+            }
+            appStore.metrics[i].rate_of_rise = {
+              "timestamp": appStore.timer,
+              // round to decimal .1 , if NaN, set value to 0
+              "value": Math.round((appStore.metrics[i].current_reading.value - previous_reading.value) / time_elapsed_sec * 60 * 10) / 10 || 0
+            }
+
+            // write into history data
+            if (appStore.appState == AppState.RECORDING) {
+              appStore.metrics[i].data.push({
+                "timestamp": appStore.metrics[i].current_reading.timestamp,
+                "value": appStore.metrics[i].current_reading.value,
+              }
+              );
+
+              appStore.metrics[i].ror_data.push(
+                appStore.metrics[i].rate_of_rise
+              );
             }
           }
         })
       )
-
-      if (appStore.appState == AppState.RECORDING) {
-        // localized mutation
-        setAppStore(
-          produce((appStore) => {
-            let i;
-            for (i = 0; i < appStore.metrics_id_list.length; i++) {
-              appStore.metrics[i].data.push(
-                {
-                  "timestamp": appStore.timer,
-                  "value": event.payload[appStore.metrics_id_list[i]]
-                }
-              );
-            }
-          })
-        )
-      }
 
       console.log(appStore.metrics);
     });
@@ -120,12 +133,16 @@ function App() {
         {/* BT */}
         <div class="bg-base-300 rounded text-right w-20 p-1 ">
           <p>{appStore.metrics[0].id}</p>
-          <p class="text-2xl font-medium text-red-600">{appStore.metrics[0].latest.value}</p>
+          <p class="text-2xl font-medium text-red-600">
+            {appStore.metrics[0].current_reading.value === undefined ? undefined : appStore.metrics[0].current_reading.value.toFixed(1)}
+          </p>
         </div>
 
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
-          <p class="text-2xl font-medium text-blue-600">15.4</p>
+          <p class="text-2xl font-medium text-blue-600">
+            {appStore.metrics[0].rate_of_rise.value === undefined ? undefined : appStore.metrics[0].rate_of_rise.value.toFixed(1)}
+          </p>
         </div>
 
         <Index each={appStore.metrics_id_list}>
@@ -134,7 +151,9 @@ function App() {
               <Show when={index > 0}>
                 <div class="bg-base-300 rounded text-right w-20 p-1">
                   <p>{appStore.metrics[index].id}</p>
-                  <p class="text-2xl font-medium text-red-600">{appStore.metrics[index].latest.value}</p>
+                  <p class="text-2xl font-medium text-red-600">
+                    {appStore.metrics[index].current_reading.value === undefined ? undefined : appStore.metrics[index].current_reading.value.toFixed(1)}
+                  </p>
                 </div>
               </Show>
             )

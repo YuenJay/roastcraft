@@ -22,8 +22,10 @@ async function init_store() {
         label: s.label,
         unit: s.unit,
         color: s.color,
-        latest: {},
-        data: []
+        current_reading: {}, // current 
+        rate_of_rise: {},    // current
+        data: [],            // history
+        ror_data: []         // history 
     }));
 
     // move BT to be the first element

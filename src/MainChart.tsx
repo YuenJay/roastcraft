@@ -54,8 +54,8 @@ export default function MainChart() {
             <g ref={axisBottomRef} transform={`translate(0, ${height - marginBottom} )`}></g>
             <g ref={axisLeftRef} transform={`translate(${marginLeft}, 0)`}></g>
 
-            {/* a reversed key array : [2,1,0] 
-              draw BT (at index 0) last so that it is on the top */}
+            {/* a reversed key array such as : [2,1,0] 
+              draw BT (at index 0) at last so that it is on the top */}
             <For each={[...appStore.metrics_id_list.keys()].reverse()}>
                 {
                     (item) => (
@@ -70,15 +70,15 @@ export default function MainChart() {
                                 fill={appStore.metrics[item].color}
                                 stroke={appStore.metrics[item].color}
                                 stroke-width="1">
-                                <Show when={appStore.metrics[item].latest.timestamp > 0}>
+                                <Show when={appStore.metrics[item].current_reading.timestamp > 0}>
                                     <circle
-                                        cx={xScale(appStore.metrics[item].latest.timestamp)}
-                                        cy={yScale(appStore.metrics[item].latest.value)}
+                                        cx={xScale(appStore.metrics[item].current_reading.timestamp)}
+                                        cy={yScale(appStore.metrics[item].current_reading.value)}
                                         r="2" />
                                     <text
-                                        x={xScale(appStore.metrics[item].latest.timestamp) + 4}
-                                        y={yScale(appStore.metrics[item].latest.value)}>
-                                        {appStore.metrics[item].latest.value}
+                                        x={xScale(appStore.metrics[item].current_reading.timestamp) + 4}
+                                        y={yScale(appStore.metrics[item].current_reading.value)}>
+                                        {appStore.metrics[item].current_reading.value}
                                     </text>
                                 </Show>
                             </g>
