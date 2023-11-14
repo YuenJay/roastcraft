@@ -36,7 +36,6 @@ function App() {
           let i;
           for (i = 0; i < appStore.metrics_id_list.length; i++) {
 
-            let previous_reading = appStore.metrics[i].current_reading;
             appStore.metrics[i].current_reading =
             {
               "timestamp": appStore.timer,
@@ -44,31 +43,29 @@ function App() {
               "system_time": new Date().getTime()
             };
 
-            // calculate ROR
-            let time_elapsed_sec = 0;
-            if (appStore.appState == AppState.RECORDING) {
-              time_elapsed_sec = appStore.metrics[i].current_reading.timestamp - previous_reading.timestamp;
-            } else {
-              time_elapsed_sec = (appStore.metrics[i].current_reading.system_time - previous_reading.system_time) / 1000;
-            }
-
-            appStore.metrics[i].ror_buffer.push(
-              {
-                "timestamp": appStore.timer,
-                // round to decimal .1 , if NaN, set value to 0
-                "value": (appStore.metrics[i].current_reading.value - previous_reading.value) * 60 / time_elapsed_sec || 0
-              }
+            appStore.metrics[i].readings_buffer.push(
+              appStore.metrics[i].current_reading
             );
 
-            if (appStore.metrics[i].ror_buffer.length > 5) {
-              appStore.metrics[i].ror_buffer.shift();
+            // buffer size of 5
+            if (appStore.metrics[i].readings_buffer.length > 5) {
+              appStore.metrics[i].readings_buffer.shift();
             }
 
-            const initialValue = 0;
+            let time_elapsed_sec = 0;
+            if (appStore.appState == AppState.RECORDING) {
+              time_elapsed_sec = appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].timestamp
+                - appStore.metrics[i].readings_buffer[0].timestamp;
+            } else {
+              time_elapsed_sec = (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].system_time
+                - appStore.metrics[i].readings_buffer[0].system_time)
+                / 1000;
+            }
+
             appStore.metrics[i].rate_of_rise = {
               "timestamp": appStore.timer,
-              "value": appStore.metrics[i].ror_buffer.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value,
-                initialValue,) / appStore.metrics[i].ror_buffer.length
+              "value": (60 * (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].value - appStore.metrics[i].readings_buffer[0].value) /
+                time_elapsed_sec) || 0
             }
 
             // write into history data
