@@ -10,15 +10,22 @@ model   = "modbus"
     stop_bits = 1
 
     [[serial.ta612c.channel]]
-        metrics_id = "ET"
-        label      = "exhaust temp"
-        id         = 1
-        unit       = "celcius"
+        metrics_id  = "ET"
+        label       = "exhaust temp"
+        id          = 1
+        unit        = "celcius"
+        color       = "#00007f"
+        ror_enabled = true
+        ror_color   = "#dd0000"
+
     [[serial.ta612c.channel]]
-        metrics_id = "BT"
-        label      = "bean temp"
-        id         = 2
-        unit       = "celcius"
+        metrics_id  = "BT"
+        label       = "bean temp"
+        id          = 2
+        unit        = "celcius"
+        color       = "#00007f"
+        ror_enabled = true
+        ror_color   = "#dd0000"
 
 [serial.modbus]
     # modbus-ascii, modbus-rtu
@@ -34,6 +41,8 @@ model   = "modbus"
         decode_type = "u16"          # u16, u32, i16, i32, f32
         unit        = "celcius"
         color       = "#ff0000"
+        ror_enabled = true
+        ror_color   = "#dd0000"
 
     [[serial.modbus.slave]]
         metrics_id  = "BT"
@@ -45,6 +54,8 @@ model   = "modbus"
         decode_type = "u16"       # u16, u32, i16, i32, f32
         unit        = "celcius"
         color       = "#00007f"
+        ror_enabled = true
+        ror_color   = "#dd0000"
 
     [[serial.modbus.slave]]
         metrics_id  = "inlet"
@@ -56,13 +67,15 @@ model   = "modbus"
         decode_type = "u16"        # u16, u32, i16, i32, f32
         unit        = "celcius"
         color       = "#007f00"
+        ror_enabled = true
+        ror_color   = "#dd0000"
 
 [tcp]
     ip   = "127.0.0.1"
     port = 502
 
     [tcp.modbus]
-        # modbus-tcp only, no modbus-udp for now
+        # modbus-tcp 
         protocol = "modbus-tcp"
 
         [[tcp.modbus.slave]]
@@ -75,3 +88,32 @@ model   = "modbus"
             decode_type = "f32"          # u16, u32, i16, i32, f32
             unit        = "pa"
             color       = "#00007f"
+            ror_enabled = true
+            ror_color   = "#dd0000"
+
+[tcp.http]
+
+    [[tcp.http.channel]]
+        metrics_id  = "BT"
+        label       = "bean temp"
+        id          = 1
+        unit        = "celcius"
+        color       = "#00007f"
+        ror_enabled = true
+        ror_color   = "#dd0000"
+    [[tcp.http.channel]]
+        metrics_id  = "ET"
+        label       = "exhaust temp"
+        id          = 2
+        unit        = "celcius"
+        color       = "#ff0000"
+        ror_enabled = true
+        ror_color   = "#dd0000"
+    [[tcp.http.channel]]
+        metrics_id  = "inlet"
+        label       = "inlet temp"
+        id          = 3
+        unit        = "celcius"
+        color       = "#00007f"
+        ror_enabled = true
+        ror_color   = "#dd0000"

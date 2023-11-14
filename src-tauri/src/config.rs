@@ -23,6 +23,7 @@ impl Config {
     }
 }
 
+// LEVEL 1
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Serial {
     pub port: String,
@@ -34,19 +35,35 @@ pub struct Serial {
     pub ta612c: Option<Ta612c>,
 }
 
+// LEVEL 1
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Tcp {
     pub ip: String,
     pub port: u16,
     pub modbus: Option<Modbus>,
+    pub http: Option<Http>,
 }
 
+// LEVEL 2
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Ta612c {
+    pub channel: Vec<Channel>,
+}
+
+// LEVEL 2
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Modbus {
     pub protocol: String,
     pub slave: Vec<Slave>,
 }
 
+// LEVEL 2
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Http {
+    pub channel: Vec<Channel>,
+}
+
+// LEVEL 3
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Slave {
     pub metrics_id: String,
@@ -58,17 +75,18 @@ pub struct Slave {
     pub decode_type: String,
     pub unit: String,
     pub color: String,
+    pub ror_enabled: bool,
+    pub ror_color: String,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct Ta612c {
-    pub channel: Vec<Channel>,
-}
-
+// LEVEL 3
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Channel {
     pub metrics_id: String,
     pub label: String,
     pub id: u16,
     pub unit: String,
+    pub color: String,
+    pub ror_enabled: bool,
+    pub ror_color: String,
 }

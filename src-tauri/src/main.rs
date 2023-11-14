@@ -52,6 +52,7 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
             state.reader_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(3));
 
+                // todo: choose device based on config
                 let mut device: Box<dyn Device + Send> =
                     Box::new(devices::modbus::ModbusDevice::new(config));
 
