@@ -51,22 +51,40 @@ function App() {
             } else {
               time_elapsed_sec = (appStore.metrics[i].current_reading.system_time - previous_reading.system_time) / 1000;
             }
+
+            appStore.metrics[i].ror_buffer.push(
+              {
+                "timestamp": appStore.timer,
+                // round to decimal .1 , if NaN, set value to 0
+                "value": (appStore.metrics[i].current_reading.value - previous_reading.value) * 60 / time_elapsed_sec || 0
+              }
+            );
+
+            if (appStore.metrics[i].ror_buffer.length > 5) {
+              appStore.metrics[i].ror_buffer.shift();
+            }
+
+            const initialValue = 0;
             appStore.metrics[i].rate_of_rise = {
               "timestamp": appStore.timer,
-              // round to decimal .1 , if NaN, set value to 0
-              "value": Math.round((appStore.metrics[i].current_reading.value - previous_reading.value) / time_elapsed_sec * 60 * 10) / 10 || 0
+              "value": appStore.metrics[i].ror_buffer.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value,
+                initialValue,) / appStore.metrics[i].ror_buffer.length
             }
 
             // write into history data
             if (appStore.appState == AppState.RECORDING) {
-              appStore.metrics[i].data.push({
-                "timestamp": appStore.metrics[i].current_reading.timestamp,
-                "value": appStore.metrics[i].current_reading.value,
-              }
+              appStore.metrics[i].data.push(
+                {
+                  "timestamp": appStore.timer,
+                  "value": event.payload[appStore.metrics_id_list[i]],
+                }
               );
 
               appStore.metrics[i].ror_data.push(
-                appStore.metrics[i].rate_of_rise
+                {
+                  "timestamp": appStore.timer,
+                  "value": appStore.metrics[i].rate_of_rise.value,
+                }
               );
             }
           }

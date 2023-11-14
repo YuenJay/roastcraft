@@ -24,6 +24,7 @@ async function init_store() {
         color: s.color,
         current_reading: {}, // current 
         rate_of_rise: {},    // current
+        ror_buffer: [],      // current
         data: [],            // history
         ror_data: []         // history 
     }));

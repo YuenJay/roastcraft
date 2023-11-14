@@ -50,7 +50,7 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
         Some(_handle) => warn!("reader_handle already exist"),
         None => {
             state.reader_handle = Some(spawn(async move {
-                let mut interval = interval(Duration::from_secs(3));
+                let mut interval = interval(Duration::from_secs(2));
 
                 // todo: choose device based on config
                 // let mut device: Box<dyn Device + Send> =
@@ -60,7 +60,7 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
 
                 loop {
                     interval.tick().await;
-                    trace!("i am inside async process, 3 sec interval");
+                    trace!("i am inside async process, 2 sec interval");
 
                     match device.read().await {
                         Ok(json_value) => {
