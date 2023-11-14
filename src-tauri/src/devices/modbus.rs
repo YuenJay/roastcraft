@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use std::io::{Error, ErrorKind};
-
-use super::Device;
 use async_trait::async_trait;
 use log::{debug, error, trace};
 use serde_json::{Map, Value};
+use std::io::{Error, ErrorKind};
 use tokio::time;
 use tokio_modbus::{
     client::{rtu, Context},
@@ -14,6 +12,7 @@ use tokio_modbus::{
     Slave,
 };
 
+use super::Device;
 use crate::config::Config;
 
 pub struct ModbusDevice {

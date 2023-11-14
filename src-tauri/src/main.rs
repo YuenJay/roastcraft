@@ -53,8 +53,10 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
                 let mut interval = interval(Duration::from_secs(3));
 
                 // todo: choose device based on config
+                // let mut device: Box<dyn Device + Send> =
+                //     Box::new(devices::modbus::ModbusDevice::new(config));
                 let mut device: Box<dyn Device + Send> =
-                    Box::new(devices::modbus::ModbusDevice::new(config));
+                    Box::new(devices::http::HttpDevice::new(config));
 
                 loop {
                     interval.tick().await;
