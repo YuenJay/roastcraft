@@ -99,28 +99,30 @@ export default function MainChart() {
                                 </Show>
                             </g>
                             {/* rate of rise */}
-                            <path
-                                fill="none"
-                                stroke={appStore.metrics[item].color}
-                                stroke-width="1.5"
-                                d={lineROR(appStore.metrics[item].ror_data) as string | undefined}
-                            />
-                            <g
-                                fill={appStore.metrics[item].color}
-                                stroke={appStore.metrics[item].color}
-                                stroke-width="1">
-                                <Show when={appStore.metrics[item].current_reading.timestamp > 0}>
-                                    <circle
-                                        cx={xScale(appStore.metrics[item].rate_of_rise.timestamp)}
-                                        cy={yScaleROR(appStore.metrics[item].rate_of_rise.value)}
-                                        r="2" />
-                                    <text
-                                        x={xScale(appStore.metrics[item].rate_of_rise.timestamp) + 4}
-                                        y={yScaleROR(appStore.metrics[item].rate_of_rise.value)}>
-                                        {appStore.metrics[item].rate_of_rise.value}
-                                    </text>
-                                </Show>
-                            </g>
+                            <Show when={appStore.metrics[item].ror_enabled}>
+                                <path
+                                    fill="none"
+                                    stroke={appStore.metrics[item].color}
+                                    stroke-width="1.5"
+                                    d={lineROR(appStore.metrics[item].ror_data) as string | undefined}
+                                />
+                                <g
+                                    fill={appStore.metrics[item].color}
+                                    stroke={appStore.metrics[item].color}
+                                    stroke-width="1">
+                                    <Show when={appStore.metrics[item].current_reading.timestamp > 0}>
+                                        <circle
+                                            cx={xScale(appStore.metrics[item].rate_of_rise.timestamp)}
+                                            cy={yScaleROR(appStore.metrics[item].rate_of_rise.value)}
+                                            r="2" />
+                                        <text
+                                            x={xScale(appStore.metrics[item].rate_of_rise.timestamp) + 4}
+                                            y={yScaleROR(appStore.metrics[item].rate_of_rise.value)}>
+                                            {appStore.metrics[item].rate_of_rise.value}
+                                        </text>
+                                    </Show>
+                                </g>
+                            </Show>
                         </>
                     )
                 }

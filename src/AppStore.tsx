@@ -17,14 +17,31 @@ async function init_store() {
     let config: any;
     await invoke("get_config").then((c) => (config = c))
 
-    let metrics: any[] = config.serial.modbus.slave.map((s: any) => ({
+    // todo: choose device based on config
+    // let metrics: any[] = config.serial.modbus.slave.map((s: any) => ({
+    //     id: s.metrics_id,
+    //     label: s.label,
+    //     unit: s.unit,
+    //     color: s.color,
+    //     ror_enabled: s.ror_enabled,
+    //     ror_color: s.ror_color,
+    //     current_reading: {}, // current 
+    //     rate_of_rise: {},    // current
+    //     readings_buffer: [], // current
+    //     data: [],            // history
+    //     ror_data: []         // history 
+    // }));
+
+    let metrics: any[] = config.tcp.http.channel.map((s: any) => ({
         id: s.metrics_id,
         label: s.label,
         unit: s.unit,
         color: s.color,
+        ror_enabled: s.ror_enabled,
+        ror_color: s.ror_color,
         current_reading: {}, // current 
         rate_of_rise: {},    // current
-        readings_buffer: [],      // current
+        readings_buffer: [], // current
         data: [],            // history
         ror_data: []         // history 
     }));

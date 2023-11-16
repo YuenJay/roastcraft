@@ -64,8 +64,8 @@ function App() {
 
             appStore.metrics[i].rate_of_rise = {
               "timestamp": appStore.timer,
-              "value": (60 * (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].value - appStore.metrics[i].readings_buffer[0].value) /
-                time_elapsed_sec) || 0
+              "value": (Math.floor(60 * (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].value - appStore.metrics[i].readings_buffer[0].value) /
+                time_elapsed_sec * 10)) / 10 || 0
             }
 
             // write into history data
