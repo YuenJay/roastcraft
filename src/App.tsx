@@ -18,6 +18,7 @@ function App() {
   let unlisten_reader: UnlistenFn;
   let unlisten_timer: UnlistenFn;
 
+
   onMount(async () => {
 
     console.log(appStore)
@@ -133,6 +134,9 @@ function App() {
     setAppStore({ appState: AppState.ON });
   }
 
+  async function phaseButtonClicked() {
+    trace!("phaseButtonClicked");
+  }
 
   return (
     // responsive design breakpoint : lg
@@ -200,26 +204,16 @@ function App() {
       <div class="col-span-8 m-1">
 
         <MainChart />
-        <ul class="steps w-full ">
-          <li data-content="✓" class="step ">
-            Charge
-          </li>
-          <li data-content="✓" class="step step-accent">
-            Dry End
-          </li>
-          <li data-content="✓" class="step step-secondary">
-            FC Start
-          </li>
-          <li data-content="✓" class="step step-secondary">
-            FC End
-          </li>
-          <li data-content="✓" class="step step-accent">
-            SC Start
-          </li>
-          <li data-content="✓" class="step step-error">
-            Drop
-          </li>
-        </ul>
+        <div class="m-2 flex justify-evenly">
+          <button class="btn btn-outline btn-primary" onClick={phaseButtonClicked}>charge</button>
+          <button class={`btn btn-outline btn-primary ${true ? "btn-active btn-disabled" : ""}`} onClick={phaseButtonClicked}>{true ? "✓ " : ""}Dry End</button>
+          <button class="btn btn-outline btn-primary">FC Start</button>
+          <button class="btn btn-outline btn-primary">FC End</button>
+          <button class="btn btn-outline btn-primary">SC Start</button>
+          <button class="btn btn-outline btn-primary">SC End</button>
+          <button class="btn btn-outline btn-primary">Drop</button>
+        </div>
+
         <PhaseChart />
       </div>
       {/* main end*/}

@@ -16,7 +16,7 @@ export default function MainChart() {
     const marginLeft = 30;
 
     const xScale = d3.scaleLinear(
-        [-60, 600],
+        [-60, 660],
         [marginLeft, width - marginRight]
     );
 
