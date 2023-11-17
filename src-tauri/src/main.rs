@@ -203,8 +203,8 @@ fn main() {
     let close = CustomMenuItem::new("close".to_string(), "Close");
     let submenu = Submenu::new("File", Menu::new().add_item(quit).add_item(close));
     let menu = Menu::new()
-        .add_native_item(MenuItem::Copy)
-        .add_item(CustomMenuItem::new("hide", "Hide"))
+        // .add_native_item(MenuItem::Copy)
+        // .add_item(CustomMenuItem::new("hide", "Hide"))
         .add_submenu(submenu);
 
     tauri::Builder::default()

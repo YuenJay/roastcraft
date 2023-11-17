@@ -56,7 +56,9 @@ async function init_store() {
         timer: 0,
         metrics: metrics,
         metrics_id_list: metrics.map((m: any) => (m.id)), // metrics order is the same
-        logs: new Array<String>()
+        logs: new Array<String>(),
+        events: new Array(),
+        phase_button_state: { CHARGE: false, DRY_END: false }
     }
 }
 

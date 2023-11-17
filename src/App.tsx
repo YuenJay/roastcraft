@@ -134,8 +134,16 @@ function App() {
     setAppStore({ appState: AppState.ON });
   }
 
-  async function phaseButtonClicked() {
-    trace!("phaseButtonClicked");
+  async function phaseButtonClicked(event_id: string) {
+    trace!("phaseButtonClicked: " + event_id);
+    setAppStore(produce((appStore) => {
+      (appStore.phase_button_state as any)[event_id] = true;
+      appStore.events.push({
+        type: "PHASE",
+        id: event_id,
+        timestamp: appStore.timer
+      });
+    }));
   }
 
   return (
@@ -205,8 +213,14 @@ function App() {
 
         <MainChart />
         <div class="m-2 flex justify-evenly">
-          <button class="btn btn-outline btn-primary" onClick={phaseButtonClicked}>charge</button>
-          <button class={`btn btn-outline btn-primary ${true ? "btn-active btn-disabled" : ""}`} onClick={phaseButtonClicked}>{true ? "✓ " : ""}Dry End</button>
+          <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.CHARGE ? "btn-active btn-disabled" : ""}`}
+            onClick={() => phaseButtonClicked("CHARGE")}>
+            {appStore.phase_button_state.CHARGE ? "✓ " : ""}charge
+          </button>
+          <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DRY_END ? "btn-active btn-disabled" : ""}`}
+            onClick={() => phaseButtonClicked("DRY_END")}>
+            {appStore.phase_button_state.DRY_END ? "✓ " : ""}Dry End
+          </button>
           <button class="btn btn-outline btn-primary">FC Start</button>
           <button class="btn btn-outline btn-primary">FC End</button>
           <button class="btn btn-outline btn-primary">SC Start</button>
