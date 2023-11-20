@@ -9,6 +9,8 @@ import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
 import useAppStore, { AppState } from "./AppStore";
+import WorkerFactory from "./WorkerFactory";
+import timerWorker from "./timer.worker";
 
 function App() {
 
@@ -16,8 +18,7 @@ function App() {
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
-  let unlisten_timer: UnlistenFn;
-
+  let timer_worker: Worker;
 
   onMount(async () => {
 
@@ -92,19 +93,13 @@ function App() {
       console.log(appStore.metrics);
     });
 
-    // event listener
-    unlisten_timer = await listen("timer", (event: any) => {
-      trace("event \"timer\" catched :" + JSON.stringify(event.payload));
-      setAppStore({ timer: event.payload });
-    });
-
     setAppStore("logs", [...appStore.logs, "RoastCraft is ready"]);
   });
 
   onCleanup(() => {
     detach();
     unlisten_reader();
-    unlisten_timer();
+
   })
 
   async function buttonOnClicked() {
@@ -120,12 +115,17 @@ function App() {
   }
 
   async function buttonStartClicked() {
-    await invoke("button_start_clicked");
+    timer_worker = new WorkerFactory(timerWorker) as Worker;
+    timer_worker.postMessage(1000);
+    timer_worker.onmessage = (event: any) => {
+      trace("time worker event data:" + JSON.stringify(event.data));
+      setAppStore({ timer: event.data });
+    };
     setAppStore({ appState: AppState.RECORDING, logs: [...appStore.logs, "start recording"] });
   }
 
   async function buttonStopClicked() {
-    await invoke("button_stop_clicked");
+    timer_worker.terminate();
     setAppStore({ appState: AppState.RECORDED, logs: [...appStore.logs, "stopped recording"] });
   }
 
