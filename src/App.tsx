@@ -38,15 +38,13 @@ function App() {
           let i;
           for (i = 0; i < appStore.metrics_id_list.length; i++) {
 
-            appStore.metrics[i].current_reading =
-            {
-              "timestamp": appStore.timer,
-              "value": Number(event.payload[appStore.metrics_id_list[i]]),
-              "system_time": new Date().getTime()
-            };
+            appStore.metrics[i].current_reading = Number(event.payload[appStore.metrics_id_list[i]]);
 
             appStore.metrics[i].readings_buffer.push(
-              appStore.metrics[i].current_reading
+              {
+                "value": Number(event.payload[appStore.metrics_id_list[i]]),
+                "system_time": new Date().getTime()
+              }
             );
 
             // buffer size of 5
@@ -54,21 +52,12 @@ function App() {
               appStore.metrics[i].readings_buffer.shift();
             }
 
-            let time_elapsed_sec = 0;
-            if (appStore.appState == AppState.RECORDING) {
-              time_elapsed_sec = appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].timestamp
-                - appStore.metrics[i].readings_buffer[0].timestamp;
-            } else {
-              time_elapsed_sec = (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].system_time
-                - appStore.metrics[i].readings_buffer[0].system_time)
-                / 1000;
-            }
+            let delta = appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].value - appStore.metrics[i].readings_buffer[0].value;
+            let time_elapsed_sec = (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].system_time
+              - appStore.metrics[i].readings_buffer[0].system_time)
+              / 1000;
 
-            appStore.metrics[i].rate_of_rise = {
-              "timestamp": appStore.timer,
-              "value": (Math.floor(60 * (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].value - appStore.metrics[i].readings_buffer[0].value) /
-                time_elapsed_sec * 10)) / 10 || 0
-            }
+            appStore.metrics[i].rate_of_rise = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
 
             // write into history data
             if (appStore.appState == AppState.RECORDING) {
@@ -82,7 +71,7 @@ function App() {
               appStore.metrics[i].ror_data.push(
                 {
                   "timestamp": appStore.timer,
-                  "value": appStore.metrics[i].rate_of_rise.value,
+                  "value": appStore.metrics[i].rate_of_rise,
                 }
               );
             }
@@ -101,6 +90,10 @@ function App() {
     unlisten_reader();
 
   })
+
+  function calculate() {
+
+  }
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
@@ -161,14 +154,14 @@ function App() {
         <div class="bg-base-300 rounded text-right w-20 p-1 ">
           <p>{appStore.metrics[0].id}</p>
           <p class="text-2xl font-medium text-red-600">
-            {appStore.metrics[0].current_reading.value === undefined ? undefined : appStore.metrics[0].current_reading.value.toFixed(1)}
+            {appStore.metrics[0].current_reading.toFixed(1)}
           </p>
         </div>
 
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">
-            {appStore.metrics[0].rate_of_rise.value === undefined ? undefined : appStore.metrics[0].rate_of_rise.value.toFixed(1)}
+            {appStore.metrics[0].rate_of_rise.toFixed(1)}
           </p>
         </div>
 
@@ -179,7 +172,7 @@ function App() {
                 <div class="bg-base-300 rounded text-right w-20 p-1">
                   <p>{appStore.metrics[index].id}</p>
                   <p class="text-2xl font-medium text-red-600">
-                    {appStore.metrics[index].current_reading.value === undefined ? undefined : appStore.metrics[index].current_reading.value.toFixed(1)}
+                    {appStore.metrics[index].current_reading.toFixed(1)}
                   </p>
                 </div>
               </Show>
