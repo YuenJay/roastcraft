@@ -86,15 +86,15 @@ export default function MainChart() {
                                 fill={appStore.metrics[item].color}
                                 stroke={appStore.metrics[item].color}
                                 stroke-width="1">
-                                <Show when={appStore.timer > 0}>
+                                <Show when={appStore.metrics[item].data.length > 0}>
                                     <circle
-                                        cx={xScale(appStore.timer)}
-                                        cy={yScale(appStore.metrics[item].current_reading)}
+                                        cx={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp)}
+                                        cy={yScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value)}
                                         r="2" />
                                     <text
-                                        x={xScale(appStore.timer) + 4}
-                                        y={yScale(appStore.metrics[item].current_reading)}>
-                                        {appStore.metrics[item].current_reading}
+                                        x={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp) + 4}
+                                        y={yScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value)}>
+                                        {appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value.toFixed(1)}
                                     </text>
                                 </Show>
                             </g>
@@ -110,15 +110,15 @@ export default function MainChart() {
                                     fill={appStore.metrics[item].color}
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1">
-                                    <Show when={appStore.timer > 0}>
+                                    <Show when={appStore.metrics[item].ror_data.length > 0}>
                                         <circle
-                                            cx={xScale(appStore.timer)}
-                                            cy={yScaleROR(appStore.metrics[item].rate_of_rise)}
+                                            cx={xScale(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].timestamp)}
+                                            cy={yScaleROR(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].value)}
                                             r="2" />
                                         <text
-                                            x={xScale(appStore.timer) + 4}
-                                            y={yScaleROR(appStore.metrics[item].rate_of_rise)}>
-                                            {appStore.metrics[item].rate_of_rise}
+                                            x={xScale(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].timestamp) + 4}
+                                            y={yScaleROR(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].value)}>
+                                            {appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].value.toFixed(1)}
                                         </text>
                                     </Show>
                                 </g>
