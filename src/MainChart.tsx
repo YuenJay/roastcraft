@@ -122,7 +122,29 @@ export default function MainChart() {
                                         </text>
                                     </Show>
                                 </g>
+                                {/* BT outlier */}
+                                <For each={appStore.metrics[item].ror_data.filter((ror: any) => (ror.outlier == true))}>
+                                    {
+                                        (outlier) => (
+                                            <>
+                                                <g
+                                                    fill="none"
+                                                    stroke={appStore.metrics[item].color}
+                                                    stroke-width="1">
+
+                                                    <circle
+                                                        cx={xScale(outlier.timestamp)}
+                                                        cy={yScaleROR(outlier.value)}
+                                                        r="4" />
+
+
+                                                </g>
+                                            </>
+                                        )}
+                                </For>
                             </Show>
+
+
                         </>
                     )
                 }

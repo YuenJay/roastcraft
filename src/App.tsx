@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { onMount, onCleanup, Show, For, Index } from "solid-js";
-import { produce } from 'solid-js/store'
+import { produce, unwrap } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
+import { mean, median, medianAbsoluteDeviation, standardDeviation } from "simple-statistics";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
@@ -40,6 +41,7 @@ function App() {
 
             appStore.metrics[i].current_reading = Number(event.payload[appStore.metrics_id_list[i]]);
 
+            /* calculate ROR start */
             appStore.metrics[i].readings_buffer.push(
               {
                 "value": Number(event.payload[appStore.metrics_id_list[i]]),
@@ -58,6 +60,7 @@ function App() {
               / 1000;
 
             appStore.metrics[i].rate_of_rise = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
+            /* calculate ROR end */
 
             // write into history data
             if (appStore.appState == AppState.RECORDING) {
@@ -79,7 +82,11 @@ function App() {
         })
       )
 
-      console.log(appStore.metrics);
+      if (appStore.appState == AppState.RECORDING) {
+        findOutlier();
+      }
+
+      console.log(unwrap(appStore.metrics));
     });
 
     setAppStore("logs", [...appStore.logs, "RoastCraft is ready"]);
@@ -91,7 +98,38 @@ function App() {
 
   })
 
-  function calculate() {
+  // find outliers, regression, etc
+  function findOutlier() {
+
+    console.log("in findOutlier()");
+
+    let ror_data: Array<any> = unwrap(appStore.metrics[0].ror_data);
+    let window_size = Math.min(5, ror_data.length);
+    let window = ror_data.slice(-window_size - 1, -1).map(ror => ror.value);
+
+    let ma = mean(window); // moving average
+    let sd = standardDeviation(window); // standard deviation
+    let zScore = Math.abs((ror_data[ror_data.length - 1].value - ma) / sd);
+
+    let m = median(window);
+    let mad = medianAbsoluteDeviation(window);
+    let modifiedZScore = Math.abs(0.6745 * (ror_data[ror_data.length - 1].value - m) / mad);
+
+    console.log(window);
+    console.log(ma);
+    console.log(sd);
+    console.log("zScore        : " + zScore);
+    console.log(m);
+    console.log(mad);
+    console.log("modifiedZScore: " + modifiedZScore);
+
+    if (zScore > 3) {
+      setAppStore(
+        produce((appStore) => {
+          appStore.metrics[0].ror_data[appStore.metrics[0].ror_data.length - 1].outlier = true;
+        })
+      )
+    }
 
   }
 
