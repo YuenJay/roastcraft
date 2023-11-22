@@ -98,10 +98,7 @@ function App() {
 
   })
 
-  // find outliers, regression, etc
   function findOutlier() {
-
-    console.log("in findOutlier()");
 
     let ror_data: Array<any> = unwrap(appStore.metrics[0].ror_data);
     let window_size = Math.min(5, ror_data.length);
@@ -111,17 +108,26 @@ function App() {
     let sd = standardDeviation(window); // standard deviation
     let zScore = Math.abs((ror_data[ror_data.length - 1].value - ma) / sd);
 
+    console.log(window);
+    console.log("zScore: " + zScore);
+
+    // https://eurekastatistics.com/using-the-median-absolute-deviation-to-find-outliers/
+    // The MAD=0 Problem
+    // If more than 50% of your data have identical values, your MAD will equal zero. 
+    // All points in your dataset except those that equal the median will then be flagged as outliers, 
+    // regardless of the level at which you've set your outlier cutoff. 
+    // (By constrast, if you use the standard-deviations-from-mean approach to finding outliers, 
+    // Chebyshev's inequality puts a hard limit on the percentage of points that may be flagged as outliers.) 
+    // So at the very least check that you don't have too many identical data points before using the MAD to flag outliers.
+
+    /*
     let m = median(window);
     let mad = medianAbsoluteDeviation(window);
     let modifiedZScore = Math.abs(0.6745 * (ror_data[ror_data.length - 1].value - m) / mad);
-
-    console.log(window);
-    console.log(ma);
-    console.log(sd);
-    console.log("zScore        : " + zScore);
     console.log(m);
     console.log(mad);
     console.log("modifiedZScore: " + modifiedZScore);
+    */
 
     if (zScore > 3) {
       setAppStore(
@@ -131,6 +137,12 @@ function App() {
       )
     }
 
+  }
+
+  // find lowest point in BT
+  function findTurningPoint() {
+
+    // generate an event
   }
 
   async function buttonOnClicked() {
