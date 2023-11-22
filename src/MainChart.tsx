@@ -104,26 +104,26 @@ export default function MainChart() {
                                     fill="none"
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1.5"
-                                    d={lineROR(appStore.metrics[item].ror_data) as string | undefined}
+                                    d={lineROR(appStore.metrics[item].ror) as string | undefined}
                                 />
                                 <g
                                     fill={appStore.metrics[item].color}
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1">
-                                    <Show when={appStore.metrics[item].ror_data.length > 0}>
+                                    <Show when={appStore.metrics[item].ror.length > 0}>
                                         <circle
-                                            cx={xScale(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].timestamp)}
-                                            cy={yScaleROR(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].value)}
+                                            cx={xScale(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].timestamp)}
+                                            cy={yScaleROR(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].value)}
                                             r="2" />
                                         <text
-                                            x={xScale(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].timestamp) + 4}
-                                            y={yScaleROR(appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].value)}>
-                                            {appStore.metrics[item].ror_data[appStore.metrics[item].ror_data.length - 1].value.toFixed(1)}
+                                            x={xScale(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].timestamp) + 4}
+                                            y={yScaleROR(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].value)}>
+                                            {appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].value.toFixed(1)}
                                         </text>
                                     </Show>
                                 </g>
                                 {/* BT outlier */}
-                                <For each={appStore.metrics[item].ror_data.filter((ror: any) => (ror.outlier == true))}>
+                                <For each={appStore.metrics[item].ror.filter((ror: any) => (ror.outlier == true))}>
                                     {
                                         (outlier) => (
                                             <>

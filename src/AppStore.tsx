@@ -25,11 +25,11 @@ async function init_store() {
     //     color: s.color,
     //     ror_enabled: s.ror_enabled,
     //     ror_color: s.ror_color,
-    //     current_reading: {}, // current 
-    //     rate_of_rise: {},    // current
-    //     readings_buffer: [], // current
+    //     current_data: {}, // current 
+    //     current_ror: {},    // current
+    //     data_window: [], // current
     //     data: [],            // history
-    //     ror_data: []         // history 
+    //     ror: []         // history 
     // }));
 
     let metrics: any[] = config.tcp.http.channel.map((s: any) => ({
@@ -39,11 +39,11 @@ async function init_store() {
         color: s.color,
         ror_enabled: s.ror_enabled,
         ror_color: s.ror_color,
-        current_reading: 0, // current 
-        rate_of_rise: 0,    // current
-        readings_buffer: [], // current
-        data: [],            // history
-        ror_data: []         // history 
+        current_data: 0,  // current 
+        current_ror: 0,   // current
+        data_window: [],  // current, for calculate ror
+        data: [], // history records
+        ror: []   // history records
     }));
 
     // move BT to be the first element

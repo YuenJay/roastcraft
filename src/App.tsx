@@ -39,10 +39,10 @@ function App() {
           let i;
           for (i = 0; i < appStore.metrics_id_list.length; i++) {
 
-            appStore.metrics[i].current_reading = Number(event.payload[appStore.metrics_id_list[i]]);
+            appStore.metrics[i].current_data = Number(event.payload[appStore.metrics_id_list[i]]);
 
             /* calculate ROR start */
-            appStore.metrics[i].readings_buffer.push(
+            appStore.metrics[i].data_window.push(
               {
                 "value": Number(event.payload[appStore.metrics_id_list[i]]),
                 "system_time": new Date().getTime()
@@ -50,16 +50,17 @@ function App() {
             );
 
             // buffer size of 5
-            if (appStore.metrics[i].readings_buffer.length > 5) {
-              appStore.metrics[i].readings_buffer.shift();
+            if (appStore.metrics[i].data_window.length > 5) {
+              appStore.metrics[i].data_window.shift();
             }
 
-            let delta = appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].value - appStore.metrics[i].readings_buffer[0].value;
-            let time_elapsed_sec = (appStore.metrics[i].readings_buffer[appStore.metrics[i].readings_buffer.length - 1].system_time
-              - appStore.metrics[i].readings_buffer[0].system_time)
+            let delta = appStore.metrics[i].data_window[appStore.metrics[i].data_window.length - 1].value
+              - appStore.metrics[i].data_window[0].value;
+            let time_elapsed_sec = (appStore.metrics[i].data_window[appStore.metrics[i].data_window.length - 1].system_time
+              - appStore.metrics[i].data_window[0].system_time)
               / 1000;
 
-            appStore.metrics[i].rate_of_rise = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
+            appStore.metrics[i].current_ror = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
             /* calculate ROR end */
 
             // write into history data
@@ -70,21 +71,14 @@ function App() {
                   "value": event.payload[appStore.metrics_id_list[i]],
                 }
               );
-
-              appStore.metrics[i].ror_data.push(
-                {
-                  "timestamp": appStore.timer,
-                  "value": appStore.metrics[i].rate_of_rise,
-                }
-              );
             }
           }
         })
       )
 
-      if (appStore.appState == AppState.RECORDING) {
-        findOutlier();
-      }
+      // BT ROR
+      calculate(0);
+
 
       console.log(unwrap(appStore.metrics));
     });
@@ -98,15 +92,52 @@ function App() {
 
   })
 
+  function calculate(metrics_index: number) {
+    let data: Array<any> = unwrap(appStore.metrics[metrics_index].data);
+
+    let ror_array = Array<any>();
+
+    console.log("data");
+    let i;
+    for (i = 0; i < data.length; i++) {
+
+      console.log("i: " + i);
+
+      let window_size = 5
+      let window = data.slice(Math.max(0, i - window_size + 1), i + 1);
+
+      let delta = window[window.length - 1].value - window[0].value;
+      let time_elapsed_sec = window[window.length - 1].timestamp - window[0].timestamp;
+
+      let ror = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
+
+      ror_array.push(
+        {
+          "timestamp": data[i].timestamp,
+          "value": ror,
+        }
+      );
+
+    }
+
+    console.log(ror_array);
+    setAppStore(
+      produce((appStore) => {
+        appStore.metrics[metrics_index].ror = ror_array;
+      })
+    )
+
+  }
+
   function findOutlier() {
 
-    let ror_data: Array<any> = unwrap(appStore.metrics[0].ror_data);
-    let window_size = Math.min(5, ror_data.length);
-    let window = ror_data.slice(-window_size - 1, -1).map(ror => ror.value);
+    let ror: Array<any> = unwrap(appStore.metrics[0].ror);
+    let window_size = Math.min(5, ror.length);
+    let window = ror.slice(-window_size - 1, -1).map(ror => ror.value);
 
     let ma = mean(window); // moving average
     let sd = standardDeviation(window); // standard deviation
-    let zScore = Math.abs((ror_data[ror_data.length - 1].value - ma) / sd);
+    let zScore = Math.abs((ror[ror.length - 1].value - ma) / sd);
 
     console.log(window);
     console.log("zScore: " + zScore);
@@ -123,7 +154,7 @@ function App() {
     /*
     let m = median(window);
     let mad = medianAbsoluteDeviation(window);
-    let modifiedZScore = Math.abs(0.6745 * (ror_data[ror_data.length - 1].value - m) / mad);
+    let modifiedZScore = Math.abs(0.6745 * (ror[ror.length - 1].value - m) / mad);
     console.log(m);
     console.log(mad);
     console.log("modifiedZScore: " + modifiedZScore);
@@ -132,10 +163,14 @@ function App() {
     if (zScore > 3) {
       setAppStore(
         produce((appStore) => {
-          appStore.metrics[0].ror_data[appStore.metrics[0].ror_data.length - 1].outlier = true;
+          appStore.metrics[0].ror[appStore.metrics[0].ror.length - 1].outlier = true;
         })
       )
     }
+
+  }
+
+  function autoDetectCharge() {
 
   }
 
@@ -204,14 +239,14 @@ function App() {
         <div class="bg-base-300 rounded text-right w-20 p-1 ">
           <p>{appStore.metrics[0].id}</p>
           <p class="text-2xl font-medium text-red-600">
-            {appStore.metrics[0].current_reading.toFixed(1)}
+            {appStore.metrics[0].current_data.toFixed(1)}
           </p>
         </div>
 
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">
-            {appStore.metrics[0].rate_of_rise.toFixed(1)}
+            {appStore.metrics[0].current_ror.toFixed(1)}
           </p>
         </div>
 
@@ -222,7 +257,7 @@ function App() {
                 <div class="bg-base-300 rounded text-right w-20 p-1">
                   <p>{appStore.metrics[index].id}</p>
                   <p class="text-2xl font-medium text-red-600">
-                    {appStore.metrics[index].current_reading.toFixed(1)}
+                    {appStore.metrics[index].current_data.toFixed(1)}
                   </p>
                 </div>
               </Show>
