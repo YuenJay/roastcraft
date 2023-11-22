@@ -76,9 +76,9 @@ function App() {
         })
       )
 
-      // BT ROR
-      calculate(0);
-
+      // BT only for now
+      calculateRor(0);
+      findRorOutlier(0);
 
       console.log(unwrap(appStore.metrics));
     });
@@ -92,16 +92,12 @@ function App() {
 
   })
 
-  function calculate(metrics_index: number) {
+  function calculateRor(metrics_index: number) {
     let data: Array<any> = unwrap(appStore.metrics[metrics_index].data);
 
     let ror_array = Array<any>();
 
-    console.log("data");
-    let i;
-    for (i = 0; i < data.length; i++) {
-
-      console.log("i: " + i);
+    for (let i = 0; i < data.length; i++) {
 
       let window_size = 5
       let window = data.slice(Math.max(0, i - window_size + 1), i + 1);
@@ -120,7 +116,6 @@ function App() {
 
     }
 
-    console.log(ror_array);
     setAppStore(
       produce((appStore) => {
         appStore.metrics[metrics_index].ror = ror_array;
@@ -129,45 +124,50 @@ function App() {
 
   }
 
-  function findOutlier() {
+  function findRorOutlier(metrics_index: number) {
 
-    let ror: Array<any> = unwrap(appStore.metrics[0].ror);
-    let window_size = Math.min(5, ror.length);
-    let window = ror.slice(-window_size - 1, -1).map(ror => ror.value);
+    let ror: Array<any> = unwrap(appStore.metrics[metrics_index].ror);
 
-    let ma = mean(window); // moving average
-    let sd = standardDeviation(window); // standard deviation
-    let zScore = Math.abs((ror[ror.length - 1].value - ma) / sd);
+    for (let i = 0; i < ror.length; i++) {
+      if (i == 0) {
+        continue;
+      }
 
-    console.log(window);
-    console.log("zScore: " + zScore);
+      let window_size = 5
+      let window = ror.slice(Math.max(0, i - window_size), i).map(r => r.value); // window doesn't include i
 
-    // https://eurekastatistics.com/using-the-median-absolute-deviation-to-find-outliers/
-    // The MAD=0 Problem
-    // If more than 50% of your data have identical values, your MAD will equal zero. 
-    // All points in your dataset except those that equal the median will then be flagged as outliers, 
-    // regardless of the level at which you've set your outlier cutoff. 
-    // (By constrast, if you use the standard-deviations-from-mean approach to finding outliers, 
-    // Chebyshev's inequality puts a hard limit on the percentage of points that may be flagged as outliers.) 
-    // So at the very least check that you don't have too many identical data points before using the MAD to flag outliers.
+      let ma = mean(window); // moving average
+      let sd = standardDeviation(window); // standard deviation
+      let zScore = Math.abs((ror[i].value - ma) / sd);
 
-    /*
-    let m = median(window);
-    let mad = medianAbsoluteDeviation(window);
-    let modifiedZScore = Math.abs(0.6745 * (ror[ror.length - 1].value - m) / mad);
-    console.log(m);
-    console.log(mad);
-    console.log("modifiedZScore: " + modifiedZScore);
-    */
+      // console.log(window);
+      // console.log("zScore: " + zScore);
 
-    if (zScore > 3) {
-      setAppStore(
-        produce((appStore) => {
-          appStore.metrics[0].ror[appStore.metrics[0].ror.length - 1].outlier = true;
-        })
-      )
+      // https://eurekastatistics.com/using-the-median-absolute-deviation-to-find-outliers/
+      // The MAD=0 Problem
+      // If more than 50% of your data have identical values, your MAD will equal zero. 
+      // All points in your dataset except those that equal the median will then be flagged as outliers, 
+      // regardless of the level at which you've set your outlier cutoff. 
+      // (By constrast, if you use the standard-deviations-from-mean approach to finding outliers, 
+      // Chebyshev's inequality puts a hard limit on the percentage of points that may be flagged as outliers.) 
+      // So at the very least check that you don't have too many identical data points before using the MAD to flag outliers.
+
+      /*
+      let m = median(window);
+      let mad = medianAbsoluteDeviation(window);
+      let modifiedZScore = Math.abs(0.6745 * (ror[i].value - m) / mad);
+      console.log(m);
+      console.log(mad);
+      console.log("modifiedZScore: " + modifiedZScore);
+      */
+      if (zScore > 3) {
+        setAppStore(
+          produce((appStore) => {
+            appStore.metrics[metrics_index].ror[i].outlier = true;
+          })
+        )
+      }
     }
-
   }
 
   function autoDetectCharge() {
