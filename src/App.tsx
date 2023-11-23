@@ -3,9 +3,10 @@
 import { onMount, onCleanup, Show, For, Index } from "solid-js";
 import { produce, unwrap } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
-import { trace, attachConsole } from "tauri-plugin-log-api";
+import { trace, attachConsole, info } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { mean, median, medianAbsoluteDeviation, standardDeviation } from "simple-statistics";
+import { mean, standardDeviation } from "simple-statistics";
+// import { median, medianAbsoluteDeviation } from "simple-statistics";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
@@ -44,8 +45,8 @@ function App() {
             /* calculate ROR start */
             appStore.metrics[i].data_window.push(
               {
-                "value": Number(event.payload[appStore.metrics_id_list[i]]),
-                "system_time": new Date().getTime()
+                value: Number(event.payload[appStore.metrics_id_list[i]]),
+                system_time: new Date().getTime()
               }
             );
 
@@ -67,8 +68,8 @@ function App() {
             if (appStore.appState == AppState.RECORDING) {
               appStore.metrics[i].data.push(
                 {
-                  "timestamp": appStore.timer,
-                  "value": event.payload[appStore.metrics_id_list[i]],
+                  timestamp: appStore.timer,
+                  value: event.payload[appStore.metrics_id_list[i]],
                 }
               );
             }
@@ -79,8 +80,10 @@ function App() {
       // BT only for now
       calculateRor(0);
       findRorOutlier(0);
+      autoDetectCharge();
 
-      console.log(unwrap(appStore.metrics));
+
+      console.log(unwrap(appStore));
     });
 
     setAppStore("logs", [...appStore.logs, "RoastCraft is ready"]);
@@ -109,8 +112,8 @@ function App() {
 
       ror_array.push(
         {
-          "timestamp": data[i].timestamp,
-          "value": ror,
+          timestamp: data[i].timestamp,
+          value: ror,
         }
       );
 
@@ -140,9 +143,6 @@ function App() {
       let sd = standardDeviation(window); // standard deviation
       let zScore = Math.abs((ror[i].value - ma) / sd);
 
-      // console.log(window);
-      // console.log("zScore: " + zScore);
-
       // https://eurekastatistics.com/using-the-median-absolute-deviation-to-find-outliers/
       // The MAD=0 Problem
       // If more than 50% of your data have identical values, your MAD will equal zero. 
@@ -152,14 +152,13 @@ function App() {
       // Chebyshev's inequality puts a hard limit on the percentage of points that may be flagged as outliers.) 
       // So at the very least check that you don't have too many identical data points before using the MAD to flag outliers.
 
-      /*
-      let m = median(window);
-      let mad = medianAbsoluteDeviation(window);
-      let modifiedZScore = Math.abs(0.6745 * (ror[i].value - m) / mad);
-      console.log(m);
-      console.log(mad);
-      console.log("modifiedZScore: " + modifiedZScore);
-      */
+      // let m = median(window);
+      // let mad = medianAbsoluteDeviation(window);
+      // let modifiedZScore = Math.abs(0.6745 * (ror[i].value - m) / mad);
+      // console.log(m);
+      // console.log(mad);
+      // console.log("modifiedZScore: " + modifiedZScore);
+
       if (zScore > 3) {
         setAppStore(
           produce((appStore) => {
@@ -167,11 +166,51 @@ function App() {
           })
         )
       }
+
     }
   }
 
+  // reference: artisan/src/artisanlib/main.py  BTbreak()
+  // idea:
+  // . average delta before i-2 is not negative
+  // . average delta after i-2 is negative and twice as high (absolute) as the one before
   function autoDetectCharge() {
+    let m_index: number = 0 // metrics index for BT
+    let ror: Array<any> = unwrap(appStore.metrics[m_index].ror);
 
+    let window_size = 5
+    if (ror.length >= window_size) {
+
+      let window = ror.slice(Math.max(0, ror.length - window_size), ror.length).map(r => r.value);
+
+      // window array: [    0][    1][     2][    3][    4]
+      //    ror array: [len-5][len-4][*len-3][len-2][len-1]
+      //                              ^^^^^^
+      //                              CHARGE
+
+      let dpre = window[1] + window[2] / 2.0;
+      let dpost = window[3] + window[4] / 2.0;
+      if (window[1] > 0.0 && window[2] > 0.0
+        && window[3] < 0.0 && window[3] < 0.0
+        && Math.abs(dpost) > Math.abs(dpre) * 2) {
+        let charge_index = ror.length - 3;
+        info("auto detected charge at ror index: " + (charge_index));
+
+        setAppStore(
+          produce((appStore) => {
+            (appStore.phase_button_state as any)["CHARGE"] = true;
+            appStore.events.push({
+              type: "PHASE",
+              id: "CHARGE",
+              timestamp: appStore.metrics[m_index].data[charge_index].timestamp,
+              value: appStore.metrics[m_index].data[charge_index].value
+            });
+          })
+        )
+      }
+
+
+    }
   }
 
   // find lowest point in BT
@@ -219,7 +258,8 @@ function App() {
       appStore.events.push({
         type: "PHASE",
         id: event_id,
-        timestamp: appStore.timer
+        timestamp: appStore.timer,
+        value: appStore.metrics[0].current_data
       });
     }));
   }

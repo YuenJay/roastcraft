@@ -16,7 +16,7 @@ export default function MainChart() {
     const marginLeft = 30;
 
     const xScale = d3.scaleLinear(
-        [-60, 660],
+        [-60, 720],
         [marginLeft, width - marginRight]
     );
 
@@ -145,6 +145,29 @@ export default function MainChart() {
                         </>
                     )
                 }
+            </For>
+
+            <For each={appStore.events}>
+                {
+                    (item) => (
+                        <>
+                            <g
+                                fill="none"
+                                stroke="#9c27b0"
+                                stroke-width="1">
+                                <circle
+                                    cx={xScale(item.timestamp)}
+                                    cy={yScale(item.value)}
+                                    r="4" />
+                                <text
+                                    fill="#570885"
+                                    x={xScale(item.timestamp) + 4}
+                                    y={yScale(item.value)}>
+                                    {item.id + " : " + item.value + " @ " + item.timestamp}
+                                </text>
+                            </g>
+                        </>
+                    )}
             </For>
         </svg >
     );
