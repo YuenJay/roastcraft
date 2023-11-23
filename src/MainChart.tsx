@@ -69,6 +69,15 @@ export default function MainChart() {
             <g ref={axisLeftRef} transform={`translate(${marginLeft}, 0)`}></g>
             <g ref={axisRightRef} transform={`translate(${width - marginRight}, 0)`}></g>
 
+            <defs>
+                {/* Defines clipping area, rect is inside axis*/}
+                <clipPath
+                    clipPathUnits="userSpaceOnUse"
+                    id="clip-path">
+                    <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
+                </clipPath>
+            </defs>
+
             {/* a reversed key array such as : [2,1,0] 
               draw BT (at index 0) at last so that it is on the top */}
             <For each={[...appStore.metrics_id_list.keys()].reverse()}>
@@ -81,6 +90,7 @@ export default function MainChart() {
                                 stroke={appStore.metrics[item].color}
                                 stroke-width="1.5"
                                 d={line(appStore.metrics[item].data) as string | undefined}
+                                clip-path="url(#clip-path)"
                             />
                             <g
                                 fill={appStore.metrics[item].color}
@@ -105,6 +115,7 @@ export default function MainChart() {
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1.5"
                                     d={lineROR(appStore.metrics[item].ror) as string | undefined}
+                                    clip-path="url(#clip-path)"
                                 />
                                 <g
                                     fill={appStore.metrics[item].color}
