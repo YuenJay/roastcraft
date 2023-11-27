@@ -65,6 +65,8 @@ async function init_store() {
         ROR_TP: false,
         ROR_linear_start: { timestamp: 0, value: 0 },
         ROR_linear_end: { timestamp: 0, value: 0 },
+        ROR_linear_start2: { timestamp: 0, value: 0 },
+        ROR_linear_end2: { timestamp: 0, value: 0 },
     }
 }
 

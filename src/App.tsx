@@ -173,15 +173,10 @@ function App() {
     if (appStore.TP == true && appStore.ROR_TP == false) {
       let window_size = 9
       let window = ror.filter((r) => (r.outlier != true)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
-      console.log("window for linear regression");
-      console.log(window);
-      console.log("linear regression");
-      console.log(linearRegression(window));
       if (linearRegression(window).m < 0) {
         let target_index = window.length - 5;
         setAppStore(
           produce((appStore) => {
-
             appStore.ROR_TP = true;
             appStore.ror_events.push({
               type: "PHASE",
@@ -193,6 +188,26 @@ function App() {
           })
         )
       }
+      // let l = linearRegressionLine(linearRegression(window));
+      // setAppStore(
+      //   produce((appStore) => {
+      //     appStore.ROR_linear_start = {
+      //       timestamp: window[0][0],
+      //       value: l(window[0][0])
+      //     };
+      //     appStore.ROR_linear_end = {
+      //       timestamp: window[window.length - 1][0],
+      //       value: l(window[window.length - 1][0])
+      //     }
+      //   })
+      // )
+
+    }
+
+    // ROR linear regression all
+    if (appStore.ROR_TP == true && appStore.phase_button_state.DROP == false) {
+      let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
+      let window = ror.filter((r) => (r.outlier != true && r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
       let l = linearRegressionLine(linearRegression(window));
       setAppStore(
         produce((appStore) => {
@@ -206,9 +221,28 @@ function App() {
           }
         })
       )
-      console.log(appStore.ROR_linear_start);
-      console.log(appStore.ROR_linear_end);
     }
+
+    // ROR linear regression recent
+    if (appStore.ROR_TP == true && appStore.phase_button_state.DROP == false) {
+      let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
+      let window_size = 15
+      let window = ror.filter((r) => (r.outlier != true && r.timestamp > ROR_TP_timestamp)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
+      let l = linearRegressionLine(linearRegression(window));
+      setAppStore(
+        produce((appStore) => {
+          appStore.ROR_linear_start2 = {
+            timestamp: window[0][0],
+            value: l(window[0][0])
+          };
+          appStore.ROR_linear_end2 = {
+            timestamp: window[window.length - 1][0],
+            value: l(window[window.length - 1][0])
+          }
+        })
+      )
+    }
+
   }
 
   // reference: artisan/src/artisanlib/main.py  BTbreak()

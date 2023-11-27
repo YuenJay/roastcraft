@@ -25,7 +25,7 @@ export default function MainChart() {
         marginTop,
     ]);
 
-    const yScaleROR = d3.scaleLinear([0, 50], [
+    const yScaleROR = d3.scaleLinear([0, 35], [
         height - marginBottom,
         marginTop,
     ]);
@@ -214,6 +214,14 @@ export default function MainChart() {
                 y1={yScaleROR(appStore.ROR_linear_start.value)}
                 x2={xScale(appStore.ROR_linear_end.timestamp + appStore.time_delta)}
                 y2={yScaleROR(appStore.ROR_linear_end.value)}
+            ></line>
+            <line stroke="#FF0000"
+                stroke-width="3"
+                clip-path="url(#clip-path)"
+                x1={xScale(appStore.ROR_linear_start2.timestamp + appStore.time_delta)}
+                y1={yScaleROR(appStore.ROR_linear_start2.value)}
+                x2={xScale(appStore.ROR_linear_end2.timestamp + appStore.time_delta)}
+                y2={yScaleROR(appStore.ROR_linear_end2.value)}
             ></line>
         </svg >
     );
