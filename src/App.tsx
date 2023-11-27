@@ -205,6 +205,7 @@ function App() {
               timestamp: appStore.metrics[m_index].data[charge_index].timestamp,
               value: appStore.metrics[m_index].data[charge_index].value
             });
+            appStore.time_delta = - appStore.metrics[m_index].data[charge_index].timestamp;
           })
         )
       }
