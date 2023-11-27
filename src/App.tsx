@@ -193,21 +193,41 @@ function App() {
       if (window[1] > 0.0 && window[2] > 0.0
         && window[3] < 0.0 && window[3] < 0.0
         && Math.abs(dpost) > Math.abs(dpre) * 2) {
-        let charge_index = ror.length - 3;
-        info("auto detected charge at ror index: " + (charge_index));
+        let target_index = ror.length - 3;
 
-        setAppStore(
-          produce((appStore) => {
-            (appStore.phase_button_state as any)["CHARGE"] = true;
-            appStore.events.push({
-              type: "PHASE",
-              id: "CHARGE",
-              timestamp: appStore.metrics[m_index].data[charge_index].timestamp,
-              value: appStore.metrics[m_index].data[charge_index].value
-            });
-            appStore.time_delta = - appStore.metrics[m_index].data[charge_index].timestamp;
-          })
-        )
+        if (appStore.phase_button_state.CHARGE == false) {
+          info("auto detected charge at ror index: " + (target_index));
+
+          setAppStore(
+            produce((appStore) => {
+              appStore.phase_button_state.CHARGE = true;
+              appStore.events.push({
+                type: "PHASE",
+                id: "CHARGE",
+                timestamp: appStore.metrics[m_index].data[target_index].timestamp,
+                value: appStore.metrics[m_index].data[target_index].value
+              });
+              appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
+            })
+          )
+        } else if (appStore.phase_button_state.CHARGE == true && appStore.phase_button_state.DROP == false) {
+          info("auto detected drop at ror index: " + (target_index));
+
+          setAppStore(
+            produce((appStore) => {
+              appStore.phase_button_state.DROP = true;
+              appStore.events.push({
+                type: "PHASE",
+                id: "DROP",
+                timestamp: appStore.metrics[m_index].data[target_index].timestamp,
+                value: appStore.metrics[m_index].data[target_index].value
+              });
+
+            })
+          )
+        }
+
+
       }
 
 
@@ -334,7 +354,7 @@ function App() {
         <div class="m-2 flex justify-evenly">
           <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.CHARGE ? "btn-active btn-disabled" : ""}`}
             onClick={() => phaseButtonClicked("CHARGE")}>
-            {appStore.phase_button_state.CHARGE ? "✓ " : ""}charge
+            {appStore.phase_button_state.CHARGE ? "✓ " : ""}Charge
           </button>
           <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DRY_END ? "btn-active btn-disabled" : ""}`}
             onClick={() => phaseButtonClicked("DRY_END")}>
@@ -344,7 +364,10 @@ function App() {
           <button class="btn btn-outline btn-primary">FC End</button>
           <button class="btn btn-outline btn-primary">SC Start</button>
           <button class="btn btn-outline btn-primary">SC End</button>
-          <button class="btn btn-outline btn-primary">Drop</button>
+          <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DROP ? "btn-active btn-disabled" : ""}`}
+            onClick={() => phaseButtonClicked("DROP")}>
+            {appStore.phase_button_state.DROP ? "✓ " : ""}Drop
+          </button>
         </div>
 
         <PhaseChart />
