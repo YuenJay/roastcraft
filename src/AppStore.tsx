@@ -59,7 +59,9 @@ async function init_store() {
         logs: new Array<String>(),
         events: new Array(),
         phase_button_state: { CHARGE: false, DRY_END: false, DROP: false },
-        time_delta: 0
+        time_delta: 0,
+        TP: false,
+        ROR_TP: false,
     }
 }
 

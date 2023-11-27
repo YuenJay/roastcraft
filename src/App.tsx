@@ -81,7 +81,7 @@ function App() {
       calculateRor(0);
       findRorOutlier(0);
       autoDetectCharge();
-
+      findTurningPoint();
 
       console.log(unwrap(appStore));
     });
@@ -237,7 +237,39 @@ function App() {
   // find lowest point in BT
   function findTurningPoint() {
 
-    // generate an event
+    // only detect turning point after charge
+    if (appStore.phase_button_state.CHARGE == false || appStore.TP == true) {
+      return
+    }
+
+    let tp = 1000;
+
+    // last 2 BT value greater than updated min tp
+    let data: Array<any> = unwrap(appStore.metrics[0].data);
+
+    for (let i = 0; i < data.length; i++) {
+
+      tp = Math.min(data[i].value, tp);
+
+      // last 2 BT reading > tp
+      if (data[data.length - 1].value > tp && data[data.length - 2].value > tp) {
+        let target_index = data.length - 3;
+        setAppStore(
+          produce((appStore) => {
+
+            appStore.TP = true;
+            appStore.events.push({
+              type: "PHASE",
+              id: "TP",
+              timestamp: appStore.metrics[0].data[target_index].timestamp,
+              value: appStore.metrics[0].data[target_index].value
+            });
+
+          })
+        )
+      }
+
+    }
   }
 
   async function buttonOnClicked() {
