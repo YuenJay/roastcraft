@@ -184,6 +184,37 @@ export default function MainChart() {
                         </>
                     )}
             </For>
+            <For each={appStore.ror_events}>
+                {
+                    (item) => (
+                        <>
+                            <g
+                                fill="none"
+                                stroke="#9c27b0"
+                                stroke-width="1"
+                                clip-path="url(#clip-path)">
+                                <circle
+                                    cx={xScale(item.timestamp + appStore.time_delta)}
+                                    cy={yScaleROR(item.value)}
+                                    r="4" />
+                                <text
+                                    fill="#570885"
+                                    x={xScale(item.timestamp) + appStore.time_delta + 4}
+                                    y={yScaleROR(item.value)}>
+                                    {item.id + " : " + item.value + " @ " + item.timestamp}
+                                </text>
+                            </g>
+                        </>
+                    )}
+            </For>
+            <line stroke="#00FF00"
+                stroke-width="3"
+                clip-path="url(#clip-path)"
+                x1={xScale(appStore.ROR_linear_start.timestamp + appStore.time_delta)}
+                y1={yScaleROR(appStore.ROR_linear_start.value)}
+                x2={xScale(appStore.ROR_linear_end.timestamp + appStore.time_delta)}
+                y2={yScaleROR(appStore.ROR_linear_end.value)}
+            ></line>
         </svg >
     );
 }

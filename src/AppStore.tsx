@@ -58,10 +58,13 @@ async function init_store() {
         metrics_id_list: metrics.map((m: any) => (m.id)), // metrics order is the same
         logs: new Array<String>(),
         events: new Array(),
+        ror_events: new Array(),
         phase_button_state: { CHARGE: false, DRY_END: false, DROP: false },
         time_delta: 0,
         TP: false,
         ROR_TP: false,
+        ROR_linear_start: { timestamp: 0, value: 0 },
+        ROR_linear_end: { timestamp: 0, value: 0 },
     }
 }
 

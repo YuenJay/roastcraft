@@ -5,7 +5,7 @@ import { produce, unwrap } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { mean, standardDeviation } from "simple-statistics";
+import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
@@ -13,6 +13,7 @@ import InputChart from "./InputChart";
 import useAppStore, { AppState } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
+import { app } from "@tauri-apps/api";
 
 function App() {
 
@@ -166,7 +167,47 @@ function App() {
           })
         )
       }
+    }
 
+    // find ROR TP
+    if (appStore.TP == true && appStore.ROR_TP == false) {
+      let window_size = 9
+      let window = ror.filter((r) => (r.outlier != true)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
+      console.log("window for linear regression");
+      console.log(window);
+      console.log("linear regression");
+      console.log(linearRegression(window));
+      if (linearRegression(window).m < 0) {
+        let target_index = window.length - 5;
+        setAppStore(
+          produce((appStore) => {
+
+            appStore.ROR_TP = true;
+            appStore.ror_events.push({
+              type: "PHASE",
+              id: "ROR_TP",
+              timestamp: window[target_index][0],
+              value: window[target_index][1]
+            });
+
+          })
+        )
+      }
+      let l = linearRegressionLine(linearRegression(window));
+      setAppStore(
+        produce((appStore) => {
+          appStore.ROR_linear_start = {
+            timestamp: window[0][0],
+            value: l(window[0][0])
+          };
+          appStore.ROR_linear_end = {
+            timestamp: window[window.length - 1][0],
+            value: l(window[window.length - 1][0])
+          }
+        })
+      )
+      console.log(appStore.ROR_linear_start);
+      console.log(appStore.ROR_linear_end);
     }
   }
 
