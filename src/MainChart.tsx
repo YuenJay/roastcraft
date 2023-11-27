@@ -115,7 +115,7 @@ export default function MainChart() {
                                     fill="none"
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1.5"
-                                    d={lineROR(appStore.metrics[item].ror) as string | undefined}
+                                    d={lineROR(appStore.metrics[item].ror.filter((r: any) => (r.timestamp + appStore.time_delta > 0))) as string | undefined}
                                     clip-path="url(#clip-path)"
                                 />
                                 <g
@@ -136,7 +136,7 @@ export default function MainChart() {
                                     </Show>
                                 </g>
                                 {/* BT ROR outlier */}
-                                <For each={appStore.metrics[item].ror.filter((ror: any) => (ror.outlier == true))}>
+                                <For each={appStore.metrics[item].ror.filter((ror: any) => (ror.outlier == true && ror.timestamp + appStore.time_delta > 0))}>
                                     {
                                         (outlier) => (
                                             <>

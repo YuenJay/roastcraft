@@ -188,20 +188,6 @@ function App() {
           })
         )
       }
-      // let l = linearRegressionLine(linearRegression(window));
-      // setAppStore(
-      //   produce((appStore) => {
-      //     appStore.ROR_linear_start = {
-      //       timestamp: window[0][0],
-      //       value: l(window[0][0])
-      //     };
-      //     appStore.ROR_linear_end = {
-      //       timestamp: window[window.length - 1][0],
-      //       value: l(window[window.length - 1][0])
-      //     }
-      //   })
-      // )
-
     }
 
     // ROR linear regression all
