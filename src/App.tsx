@@ -115,7 +115,6 @@ function App() {
     timer_worker = new WorkerFactory(timerWorker) as Worker;
     timer_worker.postMessage(1000);
     timer_worker.onmessage = (event: any) => {
-      trace("time worker event data:" + JSON.stringify(event.data));
       setAppStore({ timer: event.data });
     };
     setAppStore({ appState: AppState.RECORDING, logs: [...appStore.logs, "start recording"] });
@@ -134,7 +133,7 @@ function App() {
   async function phaseButtonClicked(event_id: string) {
     trace!("phaseButtonClicked: " + event_id);
     setAppStore(produce((appStore) => {
-      (appStore.phase_button_state as any)[event_id] = true;
+      (appStore.phase_state as any)[event_id] = true;
       appStore.events.push({
         type: "PHASE",
         id: event_id,
@@ -239,39 +238,52 @@ function App() {
         <div class="m-2 flex justify-evenly">
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.CHARGE ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.CHARGE ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("CHARGE")}>
-              {appStore.phase_button_state.CHARGE ? "✓ " : ""}Charge
+              {appStore.phase_state.CHARGE ? "✓ " : ""}Charge
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DRY_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.DRY_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("DRY_END")}>
-              {appStore.phase_button_state.DRY_END ? "✓ " : ""}Dry End
+              {appStore.phase_state.DRY_END ? "✓ " : ""}Dry End
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-            <button class="btn btn-outline btn-primary" >FC Start</button>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_START ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("FC_START")}>
+              {appStore.phase_state.FC_START ? "✓ " : ""}FC Start
+            </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-            <button class="btn btn-outline btn-primary">FC End</button>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_END ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("FC_END")}>
+              {appStore.phase_state.FC_END ? "✓ " : ""}FC End
+            </button>
           </div>
+
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-            <button class="btn btn-outline btn-primary">SC Start</button>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_START ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("SC_START")}>
+              {appStore.phase_state.SC_START ? "✓ " : ""}SC Start
+            </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-            <button class="btn btn-outline btn-primary">SC End</button>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_END ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("SC_END")}>
+              {appStore.phase_state.SC_END ? "✓ " : ""}SC End
+            </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DROP ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.phase_state.DROP ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("DROP")}>
-              {appStore.phase_button_state.DROP ? "✓ " : ""}Drop
+              {appStore.phase_state.DROP ? "✓ " : ""}Drop
             </button>
           </div>
         </div>

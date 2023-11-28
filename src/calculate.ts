@@ -80,14 +80,14 @@ export function findRorOutlier(metrics_index: number) {
     }
 
     // find ROR TP
-    if (appStore.TP == true && appStore.ROR_TP == false) {
+    if (appStore.phase_state.TP == true && appStore.phase_state.ROR_TP == false) {
         let window_size = 9
         let window = ror.filter((r) => (r.outlier != true)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
         if (linearRegression(window).m < 0) {
             let target_index = window.length - 5;
             setAppStore(
                 produce((appStore) => {
-                    appStore.ROR_TP = true;
+                    appStore.phase_state.ROR_TP = true;
                     appStore.ror_events.push({
                         type: "PHASE",
                         id: "ROR_TP",
@@ -101,7 +101,7 @@ export function findRorOutlier(metrics_index: number) {
     }
 
     // ROR linear regression all
-    if (appStore.ROR_TP == true && appStore.phase_button_state.DROP == false) {
+    if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
         let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
         let window = ror.filter((r) => (r.outlier != true && r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
@@ -120,7 +120,7 @@ export function findRorOutlier(metrics_index: number) {
     }
 
     // ROR linear regression recent
-    if (appStore.ROR_TP == true && appStore.phase_button_state.DROP == false) {
+    if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
         let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
         let window_size = 15
         let window = ror.filter((r) => (r.outlier != true && r.timestamp > ROR_TP_timestamp)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
@@ -166,12 +166,12 @@ export function autoDetectCharge() {
             && Math.abs(dpost) > Math.abs(dpre) * 2) {
             let target_index = ror.length - 3;
 
-            if (appStore.phase_button_state.CHARGE == false) {
+            if (appStore.phase_state.CHARGE == false) {
                 info("auto detected charge at ror index: " + (target_index));
 
                 setAppStore(
                     produce((appStore) => {
-                        appStore.phase_button_state.CHARGE = true;
+                        appStore.phase_state.CHARGE = true;
                         appStore.events.push({
                             type: "PHASE",
                             id: "CHARGE",
@@ -181,12 +181,12 @@ export function autoDetectCharge() {
                         appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
                     })
                 )
-            } else if (appStore.phase_button_state.CHARGE == true && appStore.phase_button_state.DROP == false) {
+            } else if (appStore.phase_state.CHARGE == true && appStore.phase_state.DROP == false) {
                 info("auto detected drop at ror index: " + (target_index));
 
                 setAppStore(
                     produce((appStore) => {
-                        appStore.phase_button_state.DROP = true;
+                        appStore.phase_state.DROP = true;
                         appStore.events.push({
                             type: "PHASE",
                             id: "DROP",
@@ -209,7 +209,7 @@ export function autoDetectCharge() {
 export function findTurningPoint() {
 
     // only detect turning point after charge
-    if (appStore.phase_button_state.CHARGE == false || appStore.TP == true) {
+    if (appStore.phase_state.CHARGE == false || appStore.phase_state.TP == true) {
         return
     }
 
@@ -228,7 +228,7 @@ export function findTurningPoint() {
             setAppStore(
                 produce((appStore) => {
 
-                    appStore.TP = true;
+                    appStore.phase_state.TP = true;
                     appStore.events.push({
                         type: "PHASE",
                         id: "TP",
