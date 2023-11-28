@@ -419,22 +419,37 @@ function App() {
           }
         </Index>
 
-        <div class="ml-auto self-center flex gap-1">
+        <div class="ml-auto self-center flex gap-3">
           <Show when={appStore.appState == AppState.OFF}>
-            <button class="btn btn-accent " onClick={buttonOnClicked}>on</button>
+            <div class="indicator">
+              <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
+              <button class="btn btn-accent " onClick={buttonOnClicked}>on</button>
+            </div>
           </Show>
 
           <Show when={appStore.appState == AppState.ON}>
-            <button class="btn btn-accent " onClick={buttonOffClicked}>off</button>
-            <button class="btn btn-accent " onClick={buttonStartClicked}>start</button>
+            <div class="indicator">
+              <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
+              <button class="btn btn-accent " onClick={buttonOffClicked}>off</button>
+            </div>
+            <div class="indicator">
+              <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
+              <button class="btn btn-accent " onClick={buttonStartClicked}>start</button>
+            </div>
           </Show>
 
           <Show when={appStore.appState == AppState.RECORDING}>
-            <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
+            <div class="indicator">
+              <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
+              <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
+            </div>
           </Show>
 
           <Show when={appStore.appState == AppState.RECORDED}>
-            <button class="btn btn-accent mr-2" onClick={buttonResetClicked}>reset</button>
+            <div class="indicator">
+              <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
+              <button class="btn btn-accent mr-2" onClick={buttonResetClicked}>reset</button>
+            </div>
           </Show>
         </div>
       </div>
@@ -445,22 +460,43 @@ function App() {
 
         <MainChart />
         <div class="m-2 flex justify-evenly">
-          <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.CHARGE ? "btn-active btn-disabled" : ""}`}
-            onClick={() => phaseButtonClicked("CHARGE")}>
-            {appStore.phase_button_state.CHARGE ? "✓ " : ""}Charge
-          </button>
-          <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DRY_END ? "btn-active btn-disabled" : ""}`}
-            onClick={() => phaseButtonClicked("DRY_END")}>
-            {appStore.phase_button_state.DRY_END ? "✓ " : ""}Dry End
-          </button>
-          <button class="btn btn-outline btn-primary">FC Start</button>
-          <button class="btn btn-outline btn-primary">FC End</button>
-          <button class="btn btn-outline btn-primary">SC Start</button>
-          <button class="btn btn-outline btn-primary">SC End</button>
-          <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DROP ? "btn-active btn-disabled" : ""}`}
-            onClick={() => phaseButtonClicked("DROP")}>
-            {appStore.phase_button_state.DROP ? "✓ " : ""}Drop
-          </button>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.CHARGE ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("CHARGE")}>
+              {appStore.phase_button_state.CHARGE ? "✓ " : ""}Charge
+            </button>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DRY_END ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("DRY_END")}>
+              {appStore.phase_button_state.DRY_END ? "✓ " : ""}Dry End
+            </button>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
+            <button class="btn btn-outline btn-primary">FC Start</button>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
+            <button class="btn btn-outline btn-primary">FC End</button>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
+            <button class="btn btn-outline btn-primary">SC Start</button>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
+            <button class="btn btn-outline btn-primary">SC End</button>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
+            <button class={`btn btn-outline btn-primary ${appStore.phase_button_state.DROP ? "btn-active btn-disabled" : ""}`}
+              onClick={() => phaseButtonClicked("DROP")}>
+              {appStore.phase_button_state.DROP ? "✓ " : ""}Drop
+            </button>
+          </div>
         </div>
 
         <PhaseChart />
