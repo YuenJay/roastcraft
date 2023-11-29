@@ -85,14 +85,7 @@ export default function MainChart() {
                 x2={xScale(appStore.ROR_linear_end.timestamp + appStore.time_delta)}
                 y2={yScaleROR(appStore.ROR_linear_end.value)}
             ></line>
-            <line stroke="#FF0000"
-                stroke-width="3"
-                clip-path="url(#clip-path)"
-                x1={xScale(appStore.ROR_linear_start2.timestamp + appStore.time_delta)}
-                y1={yScaleROR(appStore.ROR_linear_start2.value)}
-                x2={xScale(appStore.ROR_linear_end2.timestamp + appStore.time_delta)}
-                y2={yScaleROR(appStore.ROR_linear_end2.value)}
-            ></line>
+
             {/* a reversed key array such as : [2,1,0] 
               draw BT (at index 0) at last so that it is on the top */}
             <For each={[...appStore.metrics_id_list.keys()].reverse()}>
@@ -140,13 +133,13 @@ export default function MainChart() {
                                     clip-path="url(#clip-path)">
                                     <Show when={appStore.metrics[item].ror.length > 0}>
                                         <circle
-                                            cx={xScale(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].timestamp + appStore.time_delta)}
-                                            cy={yScaleROR(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].value)}
+                                            cx={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp + appStore.time_delta)}
+                                            cy={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}
                                             r="2" />
                                         <text
-                                            x={xScale(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].timestamp) + appStore.time_delta + 4}
-                                            y={yScaleROR(appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].value)}>
-                                            {appStore.metrics[item].ror[appStore.metrics[item].ror.length - 1].value.toFixed(1)}
+                                            x={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp) + appStore.time_delta + 4}
+                                            y={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}>
+                                            {appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value.toFixed(1)}
                                         </text>
                                     </Show>
                                 </g>
@@ -163,7 +156,7 @@ export default function MainChart() {
                                                     <circle
                                                         cx={xScale(outlier.timestamp + appStore.time_delta)}
                                                         cy={yScaleROR(outlier.value)}
-                                                        r="4" />
+                                                        r="2" />
                                                 </g>
                                             </>
                                         )}

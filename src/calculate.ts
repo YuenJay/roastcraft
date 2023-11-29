@@ -138,26 +138,6 @@ export function findRorOutlier(metrics_index: number) {
         )
     }
 
-    // ROR linear regression recent
-    if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
-        let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
-        let window_size = 15
-        let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
-        let l = linearRegressionLine(linearRegression(window));
-        setAppStore(
-            produce((appStore) => {
-                appStore.ROR_linear_start2 = {
-                    timestamp: window[0][0],
-                    value: l(window[0][0])
-                };
-                appStore.ROR_linear_end2 = {
-                    timestamp: window[window.length - 1][0],
-                    value: l(window[window.length - 1][0])
-                }
-            })
-        )
-    }
-
 }
 
 // reference: artisan/src/artisanlib/main.py  BTbreak()
