@@ -77,7 +77,22 @@ export default function MainChart() {
                     <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
                 </clipPath>
             </defs>
-
+            <line stroke="#00FF00"
+                stroke-width="3"
+                clip-path="url(#clip-path)"
+                x1={xScale(appStore.ROR_linear_start.timestamp + appStore.time_delta)}
+                y1={yScaleROR(appStore.ROR_linear_start.value)}
+                x2={xScale(appStore.ROR_linear_end.timestamp + appStore.time_delta)}
+                y2={yScaleROR(appStore.ROR_linear_end.value)}
+            ></line>
+            <line stroke="#FF0000"
+                stroke-width="3"
+                clip-path="url(#clip-path)"
+                x1={xScale(appStore.ROR_linear_start2.timestamp + appStore.time_delta)}
+                y1={yScaleROR(appStore.ROR_linear_start2.value)}
+                x2={xScale(appStore.ROR_linear_end2.timestamp + appStore.time_delta)}
+                y2={yScaleROR(appStore.ROR_linear_end2.value)}
+            ></line>
             {/* a reversed key array such as : [2,1,0] 
               draw BT (at index 0) at last so that it is on the top */}
             <For each={[...appStore.metrics_id_list.keys()].reverse()}>
@@ -207,22 +222,7 @@ export default function MainChart() {
                         </>
                     )}
             </For>
-            <line stroke="#00FF00"
-                stroke-width="3"
-                clip-path="url(#clip-path)"
-                x1={xScale(appStore.ROR_linear_start.timestamp + appStore.time_delta)}
-                y1={yScaleROR(appStore.ROR_linear_start.value)}
-                x2={xScale(appStore.ROR_linear_end.timestamp + appStore.time_delta)}
-                y2={yScaleROR(appStore.ROR_linear_end.value)}
-            ></line>
-            <line stroke="#FF0000"
-                stroke-width="3"
-                clip-path="url(#clip-path)"
-                x1={xScale(appStore.ROR_linear_start2.timestamp + appStore.time_delta)}
-                y1={yScaleROR(appStore.ROR_linear_start2.value)}
-                x2={xScale(appStore.ROR_linear_end2.timestamp + appStore.time_delta)}
-                y2={yScaleROR(appStore.ROR_linear_end2.value)}
-            ></line>
+
         </svg >
     );
 }

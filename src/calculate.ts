@@ -5,6 +5,7 @@ import useAppStore, { AppState, Point } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
+import * as d3 from "d3-array";
 
 const [appStore, setAppStore] = useAppStore;
 
@@ -82,6 +83,12 @@ export function findRorOutlier(metrics_index: number) {
                 appStore.metrics[metrics_index].ror[i]
             )
         }
+    }
+
+    // smooth
+    let value_blurred = d3.blur(ror_filtered.map(p => p.value), 2);
+    for (let i = 0; i < ror_filtered.length; i++) {
+        ror_filtered[i].value = value_blurred[i];
     }
 
     setAppStore(

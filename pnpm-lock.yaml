@@ -11,9 +11,15 @@ dependencies:
   '@types/d3':
     specifier: ^7.4.2
     version: 7.4.2
+  '@types/d3-array':
+    specifier: ^3.2.1
+    version: 3.2.1
   d3:
     specifier: ^7.8.5
     version: 7.8.5
+  d3-array:
+    specifier: ^3.2.4
+    version: 3.2.4
   simple-statistics:
     specifier: ^7.8.3
     version: 7.8.3
@@ -780,8 +786,8 @@ packages:
       '@babel/types': 7.22.11
     dev: true
 
-  /@types/d3-array@3.0.7:
-    resolution: {integrity: sha512-4/Q0FckQ8TBjsB0VdGFemJOG8BLXUB2KKlL0VmZ+eOYeOnTb/wDRQqYWpBmQ6IlvWkXwkYiot+n9Px2aTJ7zGQ==}
+  /@types/d3-array@3.2.1:
+    resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
     dev: false
 
   /@types/d3-axis@3.0.3:
@@ -807,7 +813,7 @@ packages:
   /@types/d3-contour@3.0.3:
     resolution: {integrity: sha512-x7G/tdDZt4m09XZnG2SutbIuQqmkNYqR9uhDMdPlpJbcwepkEjEWG29euFcgVA1k6cn92CHdDL9Z+fOnxnbVQw==}
     dependencies:
-      '@types/d3-array': 3.0.7
+      '@types/d3-array': 3.2.1
       '@types/geojson': 7946.0.10
     dev: false
 
@@ -927,7 +933,7 @@ packages:
   /@types/d3@7.4.2:
     resolution: {integrity: sha512-Y4g2Yb30ZJmmtqAJTqMRaqXwRawfvpdpVmyEYEcyGNhrQI/Zvkq3k7yE1tdN07aFSmNBfvmegMQ9Fe2qy9ZMhw==}
     dependencies:
-      '@types/d3-array': 3.0.7
+      '@types/d3-array': 3.2.1
       '@types/d3-axis': 3.0.3
       '@types/d3-brush': 3.0.3
       '@types/d3-chord': 3.0.3
