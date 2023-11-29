@@ -3,13 +3,37 @@
 import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 
+export class Point {
+    timestamp: number = 0;  // time in seconds
+    value: number = 0.0;    // temperature or ror value
+    constructor(timestamp: number, value: number) {
+        this.timestamp = timestamp;
+        this.value = value;
+    }
+}
+
+export class Metric {
+    id: number = 0;
+    label: string = "";
+    unit: string = "";
+    color: string = "";
+    ror_enabled: boolean = false;
+    ror_color: string = "";
+    current_data: number = 0.0;     // current 
+    current_ror: number = 0.0;      // current
+    data_window: Array<any> = [];   // current, for calculate ror
+    data: Array<Point> = [];        // history records
+    ror: Array<Point> = [];         // history records
+    ror_outlier: Array<Point> = []; // history records
+    ror_filtered: Array<Point> = [];// history records
+}
+
 export enum AppState {
     OFF,
     ON,
     RECORDING,
     RECORDED
 }
-
 
 async function init_store() {
 
@@ -32,18 +56,20 @@ async function init_store() {
     //     ror: []         // history 
     // }));
 
-    let metrics: any[] = config.tcp.http.channel.map((s: any) => ({
+    let metrics: Metric[] = config.tcp.http.channel.map((s: any) => ({
         id: s.metrics_id,
         label: s.label,
         unit: s.unit,
         color: s.color,
         ror_enabled: s.ror_enabled,
         ror_color: s.ror_color,
-        current_data: 0,  // current 
-        current_ror: 0,   // current
-        data_window: [],  // current, for calculate ror
-        data: [], // history records
-        ror: []   // history records
+        current_data: 0,
+        current_ror: 0,
+        data_window: [],
+        data: new Array<Point>(),
+        ror: new Array<Point>(),
+        ror_outlier: new Array<Point>(),
+        ror_filtered: new Array<Point>(),
     }));
 
     // move BT to be the first element

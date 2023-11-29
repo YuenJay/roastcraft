@@ -9,10 +9,11 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
-import useAppStore, { AppState } from "./AppStore";
+import useAppStore, { AppState, Point } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectCharge, calculateRor, findRorOutlier, findTurningPoint } from "./calculate";
+
 
 function App() {
 
@@ -67,10 +68,10 @@ function App() {
             // write into history data
             if (appStore.appState == AppState.RECORDING) {
               appStore.metrics[i].data.push(
-                {
-                  timestamp: appStore.timer,
-                  value: event.payload[appStore.metrics_id_list[i]],
-                }
+                new Point(
+                  appStore.timer,
+                  event.payload[appStore.metrics_id_list[i]]
+                )
               );
             }
           }
@@ -195,7 +196,7 @@ function App() {
           }
         </Index>
 
-        <div class="ml-auto self-center flex gap-3">
+        <div class="ml-auto self-center flex gap-3 mr-3">
           <Show when={appStore.appState == AppState.OFF}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
@@ -235,7 +236,7 @@ function App() {
       <div class="col-span-8 m-1">
 
         <MainChart />
-        <div class="m-2 flex justify-evenly">
+        <div class="m-2 mb-4 flex justify-evenly">
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.CHARGE ? "btn-active btn-disabled" : ""}`}

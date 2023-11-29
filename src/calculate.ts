@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { produce, unwrap } from "solid-js/store";
-import useAppStore, { AppState } from "./AppStore";
+import useAppStore, { AppState, Point } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
@@ -7,9 +9,9 @@ import { trace, attachConsole, info } from "tauri-plugin-log-api";
 const [appStore, setAppStore] = useAppStore;
 
 export function calculateRor(metrics_index: number) {
-    let data: Array<any> = unwrap(appStore.metrics[metrics_index].data);
+    let data: Array<Point> = unwrap(appStore.metrics[metrics_index].data);
 
-    let ror_array = Array<any>();
+    let ror_array = Array<Point>();
 
     for (let i = 0; i < data.length; i++) {
 
@@ -22,10 +24,7 @@ export function calculateRor(metrics_index: number) {
         let ror = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
 
         ror_array.push(
-            {
-                timestamp: data[i].timestamp,
-                value: ror,
-            }
+            new Point(data[i].timestamp, ror)
         );
 
     }
@@ -40,7 +39,10 @@ export function calculateRor(metrics_index: number) {
 
 export function findRorOutlier(metrics_index: number) {
 
-    let ror: Array<any> = unwrap(appStore.metrics[metrics_index].ror);
+    let ror: Array<Point> = unwrap(appStore.metrics[metrics_index].ror);
+
+    let ror_outlier = new Array<Point>();
+    let ror_filtered = new Array<Point>();
 
     for (let i = 0; i < ror.length; i++) {
         if (i == 0) {
@@ -71,18 +73,28 @@ export function findRorOutlier(metrics_index: number) {
         // console.log("modifiedZScore: " + modifiedZScore);
 
         if (zScore > 3) {
-            setAppStore(
-                produce((appStore) => {
-                    appStore.metrics[metrics_index].ror[i].outlier = true;
-                })
+            ror_outlier.push(
+                appStore.metrics[metrics_index].ror[i]
+            )
+
+        } else {
+            ror_filtered.push(
+                appStore.metrics[metrics_index].ror[i]
             )
         }
     }
 
+    setAppStore(
+        produce((appStore) => {
+            appStore.metrics[metrics_index].ror_outlier = ror_outlier;
+            appStore.metrics[metrics_index].ror_filtered = ror_filtered;
+        })
+    )
+
     // find ROR TP
     if (appStore.phase_state.TP == true && appStore.phase_state.ROR_TP == false) {
         let window_size = 9
-        let window = ror.filter((r) => (r.outlier != true)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
+        let window = ror_filtered.slice(-window_size).map((r) => ([r.timestamp, r.value]));
         if (linearRegression(window).m < 0) {
             let target_index = window.length - 5;
             setAppStore(
@@ -103,7 +115,7 @@ export function findRorOutlier(metrics_index: number) {
     // ROR linear regression all
     if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
         let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
-        let window = ror.filter((r) => (r.outlier != true && r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
+        let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
         setAppStore(
             produce((appStore) => {
@@ -123,7 +135,7 @@ export function findRorOutlier(metrics_index: number) {
     if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
         let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
         let window_size = 15
-        let window = ror.filter((r) => (r.outlier != true && r.timestamp > ROR_TP_timestamp)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
+        let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).slice(-window_size).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
         setAppStore(
             produce((appStore) => {

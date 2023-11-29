@@ -2,7 +2,7 @@
 
 import { onMount, createEffect, Show, For } from "solid-js";
 import * as d3 from "d3";
-import useAppStore from "./AppStore";
+import useAppStore, { Point } from "./AppStore";
 
 export default function MainChart() {
 
@@ -31,12 +31,12 @@ export default function MainChart() {
     ]);
 
     const line = d3.line()
-        .x((d: any) => xScale(d.timestamp + appStore.time_delta))
-        .y((d: any) => yScale(d.value));
+        .x((p: any) => xScale(p.timestamp + appStore.time_delta))
+        .y((p: any) => yScale(p.value));
 
     const lineROR = d3.line()
-        .x((d: any) => xScale(d.timestamp + appStore.time_delta))
-        .y((d: any) => yScaleROR(d.value));
+        .x((p: any) => xScale(p.timestamp + appStore.time_delta))
+        .y((p: any) => yScaleROR(p.value));
 
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions
     let svgRef!: SVGSVGElement;
@@ -89,7 +89,7 @@ export default function MainChart() {
                                 fill="none"
                                 stroke={appStore.metrics[item].color}
                                 stroke-width="1.5"
-                                d={line(appStore.metrics[item].data) as string | undefined}
+                                d={line(appStore.metrics[item].data as any) as string | undefined}
                                 clip-path="url(#clip-path)"
                             />
                             <g
@@ -115,7 +115,7 @@ export default function MainChart() {
                                     fill="none"
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1.5"
-                                    d={lineROR(appStore.metrics[item].ror.filter((r: any) => (r.timestamp + appStore.time_delta > 0))) as string | undefined}
+                                    d={lineROR(appStore.metrics[item].ror_filtered.filter((p) => (p.timestamp + appStore.time_delta > 0)) as any) as string | undefined}
                                     clip-path="url(#clip-path)"
                                 />
                                 <g
@@ -136,7 +136,7 @@ export default function MainChart() {
                                     </Show>
                                 </g>
                                 {/* BT ROR outlier */}
-                                <For each={appStore.metrics[item].ror.filter((ror: any) => (ror.outlier == true && ror.timestamp + appStore.time_delta > 0))}>
+                                <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + appStore.time_delta > 0))}>
                                     {
                                         (outlier) => (
                                             <>
