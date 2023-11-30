@@ -200,32 +200,32 @@ function App() {
           <Show when={appStore.appState == AppState.OFF}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-              <button class="btn btn-accent " onClick={buttonOnClicked}>on</button>
+              <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
             </div>
           </Show>
 
           <Show when={appStore.appState == AppState.ON}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-              <button class="btn btn-accent " onClick={buttonOffClicked}>off</button>
+              <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
             </div>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
-              <button class="btn btn-accent " onClick={buttonStartClicked}>start</button>
+              <button class="btn btn-accent " onClick={buttonStartClicked}>START</button>
             </div>
           </Show>
 
           <Show when={appStore.appState == AppState.RECORDING}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
-              <button class="btn btn-accent mr-2" onClick={buttonStopClicked}>stop</button>
+              <button class="btn btn-accent" onClick={buttonStopClicked}>STOP</button>
             </div>
           </Show>
 
           <Show when={appStore.appState == AppState.RECORDED}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
-              <button class="btn btn-accent mr-2" onClick={buttonResetClicked}>reset</button>
+              <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>
             </div>
           </Show>
         </div>
@@ -241,28 +241,28 @@ function App() {
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.CHARGE ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("CHARGE")}>
-              {appStore.phase_state.CHARGE ? "✓ " : ""}Charge
+              {appStore.phase_state.CHARGE ? "✓ " : ""}CHARGE
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.DRY_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("DRY_END")}>
-              {appStore.phase_state.DRY_END ? "✓ " : ""}Dry End
+              {appStore.phase_state.DRY_END ? "✓ " : ""}DRY END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_START ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("FC_START")}>
-              {appStore.phase_state.FC_START ? "✓ " : ""}FC Start
+              {appStore.phase_state.FC_START ? "✓ " : ""}FC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("FC_END")}>
-              {appStore.phase_state.FC_END ? "✓ " : ""}FC End
+              {appStore.phase_state.FC_END ? "✓ " : ""}FC END
             </button>
           </div>
 
@@ -270,21 +270,21 @@ function App() {
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_START ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("SC_START")}>
-              {appStore.phase_state.SC_START ? "✓ " : ""}SC Start
+              {appStore.phase_state.SC_START ? "✓ " : ""}SC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("SC_END")}>
-              {appStore.phase_state.SC_END ? "✓ " : ""}SC End
+              {appStore.phase_state.SC_END ? "✓ " : ""}SC END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.DROP ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked("DROP")}>
-              {appStore.phase_state.DROP ? "✓ " : ""}Drop
+              {appStore.phase_state.DROP ? "✓ " : ""}DROP
             </button>
           </div>
         </div>

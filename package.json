@@ -1,7 +1,7 @@
 {
   "name": "roastcraft",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Roastcraft is a cross-platform software to log and analyze coffee roasting, much like the amazing Artisan, but implemented in modern Web Technology",
   "scripts": {
     "start": "vite",
     "dev": "vite",
@@ -9,7 +9,7 @@
     "serve": "vite preview",
     "tauri": "tauri"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@tauri-apps/api": "^1.5.1",
     "@types/d3": "^7.4.2",
@@ -23,7 +23,7 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.5",
     "autoprefixer": "^10.4.15",
-    "daisyui": "^3.9.3",
+    "daisyui": "^4.4.13",
     "postcss": "^8.4.29",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
