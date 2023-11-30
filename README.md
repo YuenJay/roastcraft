@@ -3,6 +3,8 @@
 
 Roastcraft is a cross-platform software to log and analyze coffee roasting, much like the amazing Artisan, but implemented in modern Web Technology
 
+![](https://github.com/chihpingkuo/roastcraft/blob/master/web_assets/screen_shot_2023_11_30_081457.png?raw=true)
+
 # Features
 ## small footprint (~10mb)
   - single, standalone executable

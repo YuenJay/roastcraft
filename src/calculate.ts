@@ -85,7 +85,7 @@ export function findRorOutlier(metrics_index: number) {
         }
     }
 
-    // smooth
+    // smooth 
     let value_blurred = d3.blur(ror_filtered.map(p => p.value), 2);
     for (let i = 0; i < ror_filtered.length; i++) {
         ror_filtered[i].value = value_blurred[i];

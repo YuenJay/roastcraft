@@ -144,7 +144,7 @@ export default function MainChart() {
                                     </Show>
                                 </g>
                                 {/* BT ROR outlier */}
-                                <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + appStore.time_delta > 0))}>
+                                {/* <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + appStore.time_delta > 0))}>
                                     {
                                         (outlier) => (
                                             <>
@@ -160,7 +160,7 @@ export default function MainChart() {
                                                 </g>
                                             </>
                                         )}
-                                </For>
+                                </For> */}
                             </Show>
 
 
@@ -183,10 +183,11 @@ export default function MainChart() {
                                     cy={yScale(item.value)}
                                     r="4" />
                                 <text
+                                    font-size="0.8em"
                                     fill="#570885"
                                     x={xScale(item.timestamp) + appStore.time_delta + 4}
                                     y={yScale(item.value)}>
-                                    {item.id + " : " + item.value + " @ " + item.timestamp}
+                                    {item.id + " : " + item.value.toFixed(1) + " @ " + item.timestamp}
                                 </text>
                             </g>
                         </>
@@ -205,11 +206,11 @@ export default function MainChart() {
                                     cx={xScale(item.timestamp + appStore.time_delta)}
                                     cy={yScaleROR(item.value)}
                                     r="4" />
-                                <text
+                                <text font-size="0.8em"
                                     fill="#570885"
                                     x={xScale(item.timestamp) + appStore.time_delta + 4}
                                     y={yScaleROR(item.value)}>
-                                    {item.id + " : " + item.value + " @ " + item.timestamp}
+                                    {item.id + " : " + item.value.toFixed(1) + " @ " + item.timestamp}
                                 </text>
                             </g>
                         </>
