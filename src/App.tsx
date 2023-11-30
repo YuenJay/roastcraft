@@ -12,7 +12,7 @@ import InputChart from "./InputChart";
 import useAppStore, { AppState, Point } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
-import { autoDetectCharge, calculateRor, findRorOutlier, findTurningPoint } from "./calculate";
+import { autoDetectChargeDrop, calculateRor, findDryEnd, findRorOutlier, findTurningPoint } from "./calculate";
 
 
 function App() {
@@ -81,8 +81,9 @@ function App() {
       // BT only for now
       calculateRor(0);
       findRorOutlier(0);
-      autoDetectCharge();
+      autoDetectChargeDrop();
       findTurningPoint();
+      findDryEnd();
 
       console.log(unwrap(appStore));
     });

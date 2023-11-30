@@ -144,7 +144,7 @@ export default function MainChart() {
                                     </Show>
                                 </g>
                                 {/* BT ROR outlier */}
-                                {/* <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + appStore.time_delta > 0))}>
+                                <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + appStore.time_delta > 0))}>
                                     {
                                         (outlier) => (
                                             <>
@@ -160,7 +160,7 @@ export default function MainChart() {
                                                 </g>
                                             </>
                                         )}
-                                </For> */}
+                                </For>
                             </Show>
 
 

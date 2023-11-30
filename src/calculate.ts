@@ -144,7 +144,7 @@ export function findRorOutlier(metrics_index: number) {
 // idea:
 // . average delta before i-2 is not negative
 // . average delta after i-2 is negative and twice as high (absolute) as the one before
-export function autoDetectCharge() {
+export function autoDetectChargeDrop() {
     let m_index: number = 0 // metrics index for BT
     let ror: Array<any> = unwrap(appStore.metrics[m_index].ror);
 
@@ -180,7 +180,7 @@ export function autoDetectCharge() {
                         appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
                     })
                 )
-            } else if (appStore.phase_state.CHARGE == true && appStore.phase_state.DROP == false) {
+            } else if (appStore.phase_state.CHARGE == true && appStore.phase_state.TP == true && appStore.phase_state.DROP == false) {
                 info("auto detected drop at ror index: " + (target_index));
 
                 setAppStore(
@@ -213,31 +213,72 @@ export function findTurningPoint() {
     }
 
     let tp = 1000;
+    let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
     let data: Array<any> = unwrap(appStore.metrics[0].data);
 
+    let target_index = 0;
+    let tp_found = false;
+    let temp_drop = 0;
     for (let i = 0; i < data.length; i++) {
 
         tp = Math.min(data[i].value, tp);
+        high_temp = Math.max(data[i].value, high_temp);
+
+        temp_drop = high_temp - tp;
 
         // last 2 BT reading > tp
-        if (data[data.length - 1].value > tp && data[data.length - 2].value > tp) {
-            let target_index = data.length - 3;
-            setAppStore(
-                produce((appStore) => {
-
-                    appStore.phase_state.TP = true;
-                    appStore.events.push({
-                        type: "PHASE",
-                        id: "TP",
-                        timestamp: appStore.metrics[0].data[target_index].timestamp,
-                        value: appStore.metrics[0].data[target_index].value
-                    });
-
-                })
-            )
+        if (data[data.length - 1].value > tp && data[data.length - 2].value > tp && temp_drop > 50) {
+            target_index = data.length - 3;
+            tp_found = true;
+            break;
         }
-
     }
+
+    if (tp_found) {
+        setAppStore(
+            produce((appStore) => {
+                appStore.phase_state.TP = true;
+                appStore.events.push({
+                    type: "PHASE",
+                    id: "TP",
+                    timestamp: appStore.metrics[0].data[target_index].timestamp,
+                    value: appStore.metrics[0].data[target_index].value
+                });
+
+            })
+        )
+    }
+}
+
+export function findDryEnd() {
+
+    // only detect dry end after turning point
+    if (appStore.phase_state.TP == false || appStore.phase_state.DRY_END == true) {
+        return
+    }
+
+    let data: Array<any> = appStore.metrics[0].data;
+
+    let dry_end = 150;
+
+    // last 2 BT reading > tp
+    if (data[data.length - 1].value > dry_end && data[data.length - 2].value > dry_end) {
+        let target_index = data.length - 2;
+        setAppStore(
+            produce((appStore) => {
+                appStore.phase_state.DRY_END = true;
+                appStore.events.push({
+                    type: "PHASE",
+                    id: "DRY_END",
+                    timestamp: appStore.metrics[0].data[target_index].timestamp,
+                    value: appStore.metrics[0].data[target_index].value
+                });
+
+            })
+        )
+    }
+
+
 }
