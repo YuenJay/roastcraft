@@ -13,7 +13,7 @@ export class Point {
 }
 
 export class Metric {
-    id: number = 0;
+    id: string = "";
     label: string = "";
     unit: string = "";
     color: string = "";
@@ -29,16 +29,26 @@ export class Metric {
 }
 
 export class Event {
-    type: string = "";
-    id: string = "";
-    timestamp: number = 0;  // time in seconds
-    value: number = 0.0;    // temperature or ror value
-    constructor(type: string, id: string, timestamp: number, value: number) {
-        this.type = type;
+    id: EventId;
+    timestamp: number;  // time in seconds
+    value: number;    // temperature or ror value
+    constructor(id: EventId, timestamp: number, value: number) {
         this.id = id;
         this.timestamp = timestamp;
         this.value = value;
     }
+}
+
+export enum EventId {
+    CHARGE = 'CHARGE',
+    DRY_END = 'FC_START',
+    FC_START = 'FC_START',
+    FC_END = 'FC_END',
+    SC_START = 'SC_START',
+    SC_END = 'SC_END',
+    DROP = 'DROP',
+    TP = 'TP',
+    ROR_TP = 'ROR_TP'
 }
 
 export enum AppState {
@@ -86,7 +96,7 @@ async function init_store() {
     }));
 
     // move BT to be the first element
-    let bt_index = metrics.findIndex((m: any) => (m.id == "BT"));
+    let bt_index = metrics.findIndex(m => m.id == "BT");
     metrics.unshift(metrics.splice(bt_index, 1)[0]);
 
     return {
@@ -94,7 +104,7 @@ async function init_store() {
         config: config,
         timer: 0,
         metrics: metrics,
-        metrics_id_list: metrics.map((m: any) => (m.id)), // metrics order is the same
+        metrics_id_list: metrics.map(m => m.id), // metrics order is the same
         logs: new Array<String>(),
         events: new Array<Event>(),
         phase_state: {

@@ -2,7 +2,7 @@
 
 import { onMount, createEffect, Show, For } from "solid-js";
 import * as d3 from "d3";
-import useAppStore, { Point } from "./AppStore";
+import useAppStore, { EventId, Point } from "./AppStore";
 import Annotation from "./Annotation";
 
 export default function MainChart() {
@@ -179,11 +179,11 @@ export default function MainChart() {
                                 stroke="#000000"
                                 stroke-width="1"
                                 cx={xScale(item.timestamp + appStore.time_delta)}
-                                cy={item.type == "ROR" ? yScaleROR(item.value) : yScale(item.value)}
+                                cy={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
                                 r="2" />
                             <Annotation
                                 x={xScale(item.timestamp + appStore.time_delta)}
-                                y={item.type == "ROR" ? yScaleROR(item.value) : yScale(item.value)}
+                                y={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
                                 text={item.id}
                                 timestamp={item.timestamp + appStore.time_delta}
                                 value={item.value.toFixed(1)}

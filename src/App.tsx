@@ -9,7 +9,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
-import useAppStore, { AppState, Point } from "./AppStore";
+import useAppStore, { AppState, EventId, Point } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -132,12 +132,11 @@ function App() {
     setAppStore({ appState: AppState.ON });
   }
 
-  async function phaseButtonClicked(event_id: string) {
+  async function phaseButtonClicked(event_id: EventId) {
     trace!("phaseButtonClicked: " + event_id);
     setAppStore(produce((appStore) => {
       (appStore.phase_state as any)[event_id] = true;
       appStore.events.push({
-        type: "PHASE",
         id: event_id,
         timestamp: appStore.timer,
         value: appStore.metrics[0].current_data
@@ -149,7 +148,7 @@ function App() {
     trace("key down event: " + event.code);
     switch (event.code) {
       case 'KeyZ':
-        phaseButtonClicked("CHARGE")
+        phaseButtonClicked(EventId.CHARGE)
         break;
       default:
 
@@ -241,28 +240,28 @@ function App() {
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.CHARGE ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("CHARGE")}>
+              onClick={() => phaseButtonClicked(EventId.CHARGE)}>
               {appStore.phase_state.CHARGE ? "✓ " : ""}CHARGE
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.DRY_END ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("DRY_END")}>
+              onClick={() => phaseButtonClicked(EventId.DRY_END)}>
               {appStore.phase_state.DRY_END ? "✓ " : ""}DRY END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_START ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("FC_START")}>
+              onClick={() => phaseButtonClicked(EventId.FC_START)}>
               {appStore.phase_state.FC_START ? "✓ " : ""}FC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_END ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("FC_END")}>
+              onClick={() => phaseButtonClicked(EventId.FC_END)}>
               {appStore.phase_state.FC_END ? "✓ " : ""}FC END
             </button>
           </div>
@@ -270,21 +269,21 @@ function App() {
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_START ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("SC_START")}>
+              onClick={() => phaseButtonClicked(EventId.SC_START)}>
               {appStore.phase_state.SC_START ? "✓ " : ""}SC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_END ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("SC_END")}>
+              onClick={() => phaseButtonClicked(EventId.SC_END)}>
               {appStore.phase_state.SC_END ? "✓ " : ""}SC END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
             <button class={`btn btn-outline btn-primary ${appStore.phase_state.DROP ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked("DROP")}>
+              onClick={() => phaseButtonClicked(EventId.DROP)}>
               {appStore.phase_state.DROP ? "✓ " : ""}DROP
             </button>
           </div>
