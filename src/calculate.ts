@@ -9,6 +9,10 @@ import * as d3 from "d3-array";
 
 const [appStore, setAppStore] = useAppStore;
 
+export function timestamp_format(timestamp: number) {
+    return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
+}
+
 export function calculateRor(metrics_index: number) {
     let data: Array<Point> = unwrap(appStore.metrics[metrics_index].data);
 

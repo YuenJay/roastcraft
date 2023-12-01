@@ -12,7 +12,7 @@ import InputChart from "./InputChart";
 import useAppStore, { AppState, Point } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
-import { autoDetectChargeDrop, calculateRor, findDryEnd, findRorOutlier, findTurningPoint } from "./calculate";
+import { autoDetectChargeDrop, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 
 
 function App() {
@@ -163,7 +163,7 @@ function App() {
       <div class="col-span-8 flex sticky top-0 m-1 gap-1">
         <div class="bg-black rounded flex items-center px-1">
           <p class="text-4xl font-extrabold text-white ">
-            {Math.floor(appStore.timer / 60).toString().padStart(2, '0') + ":" + (appStore.timer % 60).toString().padStart(2, '0')}
+            {timestamp_format(appStore.timer)}
           </p>
         </div>
 

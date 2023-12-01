@@ -3,6 +3,7 @@
 import { onMount, createEffect, Show, For } from "solid-js";
 import * as d3 from "d3";
 import useAppStore, { Point } from "./AppStore";
+import Annotation from "./Annotation";
 
 export default function MainChart() {
 
@@ -136,6 +137,7 @@ export default function MainChart() {
                                             cx={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp + appStore.time_delta)}
                                             cy={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}
                                             r="2" />
+
                                         <text
                                             x={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp) + appStore.time_delta + 4}
                                             y={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}>
@@ -172,46 +174,45 @@ export default function MainChart() {
             <For each={appStore.events}>
                 {
                     (item) => (
-                        <>
-                            <g
+                        <g clip-path="url(#clip-path)">
+                            <circle
                                 fill="none"
-                                stroke="#9c27b0"
+                                stroke="#000000"
                                 stroke-width="1"
-                                clip-path="url(#clip-path)">
-                                <circle
-                                    cx={xScale(item.timestamp + appStore.time_delta)}
-                                    cy={yScale(item.value)}
-                                    r="4" />
-                                <text
-                                    font-size="0.8em"
-                                    fill="#570885"
-                                    x={xScale(item.timestamp) + appStore.time_delta + 4}
-                                    y={yScale(item.value)}>
-                                    {item.id + " : " + item.value.toFixed(1) + " @ " + item.timestamp}
-                                </text>
-                            </g>
-                        </>
+                                cx={xScale(item.timestamp + appStore.time_delta)}
+                                cy={yScale(item.value)}
+                                r="2" />
+                            <Annotation
+                                x={xScale(item.timestamp + appStore.time_delta)}
+                                y={yScale(item.value)}
+                                text={item.id}
+                                timestamp={item.timestamp + appStore.time_delta}
+                                value={item.value.toFixed(1)}
+                            />
+
+                        </g>
+
                     )}
             </For>
             <For each={appStore.ror_events}>
                 {
                     (item) => (
                         <>
-                            <g
-                                fill="none"
-                                stroke="#9c27b0"
-                                stroke-width="1"
-                                clip-path="url(#clip-path)">
+                            <g clip-path="url(#clip-path)">
                                 <circle
+                                    fill="none"
+                                    stroke="#000000"
+                                    stroke-width="1"
                                     cx={xScale(item.timestamp + appStore.time_delta)}
                                     cy={yScaleROR(item.value)}
-                                    r="4" />
-                                <text font-size="0.8em"
-                                    fill="#570885"
-                                    x={xScale(item.timestamp) + appStore.time_delta + 4}
-                                    y={yScaleROR(item.value)}>
-                                    {item.id + " : " + item.value.toFixed(1) + " @ " + item.timestamp}
-                                </text>
+                                    r="2" />
+                                <Annotation
+                                    x={xScale(item.timestamp + appStore.time_delta)}
+                                    y={yScaleROR(item.value)}
+                                    text={item.id}
+                                    timestamp={item.timestamp + appStore.time_delta}
+                                    value={item.value.toFixed(1)}
+                                />
                             </g>
                         </>
                     )}
