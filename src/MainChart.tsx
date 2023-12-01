@@ -132,7 +132,7 @@ export default function MainChart() {
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1"
                                     clip-path="url(#clip-path)">
-                                    <Show when={appStore.metrics[item].ror.length > 0}>
+                                    <Show when={appStore.metrics[item].ror_filtered.length > 0}>
                                         <circle
                                             cx={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp + appStore.time_delta)}
                                             cy={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}
