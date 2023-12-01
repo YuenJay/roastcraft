@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { produce, unwrap } from "solid-js/store";
-import useAppStore, { AppState, Point } from "./AppStore";
+import useAppStore, { AppState, Point, Event } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
@@ -111,12 +111,12 @@ export function findRorOutlier(metrics_index: number) {
             setAppStore(
                 produce((appStore) => {
                     appStore.phase_state.ROR_TP = true;
-                    appStore.ror_events.push({
-                        type: "PHASE",
-                        id: "ROR_TP",
-                        timestamp: window[target_index][0],
-                        value: window[target_index][1]
-                    });
+                    appStore.events.push(new Event(
+                        "ROR",
+                        "ROR_TP",
+                        window[target_index][0],
+                        window[target_index][1]
+                    ));
 
                 })
             )
@@ -125,7 +125,7 @@ export function findRorOutlier(metrics_index: number) {
 
     // ROR linear regression all
     if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
-        let ROR_TP_timestamp = appStore.ror_events.find((r) => (r.id == "ROR_TP")).timestamp;
+        let ROR_TP_timestamp = (appStore.events.find((r) => (r.id == "ROR_TP")) as Event).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
         setAppStore(
@@ -175,12 +175,12 @@ export function autoDetectChargeDrop() {
                 setAppStore(
                     produce((appStore) => {
                         appStore.phase_state.CHARGE = true;
-                        appStore.events.push({
-                            type: "PHASE",
-                            id: "CHARGE",
-                            timestamp: appStore.metrics[m_index].data[target_index].timestamp,
-                            value: appStore.metrics[m_index].data[target_index].value
-                        });
+                        appStore.events.push(new Event(
+                            "PHASE",
+                            "CHARGE",
+                            appStore.metrics[m_index].data[target_index].timestamp,
+                            appStore.metrics[m_index].data[target_index].value
+                        ));
                         appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
                     })
                 )
@@ -190,21 +190,16 @@ export function autoDetectChargeDrop() {
                 setAppStore(
                     produce((appStore) => {
                         appStore.phase_state.DROP = true;
-                        appStore.events.push({
-                            type: "PHASE",
-                            id: "DROP",
-                            timestamp: appStore.metrics[m_index].data[target_index].timestamp,
-                            value: appStore.metrics[m_index].data[target_index].value
-                        });
-
+                        appStore.events.push(new Event(
+                            "PHASE",
+                            "DROP",
+                            appStore.metrics[m_index].data[target_index].timestamp,
+                            appStore.metrics[m_index].data[target_index].value
+                        ));
                     })
                 )
             }
-
-
         }
-
-
     }
 }
 
@@ -244,12 +239,12 @@ export function findTurningPoint() {
         setAppStore(
             produce((appStore) => {
                 appStore.phase_state.TP = true;
-                appStore.events.push({
-                    type: "PHASE",
-                    id: "TP",
-                    timestamp: appStore.metrics[0].data[target_index].timestamp,
-                    value: appStore.metrics[0].data[target_index].value
-                });
+                appStore.events.push(new Event(
+                    "PHASE",
+                    "TP",
+                    appStore.metrics[0].data[target_index].timestamp,
+                    appStore.metrics[0].data[target_index].value
+                ));
 
             })
         )
@@ -273,16 +268,13 @@ export function findDryEnd() {
         setAppStore(
             produce((appStore) => {
                 appStore.phase_state.DRY_END = true;
-                appStore.events.push({
-                    type: "PHASE",
-                    id: "DRY_END",
-                    timestamp: appStore.metrics[0].data[target_index].timestamp,
-                    value: appStore.metrics[0].data[target_index].value
-                });
-
+                appStore.events.push(new Event(
+                    "PHASE",
+                    "DRY_END",
+                    appStore.metrics[0].data[target_index].timestamp,
+                    appStore.metrics[0].data[target_index].value
+                ));
             })
         )
     }
-
-
 }

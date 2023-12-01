@@ -154,6 +154,7 @@ export default function MainChart() {
                                                     fill="none"
                                                     stroke={appStore.metrics[item].color}
                                                     stroke-width="1"
+                                                    stroke-opacity="50%"
                                                     clip-path="url(#clip-path)">
                                                     <circle
                                                         cx={xScale(outlier.timestamp + appStore.time_delta)}
@@ -164,8 +165,6 @@ export default function MainChart() {
                                         )}
                                 </For>
                             </Show>
-
-
                         </>
                     )
                 }
@@ -180,44 +179,18 @@ export default function MainChart() {
                                 stroke="#000000"
                                 stroke-width="1"
                                 cx={xScale(item.timestamp + appStore.time_delta)}
-                                cy={yScale(item.value)}
+                                cy={item.type == "ROR" ? yScaleROR(item.value) : yScale(item.value)}
                                 r="2" />
                             <Annotation
                                 x={xScale(item.timestamp + appStore.time_delta)}
-                                y={yScale(item.value)}
+                                y={item.type == "ROR" ? yScaleROR(item.value) : yScale(item.value)}
                                 text={item.id}
                                 timestamp={item.timestamp + appStore.time_delta}
                                 value={item.value.toFixed(1)}
                             />
-
                         </g>
-
                     )}
             </For>
-            <For each={appStore.ror_events}>
-                {
-                    (item) => (
-                        <>
-                            <g clip-path="url(#clip-path)">
-                                <circle
-                                    fill="none"
-                                    stroke="#000000"
-                                    stroke-width="1"
-                                    cx={xScale(item.timestamp + appStore.time_delta)}
-                                    cy={yScaleROR(item.value)}
-                                    r="2" />
-                                <Annotation
-                                    x={xScale(item.timestamp + appStore.time_delta)}
-                                    y={yScaleROR(item.value)}
-                                    text={item.id}
-                                    timestamp={item.timestamp + appStore.time_delta}
-                                    value={item.value.toFixed(1)}
-                                />
-                            </g>
-                        </>
-                    )}
-            </For>
-
         </svg >
     );
 }

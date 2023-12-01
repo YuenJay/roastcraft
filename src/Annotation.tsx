@@ -4,8 +4,6 @@ import { timestamp_format } from "./calculate";
 
 export default function Annotation(props: any) {
 
-
-
     let angle = 150 * (Math.PI / 180);
     let radius = 30;
 
@@ -24,6 +22,9 @@ export default function Annotation(props: any) {
     let toX = fromX + Math.sin(angle) * radius;
     let toY = fromY - Math.cos(angle) * radius;
 
+    let toXtext = fromX + Math.sin(angle) * radius * 1.1;
+    let toYtext = fromY - Math.cos(angle) * radius * 1.1;
+
     return (
         <>
             <line stroke="#000000"
@@ -37,8 +38,8 @@ export default function Annotation(props: any) {
             <text
                 stroke="#000000"
                 font-size="0.6em"
-                x={toX}
-                y={toY}>
+                x={toXtext}
+                y={toYtext}>
                 <tspan x={toX} dy={dy_base}>{text}</tspan>
                 <tspan x={toX} dy="1.1em">{timestamp_format(props.timestamp)}</tspan>
                 <tspan x={toX} dy="1.1em">{props.value}</tspan>

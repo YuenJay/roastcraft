@@ -28,6 +28,19 @@ export class Metric {
     ror_filtered: Array<Point> = [];// history records
 }
 
+export class Event {
+    type: string = "";
+    id: string = "";
+    timestamp: number = 0;  // time in seconds
+    value: number = 0.0;    // temperature or ror value
+    constructor(type: string, id: string, timestamp: number, value: number) {
+        this.type = type;
+        this.id = id;
+        this.timestamp = timestamp;
+        this.value = value;
+    }
+}
+
 export enum AppState {
     OFF,
     ON,
@@ -83,8 +96,7 @@ async function init_store() {
         metrics: metrics,
         metrics_id_list: metrics.map((m: any) => (m.id)), // metrics order is the same
         logs: new Array<String>(),
-        events: new Array(),
-        ror_events: new Array(),
+        events: new Array<Event>(),
         phase_state: {
             CHARGE: false,
             DRY_END: false,
