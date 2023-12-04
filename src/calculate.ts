@@ -194,6 +194,7 @@ export function autoDetectChargeDrop() {
                             appStore.metrics[m_index].data[target_index].timestamp,
                             appStore.metrics[m_index].data[target_index].value
                         ));
+                        appStore.RoastPhase = RoastPhase.AFTER_DROP;
                     })
                 )
             }
@@ -315,7 +316,36 @@ export function calculatePhases() {
         })
 
     } else if (appStore.RoastPhase == RoastPhase.DEVELOP) {
+        let charge = appStore.events.find(r => r.id == EventId.CHARGE) as Event;
+        let tp = appStore.events.find(r => r.id == EventId.TP) as Event;
+        let de = appStore.events.find(r => r.id == EventId.DRY_END) as Event;
+        let fc = appStore.events.find(r => r.id == EventId.FC_START) as Event;
 
+        let drying_time = de.timestamp - charge.timestamp;
+        let drying_temp_rise = de.value - tp.value;
+
+        let maillard_time = fc.timestamp - de.timestamp;
+        let maillard_temp_rise = fc.value - de.value;
+
+        let develop_time = appStore.timer - fc.timestamp;
+        let develop_temp_rise = appStore.metrics[0].current_data - fc.value;
+
+        setAppStore({
+            Drying_Phase: new Phase(
+                drying_time,
+                drying_time / (drying_time + maillard_time + develop_time) * 100,
+                drying_temp_rise),
+            Maillard_Phase: new Phase(
+                maillard_time,
+                maillard_time / (drying_time + maillard_time + develop_time) * 100,
+                maillard_temp_rise
+            ),
+            Develop_Phase: new Phase(
+                develop_time,
+                develop_time / (drying_time + maillard_time + develop_time) * 100,
+                develop_temp_rise
+            )
+        })
     }
 
 }
