@@ -52,7 +52,7 @@ export class Phase {
 
 export enum EventId {
     CHARGE = 'CHARGE',
-    DRY_END = 'FC_START',
+    DRY_END = 'DRY_END',
     FC_START = 'FC_START',
     FC_END = 'FC_END',
     SC_START = 'SC_START',

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { produce, unwrap } from "solid-js/store";
-import useAppStore, { AppState, Point, Event, EventId } from "./AppStore";
+import useAppStore, { AppState, Point, Event, EventId, RoastPhase, Phase } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
@@ -180,6 +180,7 @@ export function autoDetectChargeDrop() {
                             appStore.metrics[m_index].data[target_index].value
                         ));
                         appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
+                        appStore.RoastPhase = RoastPhase.DRYING;
                     })
                 )
             } else if (appStore.event_state.CHARGE == true && appStore.event_state.TP == true && appStore.event_state.DROP == false) {
@@ -269,11 +270,52 @@ export function findDryEnd() {
                     appStore.metrics[0].data[target_index].timestamp,
                     appStore.metrics[0].data[target_index].value
                 ));
+                appStore.RoastPhase = RoastPhase.MAILLARD;
             })
         )
     }
 }
 
 export function calculatePhases() {
+
+    if (appStore.RoastPhase == RoastPhase.DRYING) {
+        let charge = appStore.events.find(r => r.id == EventId.CHARGE) as Event;
+        let temp_rise = 0;
+        if (appStore.event_state.TP) {
+            let tp = (appStore.events.find(r => r.id == EventId.TP) as Event);
+            temp_rise = appStore.metrics[0].current_data - tp.value;
+        }
+        setAppStore({
+            Drying_Phase: new Phase(
+                appStore.timer - charge.timestamp,
+                100.0,
+                temp_rise)
+        })
+    } else if (appStore.RoastPhase == RoastPhase.MAILLARD) {
+        let charge = appStore.events.find(r => r.id == EventId.CHARGE) as Event;
+        let tp = appStore.events.find(r => r.id == EventId.TP) as Event;
+        let de = appStore.events.find(r => r.id == EventId.DRY_END) as Event;
+
+        let drying_time = de.timestamp - charge.timestamp;
+        let drying_temp_rise = de.value - tp.value;
+
+        let maillard_time = appStore.timer - de.timestamp;
+        let maillard_temp_rise = appStore.metrics[0].current_data - de.value;
+
+        setAppStore({
+            Drying_Phase: new Phase(
+                drying_time,
+                drying_time / (drying_time + maillard_time) * 100,
+                drying_temp_rise),
+            Maillard_Phase: new Phase(
+                maillard_time,
+                maillard_time / (drying_time + maillard_time) * 100,
+                maillard_temp_rise
+            )
+        })
+
+    } else if (appStore.RoastPhase == RoastPhase.DEVELOP) {
+
+    }
 
 }

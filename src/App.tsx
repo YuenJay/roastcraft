@@ -12,7 +12,7 @@ import InputChart from "./InputChart";
 import useAppStore, { AppState, EventId, Point, RoastPhase } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
-import { autoDetectChargeDrop, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
+import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 
 
 function App() {
@@ -84,6 +84,7 @@ function App() {
       autoDetectChargeDrop();
       findTurningPoint();
       findDryEnd();
+      calculatePhases();
 
       console.log(unwrap(appStore));
     });
@@ -132,23 +133,29 @@ function App() {
     setAppStore({ appState: AppState.ON });
   }
 
-  async function phaseButtonClicked(event_id: EventId) {
-    trace!("phaseButtonClicked: " + event_id);
-    setAppStore(produce((appStore) => {
-      (appStore.event_state as any)[event_id] = true;
-      appStore.events.push({
-        id: event_id,
-        timestamp: appStore.timer,
-        value: appStore.metrics[0].current_data
-      });
-    }));
-  }
-
   function handleKeyDownEvent(event: KeyboardEvent) {
     trace("key down event: " + event.code);
     switch (event.code) {
       case 'KeyZ':
-        phaseButtonClicked(EventId.CHARGE)
+        handleCharge();
+        break;
+      case 'KeyX':
+        handleDryEnd();
+        break;
+      case 'KeyC':
+        handleFCStart();
+        break;
+      case 'KeyV':
+        handleFCEnd();
+        break;
+      case 'KeyB':
+        handleSCStart();
+        break;
+      case 'KeyN':
+        handleSCEnd();
+        break;
+      case 'KeyM':
+        handleDrop();
         break;
       default:
 
@@ -159,13 +166,66 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.CHARGE = true;
-        appStore.events.push({
-          id: EventId.CHARGE,
-          timestamp: appStore.timer,
-          value: appStore.metrics[0].current_data
-        });
+        appStore.events.push({ id: EventId.CHARGE, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
         appStore.time_delta = - appStore.timer;
         appStore.RoastPhase = RoastPhase.DRYING;
+      })
+    )
+  }
+
+  async function handleDryEnd() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.DRY_END = true;
+        appStore.events.push({ id: EventId.DRY_END, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.RoastPhase = RoastPhase.MAILLARD;
+      })
+    )
+  }
+
+  async function handleFCStart() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.FC_START = true;
+        appStore.events.push({ id: EventId.FC_START, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.RoastPhase = RoastPhase.DEVELOP;
+      })
+    )
+  }
+
+  async function handleFCEnd() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.FC_END = true;
+        appStore.events.push({ id: EventId.FC_END, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+      })
+    )
+  }
+
+  async function handleSCStart() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.SC_START = true;
+        appStore.events.push({ id: EventId.SC_START, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+      })
+    )
+  }
+
+  async function handleSCEnd() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.SC_END = true;
+        appStore.events.push({ id: EventId.SC_END, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+      })
+    )
+  }
+
+  async function handleDrop() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.DROP = true;
+        appStore.events.push({ id: EventId.DROP, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.RoastPhase = RoastPhase.AFTER_DROP;
       })
     )
   }
@@ -211,46 +271,47 @@ function App() {
           }
         </Index>
 
-        <div class="bg-base-300 rounded text-right w-24 p-1">
-          <p>Drying</p>
+        <div class="bg-base-300 rounded w-24 p-1">
+          <p class="text-right">Drying</p>
           <div class="grid grid-cols-2" >
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Drying_Phase.time}
+              {timestamp_format(appStore.Drying_Phase.time)}
+            </p>
+            <p class="text-right text-sm font-medium text-blue-600">
+              {appStore.Drying_Phase.temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Drying_Phase.percent}%
-            </p>
-            <p class="text-sm font-medium text-blue-600">
-              {appStore.Drying_Phase.temp_rise}°
+              {appStore.Drying_Phase.percent.toFixed(1)}%
             </p>
           </div>
         </div>
-        <div class="bg-base-300 rounded text-right w-24 p-1">
-          <p>Maillard</p>
+        <div class="bg-base-300 rounded w-24 p-1">
+          <p class="text-right">Maillard</p>
           <div class="grid grid-cols-2" >
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Maillard_Phase.time}
+              {timestamp_format(appStore.Maillard_Phase.time)}
+            </p>
+            <p class="text-right text-sm font-medium text-blue-600">
+              {appStore.Maillard_Phase.temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Maillard_Phase.percent}%
-            </p>
-            <p class="text-sm font-medium text-blue-600">
-              {appStore.Maillard_Phase.temp_rise}°
+              {appStore.Maillard_Phase.percent.toFixed(1)}%
             </p>
           </div>
         </div>
-        <div class="bg-base-300 rounded text-right w-24 p-1">
-          <p>Develop</p>
+        <div class="bg-base-300 rounded w-24 p-1">
+          <p class="text-right">Develop</p>
           <div class="grid grid-cols-2" >
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Develop_Phase.time}
+              {timestamp_format(appStore.Develop_Phase.time)}
+            </p>
+            <p class="text-right text-sm font-medium text-blue-600">
+              {appStore.Develop_Phase.temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Develop_Phase.percent}%
+              {appStore.Develop_Phase.percent.toFixed(1)}%
             </p>
-            <p class="text-sm font-medium text-blue-600">
-              {appStore.Develop_Phase.temp_rise}°
-            </p>
+
           </div>
         </div>
 
@@ -305,21 +366,21 @@ function App() {
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
             <button class={`btn btn-outline btn-primary ${appStore.event_state.DRY_END ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.DRY_END)}>
+              onClick={handleDryEnd}>
               {appStore.event_state.DRY_END ? "✓ " : ""}DRY END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
             <button class={`btn btn-outline btn-primary ${appStore.event_state.FC_START ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.FC_START)}>
+              onClick={handleFCStart}>
               {appStore.event_state.FC_START ? "✓ " : ""}FC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
             <button class={`btn btn-outline btn-primary ${appStore.event_state.FC_END ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.FC_END)}>
+              onClick={handleFCEnd}>
               {appStore.event_state.FC_END ? "✓ " : ""}FC END
             </button>
           </div>
@@ -327,21 +388,21 @@ function App() {
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
             <button class={`btn btn-outline btn-primary ${appStore.event_state.SC_START ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.SC_START)}>
+              onClick={handleSCStart}>
               {appStore.event_state.SC_START ? "✓ " : ""}SC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
             <button class={`btn btn-outline btn-primary ${appStore.event_state.SC_END ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.SC_END)}>
+              onClick={handleSCEnd}>
               {appStore.event_state.SC_END ? "✓ " : ""}SC END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
             <button class={`btn btn-outline btn-primary ${appStore.event_state.DROP ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.DROP)}>
+              onClick={handleDrop}>
               {appStore.event_state.DROP ? "✓ " : ""}DROP
             </button>
           </div>
