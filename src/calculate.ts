@@ -346,6 +346,38 @@ export function calculatePhases() {
                 develop_temp_rise
             )
         })
+    } else if (appStore.RoastPhase == RoastPhase.AFTER_DROP) {
+        let charge = appStore.events.find(r => r.id == EventId.CHARGE) as Event;
+        let tp = appStore.events.find(r => r.id == EventId.TP) as Event;
+        let de = appStore.events.find(r => r.id == EventId.DRY_END) as Event;
+        let fc = appStore.events.find(r => r.id == EventId.FC_START) as Event;
+        let drop = appStore.events.find(r => r.id == EventId.DROP) as Event;
+
+        let drying_time = de.timestamp - charge.timestamp;
+        let drying_temp_rise = de.value - tp.value;
+
+        let maillard_time = fc.timestamp - de.timestamp;
+        let maillard_temp_rise = fc.value - de.value;
+
+        let develop_time = drop.timestamp - fc.timestamp;
+        let develop_temp_rise = drop.value - fc.value;
+
+        setAppStore({
+            Drying_Phase: new Phase(
+                drying_time,
+                drying_time / (drying_time + maillard_time + develop_time) * 100,
+                drying_temp_rise),
+            Maillard_Phase: new Phase(
+                maillard_time,
+                maillard_time / (drying_time + maillard_time + develop_time) * 100,
+                maillard_temp_rise
+            ),
+            Develop_Phase: new Phase(
+                develop_time,
+                develop_time / (drying_time + maillard_time + develop_time) * 100,
+                develop_temp_rise
+            )
+        })
     }
 
 }
