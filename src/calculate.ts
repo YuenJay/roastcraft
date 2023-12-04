@@ -103,14 +103,14 @@ export function findRorOutlier(metrics_index: number) {
     )
 
     // find ROR TP
-    if (appStore.phase_state.TP == true && appStore.phase_state.ROR_TP == false) {
+    if (appStore.event_state.TP == true && appStore.event_state.ROR_TP == false) {
         let window_size = 9
         let window = ror_filtered.slice(-window_size).map((r) => ([r.timestamp, r.value]));
         if (linearRegression(window).m < 0) {
             let target_index = window.length - 5;
             setAppStore(
                 produce((appStore) => {
-                    appStore.phase_state.ROR_TP = true;
+                    appStore.event_state.ROR_TP = true;
                     appStore.events.push(new Event(
                         EventId.ROR_TP,
                         window[target_index][0],
@@ -123,7 +123,7 @@ export function findRorOutlier(metrics_index: number) {
     }
 
     // ROR linear regression all
-    if (appStore.phase_state.ROR_TP == true && appStore.phase_state.DROP == false) {
+    if (appStore.event_state.ROR_TP == true && appStore.event_state.DROP == false) {
         let ROR_TP_timestamp = (appStore.events.find(r => r.id == EventId.ROR_TP) as Event).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
@@ -168,12 +168,12 @@ export function autoDetectChargeDrop() {
             && Math.abs(dpost) > Math.abs(dpre) * 2) {
             let target_index = ror.length - 3;
 
-            if (appStore.phase_state.CHARGE == false) {
+            if (appStore.event_state.CHARGE == false) {
                 info("auto detected charge at ror index: " + (target_index));
 
                 setAppStore(
                     produce((appStore) => {
-                        appStore.phase_state.CHARGE = true;
+                        appStore.event_state.CHARGE = true;
                         appStore.events.push(new Event(
                             EventId.CHARGE,
                             appStore.metrics[m_index].data[target_index].timestamp,
@@ -182,12 +182,12 @@ export function autoDetectChargeDrop() {
                         appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
                     })
                 )
-            } else if (appStore.phase_state.CHARGE == true && appStore.phase_state.TP == true && appStore.phase_state.DROP == false) {
+            } else if (appStore.event_state.CHARGE == true && appStore.event_state.TP == true && appStore.event_state.DROP == false) {
                 info("auto detected drop at ror index: " + (target_index));
 
                 setAppStore(
                     produce((appStore) => {
-                        appStore.phase_state.DROP = true;
+                        appStore.event_state.DROP = true;
                         appStore.events.push(new Event(
                             EventId.DROP,
                             appStore.metrics[m_index].data[target_index].timestamp,
@@ -204,7 +204,7 @@ export function autoDetectChargeDrop() {
 export function findTurningPoint() {
 
     // only detect turning point after charge
-    if (appStore.phase_state.CHARGE == false || appStore.phase_state.TP == true) {
+    if (appStore.event_state.CHARGE == false || appStore.event_state.TP == true) {
         return
     }
 
@@ -235,7 +235,7 @@ export function findTurningPoint() {
     if (tp_found) {
         setAppStore(
             produce((appStore) => {
-                appStore.phase_state.TP = true;
+                appStore.event_state.TP = true;
                 appStore.events.push(new Event(
                     EventId.TP,
                     appStore.metrics[0].data[target_index].timestamp,
@@ -250,7 +250,7 @@ export function findTurningPoint() {
 export function findDryEnd() {
 
     // only detect dry end after turning point
-    if (appStore.phase_state.TP == false || appStore.phase_state.DRY_END == true) {
+    if (appStore.event_state.TP == false || appStore.event_state.DRY_END == true) {
         return
     }
 
@@ -263,7 +263,7 @@ export function findDryEnd() {
         let target_index = data.length - 2;
         setAppStore(
             produce((appStore) => {
-                appStore.phase_state.DRY_END = true;
+                appStore.event_state.DRY_END = true;
                 appStore.events.push(new Event(
                     EventId.DRY_END,
                     appStore.metrics[0].data[target_index].timestamp,
@@ -272,4 +272,8 @@ export function findDryEnd() {
             })
         )
     }
+}
+
+export function calculatePhases() {
+
 }

@@ -9,7 +9,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import PhaseChart from "./PhaseChart";
 import InputChart from "./InputChart";
-import useAppStore, { AppState, EventId, Point } from "./AppStore";
+import useAppStore, { AppState, EventId, Point, RoastPhase } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -135,7 +135,7 @@ function App() {
   async function phaseButtonClicked(event_id: EventId) {
     trace!("phaseButtonClicked: " + event_id);
     setAppStore(produce((appStore) => {
-      (appStore.phase_state as any)[event_id] = true;
+      (appStore.event_state as any)[event_id] = true;
       appStore.events.push({
         id: event_id,
         timestamp: appStore.timer,
@@ -155,6 +155,21 @@ function App() {
     }
   }
 
+  async function handleCharge() {
+    setAppStore(
+      produce((appStore) => {
+        appStore.event_state.CHARGE = true;
+        appStore.events.push({
+          id: EventId.CHARGE,
+          timestamp: appStore.timer,
+          value: appStore.metrics[0].current_data
+        });
+        appStore.time_delta = - appStore.timer;
+        appStore.RoastPhase = RoastPhase.DRYING;
+      })
+    )
+  }
+
   return (
     // responsive design breakpoint : lg
     <div class="grid grid-cols-8 lg:grid-cols-12">
@@ -162,7 +177,7 @@ function App() {
       <div class="col-span-8 flex sticky top-0 m-1 gap-1">
         <div class="bg-black rounded flex items-center px-1">
           <p class="text-4xl font-extrabold text-white ">
-            {timestamp_format(appStore.timer)}
+            {timestamp_format(appStore.timer + appStore.time_delta)}
           </p>
         </div>
 
@@ -195,6 +210,49 @@ function App() {
             )
           }
         </Index>
+
+        <div class="bg-base-300 rounded text-right w-24 p-1">
+          <p>Drying</p>
+          <div class="grid grid-cols-2" >
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Drying_Phase.time}
+            </p>
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Drying_Phase.percent}%
+            </p>
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Drying_Phase.temp_rise}°
+            </p>
+          </div>
+        </div>
+        <div class="bg-base-300 rounded text-right w-24 p-1">
+          <p>Maillard</p>
+          <div class="grid grid-cols-2" >
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Maillard_Phase.time}
+            </p>
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Maillard_Phase.percent}%
+            </p>
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Maillard_Phase.temp_rise}°
+            </p>
+          </div>
+        </div>
+        <div class="bg-base-300 rounded text-right w-24 p-1">
+          <p>Develop</p>
+          <div class="grid grid-cols-2" >
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Develop_Phase.time}
+            </p>
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Develop_Phase.percent}%
+            </p>
+            <p class="text-sm font-medium text-blue-600">
+              {appStore.Develop_Phase.temp_rise}°
+            </p>
+          </div>
+        </div>
 
         <div class="ml-auto self-center flex gap-3 mr-3">
           <Show when={appStore.appState == AppState.OFF}>
@@ -239,52 +297,52 @@ function App() {
         <div class="m-2 mb-4 flex justify-evenly">
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.CHARGE ? "btn-active btn-disabled" : ""}`}
-              onClick={() => phaseButtonClicked(EventId.CHARGE)}>
-              {appStore.phase_state.CHARGE ? "✓ " : ""}CHARGE
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.CHARGE ? "btn-active btn-disabled" : ""}`}
+              onClick={handleCharge}>
+              {appStore.event_state.CHARGE ? "✓ " : ""}CHARGE
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.DRY_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.DRY_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked(EventId.DRY_END)}>
-              {appStore.phase_state.DRY_END ? "✓ " : ""}DRY END
+              {appStore.event_state.DRY_END ? "✓ " : ""}DRY END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_START ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.FC_START ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked(EventId.FC_START)}>
-              {appStore.phase_state.FC_START ? "✓ " : ""}FC START
+              {appStore.event_state.FC_START ? "✓ " : ""}FC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.FC_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.FC_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked(EventId.FC_END)}>
-              {appStore.phase_state.FC_END ? "✓ " : ""}FC END
+              {appStore.event_state.FC_END ? "✓ " : ""}FC END
             </button>
           </div>
 
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_START ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.SC_START ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked(EventId.SC_START)}>
-              {appStore.phase_state.SC_START ? "✓ " : ""}SC START
+              {appStore.event_state.SC_START ? "✓ " : ""}SC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.SC_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.SC_END ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked(EventId.SC_END)}>
-              {appStore.phase_state.SC_END ? "✓ " : ""}SC END
+              {appStore.event_state.SC_END ? "✓ " : ""}SC END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-            <button class={`btn btn-outline btn-primary ${appStore.phase_state.DROP ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appStore.event_state.DROP ? "btn-active btn-disabled" : ""}`}
               onClick={() => phaseButtonClicked(EventId.DROP)}>
-              {appStore.phase_state.DROP ? "✓ " : ""}DROP
+              {appStore.event_state.DROP ? "✓ " : ""}DROP
             </button>
           </div>
         </div>

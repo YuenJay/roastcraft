@@ -39,6 +39,17 @@ export class Event {
     }
 }
 
+export class Phase {
+    time: number // time in seconds
+    percent: number;
+    temp_rise: number;
+    constructor(time: number, percent: number, temp_rise: number) {
+        this.time = time;
+        this.percent = percent;
+        this.temp_rise = temp_rise;
+    }
+}
+
 export enum EventId {
     CHARGE = 'CHARGE',
     DRY_END = 'FC_START',
@@ -52,17 +63,25 @@ export enum EventId {
 }
 
 export enum AppState {
-    OFF,
-    ON,
-    RECORDING,
-    RECORDED
+    OFF = 'OFF',
+    ON = 'ON',
+    RECORDING = 'RECORDING',
+    RECORDED = 'RECORDED'
+}
+
+export enum RoastPhase {
+    BEFORE_CHARGE = 'BEFORE_CHARGE',
+    DRYING = 'DRYING',
+    MAILLARD = 'MAILLARD',
+    DEVELOP = 'DEVELOP',
+    AFTER_DROP = 'AFTER_DROP',
 }
 
 async function init_store() {
 
     // get config from backend
     let config: any;
-    await invoke("get_config").then((c) => (config = c))
+    await invoke("get_config").then(c => config = c)
 
     // todo: choose device based on config
     // let metrics: any[] = config.serial.modbus.slave.map((s: any) => ({
@@ -107,7 +126,7 @@ async function init_store() {
         metrics_id_list: metrics.map(m => m.id), // metrics order is the same
         logs: new Array<String>(),
         events: new Array<Event>(),
-        phase_state: {
+        event_state: {
             CHARGE: false,
             DRY_END: false,
             FC_START: false,
@@ -121,6 +140,10 @@ async function init_store() {
         time_delta: 0,
         ROR_linear_start: { timestamp: 0, value: 0 },
         ROR_linear_end: { timestamp: 0, value: 0 },
+        Drying_Phase: new Phase(0, 0.0, 0.0),
+        Maillard_Phase: new Phase(0, 0.0, 0.0),
+        Develop_Phase: new Phase(0, 0.0, 0.0),
+        RoastPhase: RoastPhase.BEFORE_CHARGE
     }
 }
 
