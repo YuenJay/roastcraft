@@ -57,14 +57,22 @@ export default function BarChart(props: any) {
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`}>
             <g fill="steelblue">
                 {/* Add a rect for each bar. */}
-                <rect
-                    x={x(props.data[0].id)}
-                    y={y(props.data[0].percent)}
-                    height={y(0) - y(props.data[0].percent)}
-                    width={x.bandwidth()}
-                />
-
-
+                <For each={props.data}>{
+                    (d) => (<>
+                        <rect
+                            x={x(d.id)}
+                            y={y(d.percent)}
+                            height={y(0) - y(d.percent)}
+                            width={x.bandwidth()}
+                        />
+                        <text x={x(d.id) + x.bandwidth() / 2}
+                            y={y(d.percent) - 5}
+                            text-anchor="middle"
+                            font-size="1.0em">
+                            {d.percent}
+                        </text>
+                    </>)}
+                </For>
             </g>
         </svg>
 

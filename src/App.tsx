@@ -419,18 +419,20 @@ function App() {
           <BarChart
             title="Drying"
             data={[
-              { id: "A", percent: appStore.Drying_Phase.percent.toFixed(1) },
-
+              // { id: "Ref", percent: 39 },
+              { id: "#", percent: appStore.Drying_Phase.percent.toFixed(1) },
             ]} />
           <BarChart
             title="Maillard"
             data={[
-              { id: "A", percent: appStore.Maillard_Phase.percent.toFixed(1) },
+              // { id: "Ref", percent: 41 },
+              { id: "#", percent: appStore.Maillard_Phase.percent.toFixed(1) },
             ]} />
           <BarChart
             title="Develop"
             data={[
-              { id: "A", percent: appStore.Develop_Phase.percent.toFixed(1) },
+              // { id: "Ref", percent: 20 },
+              { id: "#", percent: appStore.Develop_Phase.percent.toFixed(1) },
             ]} />
         </div>
 
