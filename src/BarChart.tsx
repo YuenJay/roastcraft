@@ -18,7 +18,7 @@ export default function BarChart(props: any) {
     const x = d3.scaleBand()
         .domain(props.data.map(d => d.id)) // descending frequency
         .range([marginLeft, width - marginRight])
-        .padding(0.1);
+        .padding(0.2);
 
     // Declare the y (vertical position) scale.
     const y = d3.scaleLinear()

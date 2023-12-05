@@ -234,7 +234,7 @@ function App() {
     // responsive design breakpoint : lg
     <div class="grid grid-cols-8 lg:grid-cols-12">
       {/* header start*/}
-      <div class="col-span-8 flex sticky top-0 m-1 gap-1">
+      <div class="col-span-8 flex top-0 m-1 gap-1">
         <div class="bg-black rounded flex items-center px-1">
           <p class="text-4xl font-extrabold text-white ">
             {timestamp_format(appStore.timer + appStore.time_delta)}
@@ -419,19 +419,19 @@ function App() {
           <BarChart
             title="Drying"
             data={[
-              { id: "Ref", opacity: 0.5, percent: 40.2, temp_rise: 57.2 },
+              // { id: "Ref", opacity: 0.5, percent: 40.2, temp_rise: 57.2 },
               { id: "#", opacity: 1, percent: appStore.Drying_Phase.percent.toFixed(1), temp_rise: appStore.Drying_Phase.temp_rise.toFixed(1) },
             ]} />
           <BarChart
             title="Maillard"
             data={[
-              { id: "Ref", opacity: 0.5, percent: 40.3, temp_rise: 44.8 },
+              // { id: "Ref", opacity: 0.5, percent: 40.3, temp_rise: 44.8 },
               { id: "#", opacity: 1, percent: appStore.Maillard_Phase.percent.toFixed(1), temp_rise: appStore.Maillard_Phase.temp_rise.toFixed(1) },
             ]} />
           <BarChart
             title="Develop"
             data={[
-              { id: "Ref", opacity: 0.5, percent: 19.5, temp_rise: 13.0 },
+              // { id: "Ref", opacity: 0.5, percent: 19.5, temp_rise: 13.0 },
               { id: "#", opacity: 1, percent: appStore.Develop_Phase.percent.toFixed(1), temp_rise: appStore.Develop_Phase.temp_rise.toFixed(1) },
             ]} />
         </div>
