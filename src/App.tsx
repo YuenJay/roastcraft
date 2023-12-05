@@ -7,7 +7,7 @@ import { trace, attachConsole, info } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
-import PhaseChart from "./PhaseChart";
+import BarChart from "./BarChart";
 import InputChart from "./InputChart";
 import useAppStore, { AppState, EventId, Point, RoastPhase } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
@@ -416,9 +416,22 @@ function App() {
       <div class="col-span-8 lg:col-span-4 m-1">
         <InputChart />
         <div class="grid grid-cols-3" >
-          <PhaseChart />
-          <PhaseChart />
-          <PhaseChart />
+          <BarChart
+            title="Drying"
+            data={[
+              { id: "A", percent: appStore.Drying_Phase.percent.toFixed(1) },
+
+            ]} />
+          <BarChart
+            title="Maillard"
+            data={[
+              { id: "A", percent: appStore.Maillard_Phase.percent.toFixed(1) },
+            ]} />
+          <BarChart
+            title="Develop"
+            data={[
+              { id: "A", percent: appStore.Develop_Phase.percent.toFixed(1) },
+            ]} />
         </div>
 
 

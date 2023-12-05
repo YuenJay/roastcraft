@@ -3,32 +3,26 @@ import { onMount, Show } from "solid-js";
 import * as d3 from "d3";
 import useAppStore from "./AppStore";
 
-export default function InputChart() {
+export default function BarChart(props: any) {
 
     const [appStore, setAppStore] = useAppStore;
 
-    let data = [
-        { letter: "Aaa", frequency: 40.3 },
-        { letter: "Bbb", frequency: 50.6 },
-        { letter: "Ccc", frequency: 45.4 },
-    ]
-
     const width = 200;
     const height = 200;
-    const marginTop = 30;
-    const marginRight = 0;
+    const marginTop = 20;
+    const marginRight = 10;
     const marginBottom = 30;
-    const marginLeft = 40;
+    const marginLeft = 20;
 
     // Declare the x (horizontal position) scale.
     const x = d3.scaleBand()
-        .domain(["Aaa", "Bbb", "Ccc"]) // descending frequency
+        .domain(props.data.map(d => d.id)) // descending frequency
         .range([marginLeft, width - marginRight])
         .padding(0.1);
 
     // Declare the y (vertical position) scale.
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data, (d) => d.frequency)])
+        .domain([0, 60])
         .range([height - marginBottom, marginTop]);
 
     let svgRef: SVGSVGElement | undefined;
@@ -37,17 +31,6 @@ export default function InputChart() {
         if (svgRef) {
 
             const svg = d3.select(svgRef);
-
-            // Add a rect for each bar.
-            svg.append("g")
-                .attr("fill", "steelblue")
-                .selectAll()
-                .data(data)
-                .join("rect")
-                .attr("x", (d) => x(d.letter))
-                .attr("y", (d) => y(d.frequency))
-                .attr("height", (d) => y(0) - y(d.frequency))
-                .attr("width", x.bandwidth());
 
             // Add the x-axis and label.
             svg.append("g")
@@ -61,10 +44,10 @@ export default function InputChart() {
                 .call(g => g.select(".domain").remove())
                 .call(g => g.append("text")
                     .attr("x", -marginLeft)
-                    .attr("y", 10)
+                    .attr("y", marginTop - 10)
                     .attr("fill", "currentColor")
                     .attr("text-anchor", "start")
-                    .text("Drying (%)"));
+                    .text(`${props.title} (%)`));
 
         }
     });
@@ -72,6 +55,17 @@ export default function InputChart() {
     return (
 
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`}>
+            <g fill="steelblue">
+                {/* Add a rect for each bar. */}
+                <rect
+                    x={x(props.data[0].id)}
+                    y={y(props.data[0].percent)}
+                    height={y(0) - y(props.data[0].percent)}
+                    width={x.bandwidth()}
+                />
+
+
+            </g>
         </svg>
 
     );
