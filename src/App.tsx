@@ -408,14 +408,20 @@ function App() {
           </div>
         </div>
 
-        <PhaseChart />
+
       </div>
       {/* main end*/}
 
       {/* side bar start*/}
       <div class="col-span-8 lg:col-span-4 m-1">
         <InputChart />
-        <InputChart />
+        <div class="grid grid-cols-3" >
+          <PhaseChart />
+          <PhaseChart />
+          <PhaseChart />
+        </div>
+
+
 
         <Show when={appStore.logs.length > 0}>
 
