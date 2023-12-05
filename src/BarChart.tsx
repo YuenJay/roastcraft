@@ -47,7 +47,7 @@ export default function BarChart(props: any) {
                     .attr("y", marginTop - 10)
                     .attr("fill", "currentColor")
                     .attr("text-anchor", "start")
-                    .text(`${props.title} (%)`));
+                    .text(`${props.title}`));
 
         }
     });
@@ -55,25 +55,41 @@ export default function BarChart(props: any) {
     return (
 
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`}>
-            <g fill="steelblue">
-                {/* Add a rect for each bar. */}
-                <For each={props.data}>{
-                    (d) => (<>
-                        <rect
-                            x={x(d.id)}
-                            y={y(d.percent)}
-                            height={y(0) - y(d.percent)}
-                            width={x.bandwidth()}
-                        />
-                        <text x={x(d.id) + x.bandwidth() / 2}
-                            y={y(d.percent) - 5}
-                            text-anchor="middle"
-                            font-size="1.0em">
-                            {d.percent}
-                        </text>
-                    </>)}
-                </For>
-            </g>
+
+            {/* Add a rect for each bar. */}
+            <For each={props.data}>{
+                (d) => (<>
+                    <rect
+                        fill="steelblue"
+                        opacity={d.opacity}
+                        x={x(d.id)}
+                        y={y(d.percent)}
+                        height={y(0) - y(d.percent)}
+                        width={x.bandwidth() / 2}
+                    />
+                    <text x={x(d.id) + x.bandwidth() / 4}
+                        y={y(d.percent) - 5}
+                        text-anchor="middle"
+                        font-size="0.7em">
+                        {d.percent}
+                    </text>
+                    <rect
+                        fill="orange"
+                        opacity={d.opacity}
+                        x={x(d.id) + x.bandwidth() / 2}
+                        y={y(d.temp_rise)}
+                        height={y(0) - y(d.temp_rise)}
+                        width={x.bandwidth() / 2}
+                    />
+                    <text x={x(d.id) + x.bandwidth() * 3 / 4}
+                        y={y(d.temp_rise) - 5}
+                        text-anchor="middle"
+                        font-size="0.7em">
+                        {d.temp_rise + '°'}
+                    </text>
+                </>)}
+            </For>
+
         </svg>
 
     );

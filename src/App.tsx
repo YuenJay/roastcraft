@@ -277,7 +277,7 @@ function App() {
             <p class="text-sm font-medium text-blue-600">
               {timestamp_format(appStore.Drying_Phase.time)}
             </p>
-            <p class="text-right text-sm font-medium text-blue-600">
+            <p class="text-right text-sm font-medium text-orange-600">
               {appStore.Drying_Phase.temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
@@ -291,7 +291,7 @@ function App() {
             <p class="text-sm font-medium text-blue-600">
               {timestamp_format(appStore.Maillard_Phase.time)}
             </p>
-            <p class="text-right text-sm font-medium text-blue-600">
+            <p class="text-right text-sm font-medium text-orange-600">
               {appStore.Maillard_Phase.temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
@@ -305,7 +305,7 @@ function App() {
             <p class="text-sm font-medium text-blue-600">
               {timestamp_format(appStore.Develop_Phase.time)}
             </p>
-            <p class="text-right text-sm font-medium text-blue-600">
+            <p class="text-right text-sm font-medium text-orange-600">
               {appStore.Develop_Phase.temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
@@ -414,29 +414,29 @@ function App() {
 
       {/* side bar start*/}
       <div class="col-span-8 lg:col-span-4 m-1">
-        <InputChart />
+
         <div class="grid grid-cols-3" >
           <BarChart
             title="Drying"
             data={[
-              // { id: "Ref", percent: 39 },
-              { id: "#", percent: appStore.Drying_Phase.percent.toFixed(1) },
+              { id: "Ref", opacity: 0.5, percent: 40.2, temp_rise: 57.2 },
+              { id: "#", opacity: 1, percent: appStore.Drying_Phase.percent.toFixed(1), temp_rise: appStore.Drying_Phase.temp_rise.toFixed(1) },
             ]} />
           <BarChart
             title="Maillard"
             data={[
-              // { id: "Ref", percent: 41 },
-              { id: "#", percent: appStore.Maillard_Phase.percent.toFixed(1) },
+              { id: "Ref", opacity: 0.5, percent: 40.3, temp_rise: 44.8 },
+              { id: "#", opacity: 1, percent: appStore.Maillard_Phase.percent.toFixed(1), temp_rise: appStore.Maillard_Phase.temp_rise.toFixed(1) },
             ]} />
           <BarChart
             title="Develop"
             data={[
-              // { id: "Ref", percent: 20 },
-              { id: "#", percent: appStore.Develop_Phase.percent.toFixed(1) },
+              { id: "Ref", opacity: 0.5, percent: 19.5, temp_rise: 13.0 },
+              { id: "#", opacity: 1, percent: appStore.Develop_Phase.percent.toFixed(1), temp_rise: appStore.Develop_Phase.temp_rise.toFixed(1) },
             ]} />
         </div>
 
-
+        <InputChart />
 
         <Show when={appStore.logs.length > 0}>
 
