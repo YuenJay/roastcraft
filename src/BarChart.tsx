@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // @ts-nocheck
 import { onMount, Show } from "solid-js";
 import * as d3 from "d3";
