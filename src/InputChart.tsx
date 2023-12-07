@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, Show } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import * as d3 from "d3";
-import useAppStore from "./AppStore";
+import useAppStore, { Metric, Point, useManualMetrics } from "./AppStore";
+import { produce } from "solid-js/store";
 
 export default function InputChart() {
 
     const [appStore, setAppStore] = useAppStore;
 
-    let data = appStore.metrics[0].data;
+    const [manualMetrics, setManualMetrics] = useManualMetrics;
 
     const width = 800;
     const height = 200;
@@ -28,8 +29,9 @@ export default function InputChart() {
     ]);
 
     const line = d3.line()
-        .x((d: any) => xScale(d.timestamp))
-        .y((d: any) => yScale(d.value));
+        .x((d: any) => xScale(d.timestamp + appStore.time_delta))
+        .y((d: any) => yScale(d.value))
+        .curve(d3.curveStepAfter);
 
     let svgRef: SVGSVGElement | undefined;
 
@@ -47,6 +49,17 @@ export default function InputChart() {
         }
     });
 
+    async function handleInput(event: InputEvent) {
+
+        let value = (event.target as HTMLInputElement).value;
+        console.log(value);
+
+        setManualMetrics(
+            [...manualMetrics(), new Point(appStore.timer, Number(value))]
+        );
+
+    }
+
     return (
         <div>
             <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 200" >
@@ -54,14 +67,9 @@ export default function InputChart() {
                     fill="none"
                     stroke="currentColor"
                     stroke-width="1.5"
-                    d={line(data as any) as string | undefined}
+                    d={line(manualMetrics() as any) as string | undefined}
                 />
-                <g fill="white" stroke="currentColor" stroke-width="1">
 
-                    <Show when={data.length > 0}>
-                        <circle cx={xScale(data[data.length - 1].timestamp)} cy={yScale(data[data.length - 1].value)} r="2" />
-                    </Show>
-                </g>
             </svg>
             <input
                 type="range"
@@ -70,6 +78,7 @@ export default function InputChart() {
                 value="40"
                 class="range range-primary range-xs"
                 step="20"
+                onInput={handleInput}
             />
             <div class="w-full flex justify-between text-xs px-2 pb-4">
                 <span class="h-2 w-px bg-black">

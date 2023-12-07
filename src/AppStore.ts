@@ -2,6 +2,8 @@
 
 import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
+import { createSignal } from 'solid-js';
+
 
 export class Point {
     timestamp: number = 0;  // time in seconds
@@ -149,5 +151,6 @@ async function init_store() {
 
 export default createStore(await init_store())
 
+export const useManualMetrics = createSignal(new Array<Point>());
 
 
