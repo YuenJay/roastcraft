@@ -100,21 +100,23 @@ async function init_store() {
     //     ror: []         // history 
     // }));
 
-    let metrics: Metric[] = config.tcp.http.channel.map((s: any) => ({
-        id: s.metrics_id,
-        label: s.label,
-        unit: s.unit,
-        color: s.color,
-        ror_enabled: s.ror_enabled,
-        ror_color: s.ror_color,
-        current_data: 0,
-        current_ror: 0,
-        data_window: [],
-        data: new Array<Point>(),
-        ror: new Array<Point>(),
-        ror_outlier: new Array<Point>(),
-        ror_filtered: new Array<Point>(),
-    }));
+    let metrics: Metric[] = config.tcp.http.channel.map((s: any) => (
+        {
+            id: s.metrics_id,
+            label: s.label,
+            unit: s.unit,
+            color: s.color,
+            ror_enabled: s.ror_enabled,
+            ror_color: s.ror_color,
+            current_data: 0,
+            current_ror: 0,
+            data_window: [],
+            data: [],
+            ror: [],
+            ror_outlier: [],
+            ror_filtered: [],
+        } as Metric
+    ));
 
     // move BT to be the first element
     let bt_index = metrics.findIndex(m => m.id == "BT");
@@ -151,6 +153,25 @@ async function init_store() {
 
 export default createStore(await init_store())
 
-export const useManualMetrics = createSignal(new Array<Point>());
+export class ManualMetric {
+    id: string = "";
+    data: Point[] = [];
+}
+
+async function init_manualMetrics() {
+
+    let store: Array<ManualMetric> = [];
+
+    store.push(
+        {
+            id: "GAS",
+            data: [{ timestamp: 0, value: 40 } as Point]
+        } as ManualMetric
+    );
+
+    return store;
+}
+
+export const useManualMetrics = createStore(await init_manualMetrics());
 
 

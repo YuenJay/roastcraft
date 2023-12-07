@@ -55,8 +55,14 @@ export default function InputChart() {
         console.log(value);
 
         setManualMetrics(
-            [...manualMetrics(), new Point(appStore.timer, Number(value))]
+            produce((manualMetrics) => {
+                manualMetrics[0].data.push(
+                    new Point(appStore.timer, Number(value))
+                );
+            })
         );
+
+        console.log(manualMetrics);
 
     }
 
@@ -67,7 +73,7 @@ export default function InputChart() {
                     fill="none"
                     stroke="currentColor"
                     stroke-width="1.5"
-                    d={line(manualMetrics() as any) as string | undefined}
+                    d={line(manualMetrics[0].data as any) as string | undefined}
                 />
 
             </svg>
