@@ -155,6 +155,7 @@ export default createStore(await init_store())
 
 export class ManualMetric {
     id: string = "";
+    current_data: number = 0;
     data: Point[] = [];
 }
 
@@ -165,6 +166,7 @@ async function init_manualMetrics() {
     store.push(
         {
             id: "GAS",
+            current_data: 40,
             data: [{ timestamp: 0, value: 40 } as Point]
         } as ManualMetric
     );

@@ -56,6 +56,7 @@ export default function InputChart() {
 
         setManualMetrics(
             produce((manualMetrics) => {
+                manualMetrics[0].current_data = Number(value);
                 manualMetrics[0].data.push(
                     new Point(appStore.timer, Number(value))
                 );
@@ -73,7 +74,9 @@ export default function InputChart() {
                     fill="none"
                     stroke="currentColor"
                     stroke-width="1.5"
-                    d={line(manualMetrics[0].data as any) as string | undefined}
+                    d={line(
+                        [...manualMetrics[0].data, { timestamp: appStore.timer, value: manualMetrics[0].current_data }] as any
+                    ) as string | undefined}
                 />
 
             </svg>
