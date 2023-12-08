@@ -54,14 +54,19 @@ export default function InputChart() {
         let value = (event.target as HTMLInputElement).value;
         console.log(value);
 
-        setManualMetrics(
-            produce((manualMetrics) => {
-                manualMetrics[0].current_data = Number(value);
-                manualMetrics[0].data.push(
-                    new Point(appStore.timer, Number(value))
-                );
-            })
+        manualMetrics()[0].setCurrentData(Number(value));
+        manualMetrics()[0].setData(
+            [...manualMetrics()[0].data(), new Point(appStore.timer, Number(value))]
         );
+
+        // setManualMetrics(
+        //     produce((manualMetrics) => {
+        //         manualMetrics[0].current_data = Number(value);
+        //         manualMetrics[0].data.push(
+        //             new Point(appStore.timer, Number(value))
+        //         );
+        //     })
+        // );
 
         console.log(manualMetrics);
 
@@ -75,7 +80,8 @@ export default function InputChart() {
                     stroke="currentColor"
                     stroke-width="1.5"
                     d={line(
-                        [...manualMetrics[0].data, { timestamp: appStore.timer, value: manualMetrics[0].current_data }] as any
+                        [...manualMetrics()[0].data(), { timestamp: appStore.timer, value: manualMetrics()[0].currentData() }] as any
+                        // [...manualMetrics[0].data, { timestamp: appStore.timer, value: manualMetrics[0].current_data }] as any
                     ) as string | undefined}
                 />
 
