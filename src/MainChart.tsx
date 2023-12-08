@@ -175,7 +175,7 @@ export default function MainChart() {
                 }
             </For>
 
-            <For each={appStore.events}>
+            <For each={appState().eventsSig[GET]()}>
                 {
                     (item) => (
                         <g clip-path="url(#clip-path)">

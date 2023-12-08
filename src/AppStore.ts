@@ -3,7 +3,6 @@
 import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { Signal, createSignal } from 'solid-js';
-import { create } from 'd3';
 
 export const GET = 0
 export const SET = 1
@@ -85,11 +84,8 @@ export enum RoastPhase {
 async function init_store() {
 
     return {
-        // config: config,
-        // metrics: metrics,
-        // metrics_id_list: metrics.map(m => m.id), // metrics order is the same
-        logs: new Array<String>(),
-        events: new Array<Event>(),
+
+        // events: new Array<Event>(),
         event_state: {
             CHARGE: false,
             DRY_END: false,
@@ -101,7 +97,6 @@ async function init_store() {
             TP: false,
             ROR_TP: false,
         },
-        // time_delta: 0,
         ROR_linear_start: { timestamp: 0, value: 0 },
         ROR_linear_end: { timestamp: 0, value: 0 },
         Drying_Phase: new Phase(0, 0.0, 0.0),
@@ -176,6 +171,8 @@ async function init_appStateSig() {
         timeDeltaSig: createSignal(0),
         metricsSig: createSignal(metrics),
         metricsIdListSig: createSignal(metrics.map(m => m.id)), // metrics order is the same
+        logsSig: createSignal(new Array<string>()),
+        eventsSig: createSignal(new Array<Event>()),
     }
 }
 

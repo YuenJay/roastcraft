@@ -24,6 +24,8 @@ function App() {
   const [timer, setTimer] = appState().timerSig;
   const [metrics, setMetrics] = appState().metricsSig;
   const [metricIdList, setmetricIdList] = appState().metricsIdListSig;
+  const [logs, setLogs] = appState().logsSig;
+  const [events, setEvents] = appState().eventsSig;
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
@@ -91,7 +93,7 @@ function App() {
       console.log(unwrap(appStore));
     });
 
-    setAppStore("logs", [...appStore.logs, "RoastCraft is ready"]);
+    setLogs([...logs(), "RoastCraft is ready"]);
 
     // alternative: https://tauri.app/v1/api/js/globalshortcut/
     // but I think this is ok
@@ -107,15 +109,13 @@ function App() {
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
     setStatus(AppStatus.ON);
-    setAppStore({ logs: [...appStore.logs, "start reading metrics..."] });
-
+    setLogs([...logs(), "start reading metrics..."]);
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
     setStatus(AppStatus.OFF);
-    setAppStore({ logs: [...appStore.logs, "stopped reading metrics"] });
-
+    setLogs([...logs(), "stopped reading metrics"]);
   }
 
   async function buttonStartClicked() {
@@ -126,14 +126,14 @@ function App() {
     };
 
     setStatus(AppStatus.RECORDING);
-    setAppStore({ logs: [...appStore.logs, "start recording"] });
+    setLogs([...logs(), "start recording"]);
   }
 
   async function buttonStopClicked() {
     timer_worker.terminate();
 
     setStatus(AppStatus.RECORDED);
-    setAppStore({ logs: [...appStore.logs, "stopped recording"] });
+    setLogs([...logs(), "stopped recording"]);
   }
 
   async function buttonResetClicked() {
@@ -171,10 +171,12 @@ function App() {
   }
 
   async function handleCharge() {
+
+    setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     setAppStore(
       produce((appStore) => {
         appStore.event_state.CHARGE = true;
-        appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.DRYING;
       })
     )
@@ -183,57 +185,64 @@ function App() {
   }
 
   async function handleDryEnd() {
+    setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+
     setAppStore(
       produce((appStore) => {
         appStore.event_state.DRY_END = true;
-        appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.MAILLARD;
       })
     )
   }
 
   async function handleFCStart() {
+    setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     setAppStore(
       produce((appStore) => {
         appStore.event_state.FC_START = true;
-        appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.DEVELOP;
       })
     )
   }
 
   async function handleFCEnd() {
+    setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     setAppStore(
       produce((appStore) => {
         appStore.event_state.FC_END = true;
-        appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
       })
     )
   }
 
   async function handleSCStart() {
+    setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     setAppStore(
       produce((appStore) => {
         appStore.event_state.SC_START = true;
-        appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
       })
     )
   }
 
   async function handleSCEnd() {
+    setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     setAppStore(
       produce((appStore) => {
         appStore.event_state.SC_END = true;
-        appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
       })
     )
   }
 
   async function handleDrop() {
+    setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     setAppStore(
       produce((appStore) => {
         appStore.event_state.DROP = true;
-        appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+        // appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.AFTER_DROP;
       })
     )
@@ -447,11 +456,11 @@ function App() {
 
         <InputChart />
 
-        <Show when={appStore.logs.length > 0}>
+        <Show when={logs().length > 0}>
 
           <div class="text-sm">
             {/* show 5 lines of logs, newest on top */}
-            <For each={appStore.logs.slice(-5).reverse()}>
+            <For each={logs().slice(-5).reverse()}>
               {(item) => <p class="px-1 border-b first:bg-base-200">{item.toString()}</p>}
             </For>
 
