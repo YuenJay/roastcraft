@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { produce, unwrap } from "solid-js/store";
-import useAppStore, { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppStore";
+import { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info } from "tauri-plugin-log-api";
 import * as d3 from "d3-array";
-
-const [appStore, setAppStore] = useAppStore;
 
 const [appState, setAppState] = appStateSig;
 const [timer, setTimer] = appState().timerSig;
@@ -18,6 +16,10 @@ const [eventDRY_END, setEventDRY_END] = appState().eventDRY_ENDSig;
 const [eventDROP, setEventDROP] = appState().eventDROPSig;
 const [eventTP, setEventTP] = appState().eventTPSig;
 const [eventROR_TP, setEventROR_TP] = appState().eventROR_TPSig;
+const [roastPhase, setRoastPhase] = appState().roastPhaseSig
+const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
+const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
+const [developPhase, setDevelopPhase] = appState().developPhaseSig;
 
 export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
@@ -125,18 +127,16 @@ export function findRorOutlier(metrics_index: number) {
         let ROR_TP_timestamp = (events().find(r => r.id == EventId.ROR_TP) as Event).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
-        setAppStore(
-            produce((appStore) => {
-                appStore.ROR_linear_start = {
-                    timestamp: window[0][0],
-                    value: l(window[0][0])
-                };
-                appStore.ROR_linear_end = {
-                    timestamp: window[window.length - 1][0],
-                    value: l(window[window.length - 1][0])
-                }
-            })
-        )
+
+        appState().rorLinearStartSig[SET](new Point(
+            window[0][0],
+            l(window[0][0])
+        ));
+        appState().rorLinearEndSig[SET](new Point(
+            window[window.length - 1][0],
+            l(window[window.length - 1][0])
+        ));
+
     }
 
 }
@@ -176,12 +176,7 @@ export function autoDetectChargeDrop() {
                     metrics()[m_index].dataSig[GET]()[target_index].timestamp,
                     metrics()[m_index].dataSig[GET]()[target_index].value
                 )]);
-
-                setAppStore(
-                    produce((appStore) => {
-                        appStore.RoastPhase = RoastPhase.DRYING;
-                    })
-                )
+                setRoastPhase(RoastPhase.DRYING);
 
             } else if (eventCHARGE() == true && eventTP() == true && eventDROP() == false) {
                 info("auto detected drop at ror index: " + (target_index));
@@ -192,12 +187,7 @@ export function autoDetectChargeDrop() {
                     metrics()[m_index].dataSig[GET]()[target_index].timestamp,
                     metrics()[m_index].dataSig[GET]()[target_index].value
                 )]);
-
-                setAppStore(
-                    produce((appStore) => {
-                        appStore.RoastPhase = RoastPhase.AFTER_DROP;
-                    })
-                )
+                setRoastPhase(RoastPhase.AFTER_DROP);
             }
         }
     }
@@ -268,31 +258,25 @@ export function findDryEnd() {
             metrics()[0].dataSig[GET]()[target_index].timestamp,
             metrics()[0].dataSig[GET]()[target_index].value
         )]);
-
-        setAppStore(
-            produce((appStore) => {
-                appStore.RoastPhase = RoastPhase.MAILLARD;
-            })
-        )
+        setRoastPhase(RoastPhase.MAILLARD);
     }
 }
 
 export function calculatePhases() {
 
-    if (appStore.RoastPhase == RoastPhase.DRYING) {
+    if (roastPhase() == RoastPhase.DRYING) {
         let charge = events().find(r => r.id == EventId.CHARGE) as Event;
         let temp_rise = 0;
         if (eventTP()) {
             let tp = (events().find(r => r.id == EventId.TP) as Event);
             temp_rise = metrics()[0].currentDataSig[GET]() - tp.value;
         }
-        setAppStore({
-            Drying_Phase: new Phase(
-                timer() - charge.timestamp,
-                100.0,
-                temp_rise)
-        })
-    } else if (appStore.RoastPhase == RoastPhase.MAILLARD) {
+        setDryingPhase(new Phase(
+            timer() - charge.timestamp,
+            100.0,
+            temp_rise
+        ));
+    } else if (roastPhase() == RoastPhase.MAILLARD) {
         let charge = events().find(r => r.id == EventId.CHARGE) as Event;
         let tp = events().find(r => r.id == EventId.TP) as Event;
         let de = events().find(r => r.id == EventId.DRY_END) as Event;
@@ -303,19 +287,19 @@ export function calculatePhases() {
         let maillard_time = timer() - de.timestamp;
         let maillard_temp_rise = metrics()[0].currentDataSig[GET]() - de.value;
 
-        setAppStore({
-            Drying_Phase: new Phase(
-                drying_time,
-                drying_time / (drying_time + maillard_time) * 100,
-                drying_temp_rise),
-            Maillard_Phase: new Phase(
-                maillard_time,
-                maillard_time / (drying_time + maillard_time) * 100,
-                maillard_temp_rise
-            )
-        })
+        setDryingPhase(new Phase(
+            drying_time,
+            drying_time / (drying_time + maillard_time) * 100,
+            drying_temp_rise
+        ));
 
-    } else if (appStore.RoastPhase == RoastPhase.DEVELOP) {
+        setMaillardPhase(new Phase(
+            maillard_time,
+            maillard_time / (drying_time + maillard_time) * 100,
+            maillard_temp_rise
+        ));
+
+    } else if (roastPhase() == RoastPhase.DEVELOP) {
         let charge = events().find(r => r.id == EventId.CHARGE) as Event;
         let tp = events().find(r => r.id == EventId.TP) as Event;
         let de = events().find(r => r.id == EventId.DRY_END) as Event;
@@ -330,23 +314,25 @@ export function calculatePhases() {
         let develop_time = timer() - fc.timestamp;
         let develop_temp_rise = metrics()[0].currentDataSig[GET]() - fc.value;
 
-        setAppStore({
-            Drying_Phase: new Phase(
-                drying_time,
-                drying_time / (drying_time + maillard_time + develop_time) * 100,
-                drying_temp_rise),
-            Maillard_Phase: new Phase(
-                maillard_time,
-                maillard_time / (drying_time + maillard_time + develop_time) * 100,
-                maillard_temp_rise
-            ),
-            Develop_Phase: new Phase(
-                develop_time,
-                develop_time / (drying_time + maillard_time + develop_time) * 100,
-                develop_temp_rise
-            )
-        })
-    } else if (appStore.RoastPhase == RoastPhase.AFTER_DROP) {
+        setDryingPhase(new Phase(
+            drying_time,
+            drying_time / (drying_time + maillard_time + develop_time) * 100,
+            drying_temp_rise
+        ));
+
+        setMaillardPhase(new Phase(
+            maillard_time,
+            maillard_time / (drying_time + maillard_time + develop_time) * 100,
+            maillard_temp_rise
+        ));
+
+        setDevelopPhase(new Phase(
+            develop_time,
+            develop_time / (drying_time + maillard_time + develop_time) * 100,
+            develop_temp_rise
+        ));
+
+    } else if (roastPhase() == RoastPhase.AFTER_DROP) {
         let charge = events().find(r => r.id == EventId.CHARGE) as Event;
         let tp = events().find(r => r.id == EventId.TP) as Event;
         let de = events().find(r => r.id == EventId.DRY_END) as Event;
@@ -362,22 +348,22 @@ export function calculatePhases() {
         let develop_time = drop.timestamp - fc.timestamp;
         let develop_temp_rise = drop.value - fc.value;
 
-        setAppStore({
-            Drying_Phase: new Phase(
-                drying_time,
-                drying_time / (drying_time + maillard_time + develop_time) * 100,
-                drying_temp_rise),
-            Maillard_Phase: new Phase(
-                maillard_time,
-                maillard_time / (drying_time + maillard_time + develop_time) * 100,
-                maillard_temp_rise
-            ),
-            Develop_Phase: new Phase(
-                develop_time,
-                develop_time / (drying_time + maillard_time + develop_time) * 100,
-                develop_temp_rise
-            )
-        })
-    }
+        setDryingPhase(new Phase(
+            drying_time,
+            drying_time / (drying_time + maillard_time + develop_time) * 100,
+            drying_temp_rise
+        ));
 
+        setMaillardPhase(new Phase(
+            maillard_time,
+            maillard_time / (drying_time + maillard_time + develop_time) * 100,
+            maillard_temp_rise
+        ));
+
+        setDevelopPhase(new Phase(
+            develop_time,
+            develop_time / (drying_time + maillard_time + develop_time) * 100,
+            develop_temp_rise
+        ));
+    }
 }

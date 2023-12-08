@@ -81,20 +81,6 @@ export enum RoastPhase {
     AFTER_DROP = 'AFTER_DROP',
 }
 
-async function init_store() {
-
-    return {
-        ROR_linear_start: { timestamp: 0, value: 0 },
-        ROR_linear_end: { timestamp: 0, value: 0 },
-        Drying_Phase: new Phase(0, 0.0, 0.0),
-        Maillard_Phase: new Phase(0, 0.0, 0.0),
-        Develop_Phase: new Phase(0, 0.0, 0.0),
-        RoastPhase: RoastPhase.BEFORE_CHARGE
-    }
-}
-
-export default createStore(await init_store())
-
 export class ManualMetric {
     id: string;
     currentDataSig: Signal<number>;
@@ -169,6 +155,12 @@ async function init_appStateSig() {
         eventDROPSig: createSignal(false),
         eventTPSig: createSignal(false),
         eventROR_TPSig: createSignal(false),
+        rorLinearStartSig: createSignal(new Point(0, 0)),
+        rorLinearEndSig: createSignal(new Point(0, 0)),
+        roastPhaseSig: createSignal(RoastPhase.BEFORE_CHARGE),
+        dryingPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
+        maillardPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
+        developPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
     }
 }
 

@@ -3,11 +3,9 @@
 // @ts-nocheck
 import { onMount, Show } from "solid-js";
 import * as d3 from "d3";
-import useAppStore from "./AppStore";
+
 
 export default function BarChart(props: any) {
-
-    const [appStore, setAppStore] = useAppStore;
 
     const width = 200;
     const height = 200;

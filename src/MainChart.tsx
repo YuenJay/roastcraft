@@ -2,12 +2,10 @@
 
 import { onMount, createEffect, Show, For } from "solid-js";
 import * as d3 from "d3";
-import useAppStore, { GET, SET, EventId, Point, appStateSig } from "./AppStore";
+import { GET, SET, EventId, Point, appStateSig } from "./AppStore";
 import Annotation from "./Annotation";
 
 export default function MainChart() {
-
-    const [appStore, setAppStore] = useAppStore;
 
     const [appState, setAppState] = appStateSig;
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
@@ -86,10 +84,10 @@ export default function MainChart() {
             <line stroke="#00FF00"
                 stroke-width="3"
                 clip-path="url(#clip-path)"
-                x1={xScale(appStore.ROR_linear_start.timestamp + timeDelta())}
-                y1={yScaleROR(appStore.ROR_linear_start.value)}
-                x2={xScale(appStore.ROR_linear_end.timestamp + timeDelta())}
-                y2={yScaleROR(appStore.ROR_linear_end.value)}
+                x1={xScale(appState().rorLinearStartSig[GET]().timestamp + timeDelta())}
+                y1={yScaleROR(appState().rorLinearStartSig[GET]().value)}
+                x2={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
+                y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
             ></line>
 
             {/* a reversed key array such as : [2,1,0] 

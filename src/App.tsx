@@ -9,15 +9,13 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import InputChart from "./InputChart";
-import useAppStore, { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppStore";
+import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 
 
 function App() {
-
-  const [appStore, setAppStore] = useAppStore;
 
   const [appState, setAppState] = appStateSig;
   const [status, setStatus] = appState().statusSig;
@@ -26,6 +24,10 @@ function App() {
   const [metricIdList, setmetricIdList] = appState().metricsIdListSig;
   const [logs, setLogs] = appState().logsSig;
   const [events, setEvents] = appState().eventsSig;
+  const [roastPhase, setRoastPhase] = appState().roastPhaseSig;
+  const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
+  const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
+  const [developPhase, setDevelopPhase] = appState().developPhaseSig;
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
@@ -33,7 +35,6 @@ function App() {
 
   onMount(async () => {
 
-    console.log(appStore)
 
     // tauri-plugin-log-api
     // with LogTarget::Webview enabled this function will print logs to the browser console
@@ -90,7 +91,6 @@ function App() {
       findDryEnd();
       calculatePhases();
 
-      console.log(unwrap(appStore));
     });
 
     setLogs([...logs(), "RoastCraft is ready"]);
@@ -171,94 +171,45 @@ function App() {
   }
 
   async function handleCharge() {
-
     setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+
     appState().eventCHARGESig[SET](true);
-
-    setAppStore(
-      produce((appStore) => {
-        // appStore.event_state.CHARGE = true;
-        // appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-        appStore.RoastPhase = RoastPhase.DRYING;
-      })
-    )
-
     appState().timeDeltaSig[SET](- timer());
+
+    setRoastPhase(RoastPhase.DRYING);
   }
 
   async function handleDryEnd() {
     setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     appState().eventDRY_ENDSig[SET](true);
-
-    setAppStore(
-      produce((appStore) => {
-        // appStore.event_state.DRY_END = true;
-        // appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-        appStore.RoastPhase = RoastPhase.MAILLARD;
-      })
-    )
+    setRoastPhase(RoastPhase.MAILLARD);
   }
 
   async function handleFCStart() {
     setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     appState().eventFC_STARTSig[SET](true);
-
-    setAppStore(
-      produce((appStore) => {
-        // appStore.event_state.FC_START = true;
-        // appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-        appStore.RoastPhase = RoastPhase.DEVELOP;
-      })
-    )
+    setRoastPhase(RoastPhase.DEVELOP);
   }
 
   async function handleFCEnd() {
     setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     appState().eventFC_ENDSig[SET](true);
-
-    // setAppStore(
-    //   produce((appStore) => {
-    // appStore.event_state.FC_END = true;
-    // appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-    //   })
-    // )
   }
 
   async function handleSCStart() {
     setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     appState().eventSC_STARTSig[SET](true);
-
-    // setAppStore(
-    // produce((appStore) => {
-    // appStore.event_state.SC_START = true;
-    // appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-    // })
-    // )
   }
 
   async function handleSCEnd() {
     setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     appState().eventSC_ENDSig[SET](true);
-
-    // setAppStore(
-    // produce((appStore) => {
-    // appStore.event_state.SC_END = true;
-    // appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-    // })
-    // )
   }
 
   async function handleDrop() {
     setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
     appState().eventDROPSig[SET](true);
-
-    setAppStore(
-      produce((appStore) => {
-        // appStore.event_state.DROP = true;
-        // appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-        appStore.RoastPhase = RoastPhase.AFTER_DROP;
-      })
-    )
+    setRoastPhase(RoastPhase.AFTER_DROP);
   }
 
   return (
@@ -306,13 +257,13 @@ function App() {
           <p class="text-right">Drying</p>
           <div class="grid grid-cols-2" >
             <p class="text-sm font-medium text-blue-600">
-              {timestamp_format(appStore.Drying_Phase.time)}
+              {timestamp_format(dryingPhase().time)}
             </p>
             <p class="text-right text-sm font-medium text-orange-600">
-              {appStore.Drying_Phase.temp_rise.toFixed(1)}°
+              {dryingPhase().temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Drying_Phase.percent.toFixed(1)}%
+              {dryingPhase().percent.toFixed(1)}%
             </p>
           </div>
         </div>
@@ -320,13 +271,13 @@ function App() {
           <p class="text-right">Maillard</p>
           <div class="grid grid-cols-2" >
             <p class="text-sm font-medium text-blue-600">
-              {timestamp_format(appStore.Maillard_Phase.time)}
+              {timestamp_format(maillardPhase().time)}
             </p>
             <p class="text-right text-sm font-medium text-orange-600">
-              {appStore.Maillard_Phase.temp_rise.toFixed(1)}°
+              {maillardPhase().temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Maillard_Phase.percent.toFixed(1)}%
+              {maillardPhase().percent.toFixed(1)}%
             </p>
           </div>
         </div>
@@ -334,13 +285,13 @@ function App() {
           <p class="text-right">Develop</p>
           <div class="grid grid-cols-2" >
             <p class="text-sm font-medium text-blue-600">
-              {timestamp_format(appStore.Develop_Phase.time)}
+              {timestamp_format(developPhase().time)}
             </p>
             <p class="text-right text-sm font-medium text-orange-600">
-              {appStore.Develop_Phase.temp_rise.toFixed(1)}°
+              {developPhase().temp_rise.toFixed(1)}°
             </p>
             <p class="text-sm font-medium text-blue-600">
-              {appStore.Develop_Phase.percent.toFixed(1)}%
+              {developPhase().percent.toFixed(1)}%
             </p>
 
           </div>
@@ -451,19 +402,19 @@ function App() {
             title="Drying"
             data={[
               // { id: "Ref", opacity: 0.5, percent: 40.2, temp_rise: 57.2 },
-              { id: "#", opacity: 1, percent: appStore.Drying_Phase.percent.toFixed(1), temp_rise: appStore.Drying_Phase.temp_rise.toFixed(1) },
+              { id: "#", opacity: 1, percent: dryingPhase().percent.toFixed(1), temp_rise: dryingPhase().temp_rise.toFixed(1) },
             ]} />
           <BarChart
             title="Maillard"
             data={[
               // { id: "Ref", opacity: 0.5, percent: 40.3, temp_rise: 44.8 },
-              { id: "#", opacity: 1, percent: appStore.Maillard_Phase.percent.toFixed(1), temp_rise: appStore.Maillard_Phase.temp_rise.toFixed(1) },
+              { id: "#", opacity: 1, percent: maillardPhase().percent.toFixed(1), temp_rise: maillardPhase().temp_rise.toFixed(1) },
             ]} />
           <BarChart
             title="Develop"
             data={[
               // { id: "Ref", opacity: 0.5, percent: 19.5, temp_rise: 13.0 },
-              { id: "#", opacity: 1, percent: appStore.Develop_Phase.percent.toFixed(1), temp_rise: appStore.Develop_Phase.temp_rise.toFixed(1) },
+              { id: "#", opacity: 1, percent: developPhase().percent.toFixed(1), temp_rise: developPhase().temp_rise.toFixed(1) },
             ]} />
         </div>
 
