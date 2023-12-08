@@ -2,14 +2,17 @@
 
 import { createSignal, onMount, Show } from "solid-js";
 import * as d3 from "d3";
-import useAppStore, { GET, Metric, Point, SET, manualMetricsSignal } from "./AppStore";
+import useAppStore, { GET, Metric, Point, SET, appStateSig, manualMetricsSig } from "./AppStore";
 import { produce } from "solid-js/store";
 
 export default function InputChart() {
 
     const [appStore, setAppStore] = useAppStore;
 
-    const [manualMetrics, setManualMetrics] = manualMetricsSignal;
+    const [appState, setAppState] = appStateSig;
+    const [timer, setTimer] = appState().timerSig;
+
+    const [manualMetrics, setManualMetrics] = manualMetricsSig;
 
     const width = 800;
     const height = 200;
@@ -29,7 +32,7 @@ export default function InputChart() {
     ]);
 
     const line = d3.line()
-        .x((d: any) => xScale(d.timestamp + appStore.time_delta))
+        .x((d: any) => xScale(d.timestamp + appState().timeDeltaSig[GET]()))
         .y((d: any) => yScale(d.value))
         .curve(d3.curveStepAfter);
 
@@ -56,7 +59,7 @@ export default function InputChart() {
 
         manualMetrics()[0].currentDataSig[SET](Number(value));
         manualMetrics()[0].dataSig[SET](
-            [...manualMetrics()[0].dataSig[GET](), new Point(appStore.timer, Number(value))]
+            [...manualMetrics()[0].dataSig[GET](), new Point(timer(), Number(value))]
         );
 
         console.log(manualMetrics);
@@ -71,7 +74,7 @@ export default function InputChart() {
                     stroke="currentColor"
                     stroke-width="1.5"
                     d={line(
-                        [...manualMetrics()[0].dataSig[GET](), { timestamp: appStore.timer, value: manualMetrics()[0].currentDataSig[GET]() }] as any
+                        [...manualMetrics()[0].dataSig[GET](), { timestamp: timer(), value: manualMetrics()[0].currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
 

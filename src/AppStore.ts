@@ -2,7 +2,7 @@
 
 import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
-import { Accessor, Setter, Signal, createSignal } from 'solid-js';
+import { Signal, createSignal } from 'solid-js';
 
 export const GET = 0
 export const SET = 1
@@ -125,9 +125,7 @@ async function init_store() {
     metrics.unshift(metrics.splice(bt_index, 1)[0]);
 
     return {
-        appStatus: AppStatus.OFF,
         config: config,
-        timer: 0,
         metrics: metrics,
         metrics_id_list: metrics.map(m => m.id), // metrics order is the same
         logs: new Array<String>(),
@@ -143,7 +141,7 @@ async function init_store() {
             TP: false,
             ROR_TP: false,
         },
-        time_delta: 0,
+        // time_delta: 0,
         ROR_linear_start: { timestamp: 0, value: 0 },
         ROR_linear_end: { timestamp: 0, value: 0 },
         Drying_Phase: new Phase(0, 0.0, 0.0),
@@ -182,6 +180,16 @@ async function init_manualMetrics() {
     return manualMetrics;
 }
 
-export const manualMetricsSignal = createSignal(await init_manualMetrics());
+export const manualMetricsSig = createSignal(await init_manualMetrics());
 
+
+async function init_appStateSig() {
+    return {
+        statusSig: createSignal(AppStatus.OFF),
+        timerSig: createSignal(0),
+        timeDeltaSig: createSignal(0),
+    }
+}
+
+export const appStateSig = createSignal(await init_appStateSig());
 

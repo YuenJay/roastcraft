@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { produce, unwrap } from "solid-js/store";
-import useAppStore, { Point, Event, EventId, RoastPhase, Phase } from "./AppStore";
+import useAppStore, { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
 import * as d3 from "d3-array";
 
 const [appStore, setAppStore] = useAppStore;
+
+const [appState, setAppState] = appStateSig;
+const [timer, setTimer] = appState().timerSig;
 
 export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
@@ -171,6 +174,8 @@ export function autoDetectChargeDrop() {
             if (appStore.event_state.CHARGE == false) {
                 info("auto detected charge at ror index: " + (target_index));
 
+                appState().timeDeltaSig[SET](- appStore.metrics[m_index].data[target_index].timestamp);
+
                 setAppStore(
                     produce((appStore) => {
                         appStore.event_state.CHARGE = true;
@@ -179,10 +184,11 @@ export function autoDetectChargeDrop() {
                             appStore.metrics[m_index].data[target_index].timestamp,
                             appStore.metrics[m_index].data[target_index].value
                         ));
-                        appStore.time_delta = - appStore.metrics[m_index].data[target_index].timestamp;
+
                         appStore.RoastPhase = RoastPhase.DRYING;
                     })
                 )
+
             } else if (appStore.event_state.CHARGE == true && appStore.event_state.TP == true && appStore.event_state.DROP == false) {
                 info("auto detected drop at ror index: " + (target_index));
 
@@ -288,7 +294,7 @@ export function calculatePhases() {
         }
         setAppStore({
             Drying_Phase: new Phase(
-                appStore.timer - charge.timestamp,
+                timer() - charge.timestamp,
                 100.0,
                 temp_rise)
         })
@@ -300,7 +306,7 @@ export function calculatePhases() {
         let drying_time = de.timestamp - charge.timestamp;
         let drying_temp_rise = de.value - tp.value;
 
-        let maillard_time = appStore.timer - de.timestamp;
+        let maillard_time = timer() - de.timestamp;
         let maillard_temp_rise = appStore.metrics[0].current_data - de.value;
 
         setAppStore({
@@ -327,7 +333,7 @@ export function calculatePhases() {
         let maillard_time = fc.timestamp - de.timestamp;
         let maillard_temp_rise = fc.value - de.value;
 
-        let develop_time = appStore.timer - fc.timestamp;
+        let develop_time = timer() - fc.timestamp;
         let develop_temp_rise = appStore.metrics[0].current_data - fc.value;
 
         setAppStore({

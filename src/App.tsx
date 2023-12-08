@@ -9,7 +9,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import InputChart from "./InputChart";
-import useAppStore, { AppStatus, EventId, Point, RoastPhase } from "./AppStore";
+import useAppStore, { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -18,6 +18,10 @@ import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRo
 function App() {
 
   const [appStore, setAppStore] = useAppStore;
+
+  const [appState, setAppState] = appStateSig;
+  const [status, setStatus] = appState().statusSig;
+  const [timer, setTimer] = appState().timerSig;
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
@@ -66,10 +70,10 @@ function App() {
             /* calculate ROR end */
 
             // write into history data
-            if (appStore.appStatus == AppStatus.RECORDING) {
+            if (status() == AppStatus.RECORDING) {
               appStore.metrics[i].data.push(
                 new Point(
-                  appStore.timer,
+                  timer(),
                   event.payload[appStore.metrics_id_list[i]]
                 )
               );
@@ -104,13 +108,15 @@ function App() {
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
-    setAppStore({ appStatus: AppStatus.ON, logs: [...appStore.logs, "start reading metrics..."] });
+    setStatus(AppStatus.ON);
+    setAppStore({ logs: [...appStore.logs, "start reading metrics..."] });
 
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
-    setAppStore({ appStatus: AppStatus.OFF, logs: [...appStore.logs, "stopped reading metrics"] });
+    setStatus(AppStatus.OFF);
+    setAppStore({ logs: [...appStore.logs, "stopped reading metrics"] });
 
   }
 
@@ -118,19 +124,23 @@ function App() {
     timer_worker = new WorkerFactory(timerWorker) as Worker;
     timer_worker.postMessage(1000);
     timer_worker.onmessage = (event: any) => {
-      setAppStore({ timer: event.data });
+      setTimer(event.data);
     };
-    setAppStore({ appStatus: AppStatus.RECORDING, logs: [...appStore.logs, "start recording"] });
+
+    setStatus(AppStatus.RECORDING);
+    setAppStore({ logs: [...appStore.logs, "start recording"] });
   }
 
   async function buttonStopClicked() {
     timer_worker.terminate();
-    setAppStore({ appStatus: AppStatus.RECORDED, logs: [...appStore.logs, "stopped recording"] });
+
+    setStatus(AppStatus.RECORDED);
+    setAppStore({ logs: [...appStore.logs, "stopped recording"] });
   }
 
   async function buttonResetClicked() {
     // todo: clear appStore
-    setAppStore({ appStatus: AppStatus.ON });
+    setStatus(AppStatus.ON);
   }
 
   function handleKeyDownEvent(event: KeyboardEvent) {
@@ -166,18 +176,19 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.CHARGE = true;
-        appStore.events.push({ id: EventId.CHARGE, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
-        appStore.time_delta = - appStore.timer;
+        appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: appStore.metrics[0].current_data });
         appStore.RoastPhase = RoastPhase.DRYING;
       })
     )
+
+    appState().timeDeltaSig[SET](- timer());
   }
 
   async function handleDryEnd() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.DRY_END = true;
-        appStore.events.push({ id: EventId.DRY_END, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: appStore.metrics[0].current_data });
         appStore.RoastPhase = RoastPhase.MAILLARD;
       })
     )
@@ -187,7 +198,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.FC_START = true;
-        appStore.events.push({ id: EventId.FC_START, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: appStore.metrics[0].current_data });
         appStore.RoastPhase = RoastPhase.DEVELOP;
       })
     )
@@ -197,7 +208,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.FC_END = true;
-        appStore.events.push({ id: EventId.FC_END, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: appStore.metrics[0].current_data });
       })
     )
   }
@@ -206,7 +217,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.SC_START = true;
-        appStore.events.push({ id: EventId.SC_START, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: appStore.metrics[0].current_data });
       })
     )
   }
@@ -215,7 +226,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.SC_END = true;
-        appStore.events.push({ id: EventId.SC_END, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: appStore.metrics[0].current_data });
       })
     )
   }
@@ -224,7 +235,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.DROP = true;
-        appStore.events.push({ id: EventId.DROP, timestamp: appStore.timer, value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: appStore.metrics[0].current_data });
         appStore.RoastPhase = RoastPhase.AFTER_DROP;
       })
     )
@@ -237,7 +248,7 @@ function App() {
       <div class="col-span-8 flex top-0 m-1 gap-1">
         <div class="bg-black rounded flex items-center px-1">
           <p class="text-4xl font-extrabold text-white ">
-            {timestamp_format(appStore.timer + appStore.time_delta)}
+            {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
           </p>
         </div>
 
@@ -316,14 +327,14 @@ function App() {
         </div>
 
         <div class="ml-auto self-center flex gap-3 mr-3">
-          <Show when={appStore.appStatus == AppStatus.OFF}>
+          <Show when={status() == AppStatus.OFF}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
               <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
             </div>
           </Show>
 
-          <Show when={appStore.appStatus == AppStatus.ON}>
+          <Show when={status() == AppStatus.ON}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
               <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
@@ -334,14 +345,14 @@ function App() {
             </div>
           </Show>
 
-          <Show when={appStore.appStatus == AppStatus.RECORDING}>
+          <Show when={status() == AppStatus.RECORDING}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
               <button class="btn btn-accent" onClick={buttonStopClicked}>STOP</button>
             </div>
           </Show>
 
-          <Show when={appStore.appStatus == AppStatus.RECORDED}>
+          <Show when={status() == AppStatus.RECORDED}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
               <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>

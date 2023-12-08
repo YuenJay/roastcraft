@@ -2,12 +2,15 @@
 
 import { onMount, createEffect, Show, For } from "solid-js";
 import * as d3 from "d3";
-import useAppStore, { EventId, Point } from "./AppStore";
+import useAppStore, { EventId, Point, appStateSig } from "./AppStore";
 import Annotation from "./Annotation";
 
 export default function MainChart() {
 
     const [appStore, setAppStore] = useAppStore;
+
+    const [appState, setAppState] = appStateSig;
+    const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
 
     const width = 800;
     const height = 500;
@@ -32,11 +35,11 @@ export default function MainChart() {
     ]);
 
     const line = d3.line()
-        .x((p: any) => xScale(p.timestamp + appStore.time_delta))
+        .x((p: any) => xScale(p.timestamp + timeDelta()))
         .y((p: any) => yScale(p.value));
 
     const lineROR = d3.line()
-        .x((p: any) => xScale(p.timestamp + appStore.time_delta))
+        .x((p: any) => xScale(p.timestamp + timeDelta()))
         .y((p: any) => yScaleROR(p.value));
 
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions
@@ -81,9 +84,9 @@ export default function MainChart() {
             <line stroke="#00FF00"
                 stroke-width="3"
                 clip-path="url(#clip-path)"
-                x1={xScale(appStore.ROR_linear_start.timestamp + appStore.time_delta)}
+                x1={xScale(appStore.ROR_linear_start.timestamp + timeDelta())}
                 y1={yScaleROR(appStore.ROR_linear_start.value)}
-                x2={xScale(appStore.ROR_linear_end.timestamp + appStore.time_delta)}
+                x2={xScale(appStore.ROR_linear_end.timestamp + timeDelta())}
                 y2={yScaleROR(appStore.ROR_linear_end.value)}
             ></line>
 
@@ -108,11 +111,11 @@ export default function MainChart() {
                                 clip-path="url(#clip-path)" >
                                 <Show when={appStore.metrics[item].data.length > 0}>
                                     <circle
-                                        cx={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp + appStore.time_delta)}
+                                        cx={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp + timeDelta())}
                                         cy={yScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value)}
                                         r="2" />
                                     <text
-                                        x={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp) + appStore.time_delta + 4}
+                                        x={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp) + timeDelta() + 4}
                                         y={yScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value)}>
                                         {appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value.toFixed(1)}
                                     </text>
@@ -124,7 +127,7 @@ export default function MainChart() {
                                     fill="none"
                                     stroke={appStore.metrics[item].color}
                                     stroke-width="1.5"
-                                    d={lineROR(appStore.metrics[item].ror_filtered.filter((p) => (p.timestamp + appStore.time_delta > 0)) as any) as string | undefined}
+                                    d={lineROR(appStore.metrics[item].ror_filtered.filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
                                     clip-path="url(#clip-path)"
                                 />
                                 <g
@@ -134,19 +137,19 @@ export default function MainChart() {
                                     clip-path="url(#clip-path)">
                                     <Show when={appStore.metrics[item].ror_filtered.length > 0}>
                                         <circle
-                                            cx={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp + appStore.time_delta)}
+                                            cx={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp + timeDelta())}
                                             cy={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}
                                             r="2" />
 
                                         <text
-                                            x={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp) + appStore.time_delta + 4}
+                                            x={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp) + timeDelta() + 4}
                                             y={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}>
                                             {appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value.toFixed(1)}
                                         </text>
                                     </Show>
                                 </g>
                                 {/* BT ROR outlier */}
-                                <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + appStore.time_delta > 0))}>
+                                <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + timeDelta() > 0))}>
                                     {
                                         (outlier) => (
                                             <>
@@ -157,7 +160,7 @@ export default function MainChart() {
                                                     stroke-opacity="50%"
                                                     clip-path="url(#clip-path)">
                                                     <circle
-                                                        cx={xScale(outlier.timestamp + appStore.time_delta)}
+                                                        cx={xScale(outlier.timestamp + timeDelta())}
                                                         cy={yScaleROR(outlier.value)}
                                                         r="2" />
                                                 </g>
@@ -178,14 +181,14 @@ export default function MainChart() {
                                 fill="none"
                                 stroke="#000000"
                                 stroke-width="1"
-                                cx={xScale(item.timestamp + appStore.time_delta)}
+                                cx={xScale(item.timestamp + timeDelta())}
                                 cy={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
                                 r="2" />
                             <Annotation
-                                x={xScale(item.timestamp + appStore.time_delta)}
+                                x={xScale(item.timestamp + timeDelta())}
                                 y={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
                                 text={item.id}
-                                timestamp={item.timestamp + appStore.time_delta}
+                                timestamp={item.timestamp + timeDelta()}
                                 value={item.value.toFixed(1)}
                             />
                         </g>
