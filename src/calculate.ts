@@ -4,7 +4,7 @@ import { produce, unwrap } from "solid-js/store";
 import useAppStore, { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
-import { trace, attachConsole, info } from "tauri-plugin-log-api";
+import { info } from "tauri-plugin-log-api";
 import * as d3 from "d3-array";
 
 const [appStore, setAppStore] = useAppStore;
@@ -13,6 +13,11 @@ const [appState, setAppState] = appStateSig;
 const [timer, setTimer] = appState().timerSig;
 const [metrics, setMetrics] = appState().metricsSig;
 const [events, setEvents] = appState().eventsSig;
+const [eventCHARGE, setEventCHARGE] = appState().eventCHARGESig;
+const [eventDRY_END, setEventDRY_END] = appState().eventDRY_ENDSig;
+const [eventDROP, setEventDROP] = appState().eventDROPSig;
+const [eventTP, setEventTP] = appState().eventTPSig;
+const [eventROR_TP, setEventROR_TP] = appState().eventROR_TPSig;
 
 export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
@@ -40,12 +45,6 @@ export function calculateRor(metrics_index: number) {
     }
 
     metrics()[metrics_index].rorSig[SET](ror_array);
-
-    // setAppStore(
-    //     produce((appStore) => {
-    //         metrics()[metrics_index].ror = ror_array;
-    //     })
-    // )
 
 }
 
@@ -106,36 +105,23 @@ export function findRorOutlier(metrics_index: number) {
     metrics()[metrics_index].rorFilteredSig[SET](ror_filtered);
 
     // find ROR TP
-    if (appStore.event_state.TP == true && appStore.event_state.ROR_TP == false) {
+    if (eventTP() == true && eventROR_TP() == false) {
         let window_size = 9
         let window = ror_filtered.slice(-window_size).map((r) => ([r.timestamp, r.value]));
         if (linearRegression(window).m < 0) {
             let target_index = window.length - 5;
 
-            setEvents([...events(),
-            new Event(
+            setEventROR_TP(true);
+            setEvents([...events(), new Event(
                 EventId.ROR_TP,
                 window[target_index][0],
                 window[target_index][1]
-            )
-            ]);
-
-            setAppStore(
-                produce((appStore) => {
-                    appStore.event_state.ROR_TP = true;
-                    // appStore.events.push(new Event(
-                    //     EventId.ROR_TP,
-                    //     window[target_index][0],
-                    //     window[target_index][1]
-                    // ));
-
-                })
-            )
+            )]);
         }
     }
 
     // ROR linear regression all
-    if (appStore.event_state.ROR_TP == true && appStore.event_state.DROP == false) {
+    if (eventROR_TP() == true && eventDROP() == false) {
         let ROR_TP_timestamp = (events().find(r => r.id == EventId.ROR_TP) as Event).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let l = linearRegressionLine(linearRegression(window));
@@ -180,10 +166,11 @@ export function autoDetectChargeDrop() {
             && Math.abs(dpost) > Math.abs(dpre) * 2) {
             let target_index = ror.length - 3;
 
-            if (appStore.event_state.CHARGE == false) {
+            if (eventCHARGE() == false) {
                 info("auto detected charge at ror index: " + (target_index));
 
                 appState().timeDeltaSig[SET](- metrics()[m_index].dataSig[GET]()[target_index].timestamp);
+                setEventCHARGE(true);
                 setEvents([...events(), new Event(
                     EventId.CHARGE,
                     metrics()[m_index].dataSig[GET]()[target_index].timestamp,
@@ -192,20 +179,14 @@ export function autoDetectChargeDrop() {
 
                 setAppStore(
                     produce((appStore) => {
-                        appStore.event_state.CHARGE = true;
-                        // appStore.events.push(new Event(
-                        //     EventId.CHARGE,
-                        //     metrics()[m_index].dataSig[GET]()[target_index].timestamp,
-                        //     metrics()[m_index].dataSig[GET]()[target_index].value
-                        // ));
-
                         appStore.RoastPhase = RoastPhase.DRYING;
                     })
                 )
 
-            } else if (appStore.event_state.CHARGE == true && appStore.event_state.TP == true && appStore.event_state.DROP == false) {
+            } else if (eventCHARGE() == true && eventTP() == true && eventDROP() == false) {
                 info("auto detected drop at ror index: " + (target_index));
 
+                setEventDROP(true);
                 setEvents([...events(), new Event(
                     EventId.DROP,
                     metrics()[m_index].dataSig[GET]()[target_index].timestamp,
@@ -214,12 +195,6 @@ export function autoDetectChargeDrop() {
 
                 setAppStore(
                     produce((appStore) => {
-                        appStore.event_state.DROP = true;
-                        // appStore.events.push(new Event(
-                        //     EventId.DROP,
-                        //     metrics()[m_index].dataSig[GET]()[target_index].timestamp,
-                        //     metrics()[m_index].dataSig[GET]()[target_index].value
-                        // ));
                         appStore.RoastPhase = RoastPhase.AFTER_DROP;
                     })
                 )
@@ -232,7 +207,7 @@ export function autoDetectChargeDrop() {
 export function findTurningPoint() {
 
     // only detect turning point after charge
-    if (appStore.event_state.CHARGE == false || appStore.event_state.TP == true) {
+    if (eventCHARGE() == false || eventTP() == true) {
         return
     }
 
@@ -262,30 +237,20 @@ export function findTurningPoint() {
 
     if (tp_found) {
 
+        setEventTP(true);
         setEvents([...events(), new Event(
             EventId.TP,
             metrics()[0].dataSig[GET]()[target_index].timestamp,
             metrics()[0].dataSig[GET]()[target_index].value
         )]);
 
-        setAppStore(
-            produce((appStore) => {
-                appStore.event_state.TP = true;
-                // appStore.events.push(new Event(
-                //     EventId.TP,
-                //     metrics()[0].dataSig[GET]()[target_index].timestamp,
-                //     metrics()[0].dataSig[GET]()[target_index].value
-                // ));
-
-            })
-        )
     }
 }
 
 export function findDryEnd() {
 
     // only detect dry end after turning point
-    if (appStore.event_state.TP == false || appStore.event_state.DRY_END == true) {
+    if (eventTP() == false || eventDRY_END() == true) {
         return
     }
 
@@ -297,6 +262,7 @@ export function findDryEnd() {
     if (data[data.length - 1].value > dry_end && data[data.length - 2].value > dry_end) {
         let target_index = data.length - 2;
 
+        setEventDRY_END(true);
         setEvents([...events(), new Event(
             EventId.DRY_END,
             metrics()[0].dataSig[GET]()[target_index].timestamp,
@@ -305,12 +271,6 @@ export function findDryEnd() {
 
         setAppStore(
             produce((appStore) => {
-                appStore.event_state.DRY_END = true;
-                // appStore.events.push(new Event(
-                //     EventId.DRY_END,
-                //     metrics()[0].dataSig[GET]()[target_index].timestamp,
-                //     metrics()[0].dataSig[GET]()[target_index].value
-                // ));
                 appStore.RoastPhase = RoastPhase.MAILLARD;
             })
         )
@@ -322,7 +282,7 @@ export function calculatePhases() {
     if (appStore.RoastPhase == RoastPhase.DRYING) {
         let charge = events().find(r => r.id == EventId.CHARGE) as Event;
         let temp_rise = 0;
-        if (appStore.event_state.TP) {
+        if (eventTP()) {
             let tp = (events().find(r => r.id == EventId.TP) as Event);
             temp_rise = metrics()[0].currentDataSig[GET]() - tp.value;
         }

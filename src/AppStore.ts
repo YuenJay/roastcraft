@@ -84,19 +84,6 @@ export enum RoastPhase {
 async function init_store() {
 
     return {
-
-        // events: new Array<Event>(),
-        event_state: {
-            CHARGE: false,
-            DRY_END: false,
-            FC_START: false,
-            FC_END: false,
-            SC_START: false,
-            SC_END: false,
-            DROP: false,
-            TP: false,
-            ROR_TP: false,
-        },
         ROR_linear_start: { timestamp: 0, value: 0 },
         ROR_linear_end: { timestamp: 0, value: 0 },
         Drying_Phase: new Phase(0, 0.0, 0.0),
@@ -173,6 +160,15 @@ async function init_appStateSig() {
         metricsIdListSig: createSignal(metrics.map(m => m.id)), // metrics order is the same
         logsSig: createSignal(new Array<string>()),
         eventsSig: createSignal(new Array<Event>()),
+        eventCHARGESig: createSignal(false),
+        eventDRY_ENDSig: createSignal(false),
+        eventFC_STARTSig: createSignal(false),
+        eventFC_ENDSig: createSignal(false),
+        eventSC_STARTSig: createSignal(false),
+        eventSC_ENDSig: createSignal(false),
+        eventDROPSig: createSignal(false),
+        eventTPSig: createSignal(false),
+        eventROR_TPSig: createSignal(false),
     }
 }
 

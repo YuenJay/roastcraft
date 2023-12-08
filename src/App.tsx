@@ -173,9 +173,11 @@ function App() {
   async function handleCharge() {
 
     setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    appState().eventCHARGESig[SET](true);
+
     setAppStore(
       produce((appStore) => {
-        appStore.event_state.CHARGE = true;
+        // appStore.event_state.CHARGE = true;
         // appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.DRYING;
       })
@@ -186,10 +188,11 @@ function App() {
 
   async function handleDryEnd() {
     setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    appState().eventDRY_ENDSig[SET](true);
 
     setAppStore(
       produce((appStore) => {
-        appStore.event_state.DRY_END = true;
+        // appStore.event_state.DRY_END = true;
         // appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.MAILLARD;
       })
@@ -198,9 +201,11 @@ function App() {
 
   async function handleFCStart() {
     setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    appState().eventFC_STARTSig[SET](true);
+
     setAppStore(
       produce((appStore) => {
-        appStore.event_state.FC_START = true;
+        // appStore.event_state.FC_START = true;
         // appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.DEVELOP;
       })
@@ -209,39 +214,47 @@ function App() {
 
   async function handleFCEnd() {
     setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
-    setAppStore(
-      produce((appStore) => {
-        appStore.event_state.FC_END = true;
-        // appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-      })
-    )
+    appState().eventFC_ENDSig[SET](true);
+
+    // setAppStore(
+    //   produce((appStore) => {
+    // appStore.event_state.FC_END = true;
+    // appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+    //   })
+    // )
   }
 
   async function handleSCStart() {
     setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
-    setAppStore(
-      produce((appStore) => {
-        appStore.event_state.SC_START = true;
-        // appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-      })
-    )
+    appState().eventSC_STARTSig[SET](true);
+
+    // setAppStore(
+    // produce((appStore) => {
+    // appStore.event_state.SC_START = true;
+    // appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+    // })
+    // )
   }
 
   async function handleSCEnd() {
     setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
-    setAppStore(
-      produce((appStore) => {
-        appStore.event_state.SC_END = true;
-        // appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
-      })
-    )
+    appState().eventSC_ENDSig[SET](true);
+
+    // setAppStore(
+    // produce((appStore) => {
+    // appStore.event_state.SC_END = true;
+    // appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
+    // })
+    // )
   }
 
   async function handleDrop() {
     setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    appState().eventDROPSig[SET](true);
+
     setAppStore(
       produce((appStore) => {
-        appStore.event_state.DROP = true;
+        // appStore.event_state.DROP = true;
         // appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.AFTER_DROP;
       })
@@ -376,52 +389,52 @@ function App() {
         <div class="m-2 mb-4 flex justify-evenly">
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.CHARGE ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventCHARGESig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleCharge}>
-              {appStore.event_state.CHARGE ? "✓ " : ""}CHARGE
+              {appState().eventCHARGESig[GET]() ? "✓ " : ""}CHARGE
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.DRY_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventDRY_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleDryEnd}>
-              {appStore.event_state.DRY_END ? "✓ " : ""}DRY END
+              {appState().eventDRY_ENDSig[GET]() ? "✓ " : ""}DRY END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.FC_START ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventFC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleFCStart}>
-              {appStore.event_state.FC_START ? "✓ " : ""}FC START
+              {appState().eventFC_STARTSig[GET]() ? "✓ " : ""}FC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.FC_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventFC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleFCEnd}>
-              {appStore.event_state.FC_END ? "✓ " : ""}FC END
+              {appState().eventFC_ENDSig[GET]() ? "✓ " : ""}FC END
             </button>
           </div>
 
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.SC_START ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventSC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleSCStart}>
-              {appStore.event_state.SC_START ? "✓ " : ""}SC START
+              {appState().eventSC_STARTSig[GET]() ? "✓ " : ""}SC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.SC_END ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventSC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleSCEnd}>
-              {appStore.event_state.SC_END ? "✓ " : ""}SC END
+              {appState().eventSC_ENDSig[GET]() ? "✓ " : ""}SC END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-            <button class={`btn btn-outline btn-primary ${appStore.event_state.DROP ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-outline btn-primary ${appState().eventDROPSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleDrop}>
-              {appStore.event_state.DROP ? "✓ " : ""}DROP
+              {appState().eventDROPSig[GET]() ? "✓ " : ""}DROP
             </button>
           </div>
         </div>
