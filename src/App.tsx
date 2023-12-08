@@ -22,6 +22,8 @@ function App() {
   const [appState, setAppState] = appStateSig;
   const [status, setStatus] = appState().statusSig;
   const [timer, setTimer] = appState().timerSig;
+  const [metrics, setMetrics] = appState().metricsSig;
+  const [metricIdList, setmetricIdList] = appState().metricsIdListSig;
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
@@ -40,47 +42,43 @@ function App() {
       trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
 
       // update current metrics reading and ror
-      setAppStore(
-        produce((appStore) => {
-          let i;
-          for (i = 0; i < appStore.metrics_id_list.length; i++) {
 
-            appStore.metrics[i].current_data = Number(event.payload[appStore.metrics_id_list[i]]);
+      let i;
+      for (i = 0; i < metricIdList().length; i++) {
 
-            /* calculate ROR start */
-            appStore.metrics[i].data_window.push(
-              {
-                value: Number(event.payload[appStore.metrics_id_list[i]]),
-                system_time: new Date().getTime()
-              }
-            );
+        metrics()[i].currentDataSig[SET](Number(event.payload[metricIdList()[i]]));
 
-            // buffer size of 5
-            if (appStore.metrics[i].data_window.length > 5) {
-              appStore.metrics[i].data_window.shift();
-            }
-
-            let delta = appStore.metrics[i].data_window[appStore.metrics[i].data_window.length - 1].value
-              - appStore.metrics[i].data_window[0].value;
-            let time_elapsed_sec = (appStore.metrics[i].data_window[appStore.metrics[i].data_window.length - 1].system_time
-              - appStore.metrics[i].data_window[0].system_time)
-              / 1000;
-
-            appStore.metrics[i].current_ror = (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
-            /* calculate ROR end */
-
-            // write into history data
-            if (status() == AppStatus.RECORDING) {
-              appStore.metrics[i].data.push(
-                new Point(
-                  timer(),
-                  event.payload[appStore.metrics_id_list[i]]
-                )
-              );
-            }
+        /* calculate ROR start */
+        metrics()[i].data_window.push(
+          {
+            value: Number(event.payload[metricIdList()[i]]),
+            system_time: new Date().getTime()
           }
-        })
-      )
+        );
+
+        // buffer size of 5
+        if (metrics()[i].data_window.length > 5) {
+          metrics()[i].data_window.shift();
+        }
+
+        let delta = metrics()[i].data_window[metrics()[i].data_window.length - 1].value
+          - metrics()[i].data_window[0].value;
+        let time_elapsed_sec = (metrics()[i].data_window[metrics()[i].data_window.length - 1].system_time
+          - metrics()[i].data_window[0].system_time)
+          / 1000;
+
+        metrics()[i].currentRorSig[SET](
+          (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
+        );
+        /* calculate ROR end */
+
+        // write into history data
+        if (status() == AppStatus.RECORDING) {
+          metrics()[i].dataSig[SET](
+            [...metrics()[i].dataSig[GET](), new Point(timer(), event.payload[metricIdList()[i]])]
+          )
+        }
+      }
 
       // BT only for now
       calculateRor(0);
@@ -176,7 +174,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.CHARGE = true;
-        appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.DRYING;
       })
     )
@@ -188,7 +186,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.DRY_END = true;
-        appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.MAILLARD;
       })
     )
@@ -198,7 +196,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.FC_START = true;
-        appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.DEVELOP;
       })
     )
@@ -208,7 +206,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.FC_END = true;
-        appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
       })
     )
   }
@@ -217,7 +215,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.SC_START = true;
-        appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
       })
     )
   }
@@ -226,7 +224,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.SC_END = true;
-        appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
       })
     )
   }
@@ -235,7 +233,7 @@ function App() {
     setAppStore(
       produce((appStore) => {
         appStore.event_state.DROP = true;
-        appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: appStore.metrics[0].current_data });
+        appStore.events.push({ id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() });
         appStore.RoastPhase = RoastPhase.AFTER_DROP;
       })
     )
@@ -254,27 +252,27 @@ function App() {
 
         {/* BT */}
         <div class="bg-base-300 rounded text-right w-20 p-1 ">
-          <p>{appStore.metrics[0].id}</p>
+          <p>{metrics()[0].id}</p>
           <p class="text-2xl font-medium text-red-600">
-            {appStore.metrics[0].current_data.toFixed(1)}
+            {metrics()[0].currentDataSig[GET]().toFixed(1)}
           </p>
         </div>
 
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">
-            {appStore.metrics[0].current_ror.toFixed(1)}
+            {metrics()[0].currentRorSig[GET]().toFixed(1)}
           </p>
         </div>
 
-        <Index each={appStore.metrics_id_list}>
+        <Index each={metricIdList()}>
           {
             (item, index) => (
               <Show when={index > 0}>
                 <div class="bg-base-300 rounded text-right w-20 p-1">
-                  <p>{appStore.metrics[index].id}</p>
+                  <p>{metrics()[index].id}</p>
                   <p class="text-2xl font-medium text-red-600">
-                    {appStore.metrics[index].current_data.toFixed(1)}
+                    {metrics()[index].currentDataSig[GET]().toFixed(1)}
                   </p>
                 </div>
               </Show>

@@ -3,6 +3,7 @@
 import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { Signal, createSignal } from 'solid-js';
+import { create } from 'd3';
 
 export const GET = 0
 export const SET = 1
@@ -23,13 +24,13 @@ export class Metric {
     color: string = "";
     ror_enabled: boolean = false;
     ror_color: string = "";
-    current_data: number = 0.0;     // current 
-    current_ror: number = 0.0;      // current
+    currentDataSig: Signal<number> = createSignal(0);    // current 
+    currentRorSig: Signal<number> = createSignal(0);     // current 
     data_window: Array<any> = [];   // current, for calculate ror
-    data: Array<Point> = [];        // history records
-    ror: Array<Point> = [];         // history records
-    ror_outlier: Array<Point> = []; // history records
-    ror_filtered: Array<Point> = [];// history records
+    dataSig: Signal<Array<Point>> = createSignal(new Array<Point>());        // history records
+    rorSig: Signal<Array<Point>> = createSignal(new Array<Point>());         // history records
+    rorOutlierSig: Signal<Array<Point>> = createSignal(new Array<Point>());  // history records
+    rorFilteredSig: Signal<Array<Point>> = createSignal(new Array<Point>()); // history records
 }
 
 export class Event {
@@ -83,51 +84,10 @@ export enum RoastPhase {
 
 async function init_store() {
 
-    // get config from backend
-    let config: any;
-    await invoke("get_config").then(c => config = c)
-
-    // todo: choose device based on config
-    // let metrics: any[] = config.serial.modbus.slave.map((s: any) => ({
-    //     id: s.metrics_id,
-    //     label: s.label,
-    //     unit: s.unit,
-    //     color: s.color,
-    //     ror_enabled: s.ror_enabled,
-    //     ror_color: s.ror_color,
-    //     current_data: {}, // current 
-    //     current_ror: {},    // current
-    //     data_window: [], // current
-    //     data: [],            // history
-    //     ror: []         // history 
-    // }));
-
-    let metrics: Metric[] = config.tcp.http.channel.map((s: any) => (
-        {
-            id: s.metrics_id,
-            label: s.label,
-            unit: s.unit,
-            color: s.color,
-            ror_enabled: s.ror_enabled,
-            ror_color: s.ror_color,
-            current_data: 0,
-            current_ror: 0,
-            data_window: [],
-            data: [],
-            ror: [],
-            ror_outlier: [],
-            ror_filtered: [],
-        } as Metric
-    ));
-
-    // move BT to be the first element
-    let bt_index = metrics.findIndex(m => m.id == "BT");
-    metrics.unshift(metrics.splice(bt_index, 1)[0]);
-
     return {
-        config: config,
-        metrics: metrics,
-        metrics_id_list: metrics.map(m => m.id), // metrics order is the same
+        // config: config,
+        // metrics: metrics,
+        // metrics_id_list: metrics.map(m => m.id), // metrics order is the same
         logs: new Array<String>(),
         events: new Array<Event>(),
         event_state: {
@@ -184,10 +144,38 @@ export const manualMetricsSig = createSignal(await init_manualMetrics());
 
 
 async function init_appStateSig() {
+    // get config from backend
+    let config: any;
+    await invoke("get_config").then(c => config = c);
+
+    let metrics: Metric[] = config.tcp.http.channel.map((s: any) => (
+        {
+            id: s.metrics_id,
+            label: s.label,
+            unit: s.unit,
+            color: s.color,
+            ror_enabled: s.ror_enabled,
+            ror_color: s.ror_color,
+            currentDataSig: createSignal(0),
+            currentRorSig: createSignal(0),
+            data_window: [],
+            dataSig: createSignal(new Array<Point>()),
+            rorSig: createSignal(new Array<Point>()),
+            rorOutlierSig: createSignal(new Array<Point>()),
+            rorFilteredSig: createSignal(new Array<Point>()),
+        } as Metric
+    ));
+
+    // move BT to be the first element
+    let bt_index = metrics.findIndex(m => m.id == "BT");
+    metrics.unshift(metrics.splice(bt_index, 1)[0]);
+
     return {
         statusSig: createSignal(AppStatus.OFF),
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),
+        metricsSig: createSignal(metrics),
+        metricsIdListSig: createSignal(metrics.map(m => m.id)), // metrics order is the same
     }
 }
 

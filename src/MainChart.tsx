@@ -2,7 +2,7 @@
 
 import { onMount, createEffect, Show, For } from "solid-js";
 import * as d3 from "d3";
-import useAppStore, { EventId, Point, appStateSig } from "./AppStore";
+import useAppStore, { GET, SET, EventId, Point, appStateSig } from "./AppStore";
 import Annotation from "./Annotation";
 
 export default function MainChart() {
@@ -11,6 +11,8 @@ export default function MainChart() {
 
     const [appState, setAppState] = appStateSig;
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
+    const [metrics, setMetrics] = appState().metricsSig;
+    const [metricIdList, setmetricIdList] = appState().metricsIdListSig;
 
     const width = 800;
     const height = 500;
@@ -92,70 +94,70 @@ export default function MainChart() {
 
             {/* a reversed key array such as : [2,1,0] 
               draw BT (at index 0) at last so that it is on the top */}
-            <For each={[...appStore.metrics_id_list.keys()].reverse()}>
+            <For each={[...metricIdList().keys()].reverse()}>
                 {
                     (item) => (
                         <>
                             {/* temperature */}
                             <path
                                 fill="none"
-                                stroke={appStore.metrics[item].color}
+                                stroke={metrics()[item].color}
                                 stroke-width="1.5"
-                                d={line(appStore.metrics[item].data as any) as string | undefined}
+                                d={line(metrics()[item].dataSig[GET]() as any) as string | undefined}
                                 clip-path="url(#clip-path)"
                             />
                             <g
-                                fill={appStore.metrics[item].color}
-                                stroke={appStore.metrics[item].color}
+                                fill={metrics()[item].color}
+                                stroke={metrics()[item].color}
                                 stroke-width="1"
                                 clip-path="url(#clip-path)" >
-                                <Show when={appStore.metrics[item].data.length > 0}>
+                                <Show when={metrics()[item].dataSig[GET]().length > 0}>
                                     <circle
-                                        cx={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp + timeDelta())}
-                                        cy={yScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value)}
+                                        cx={xScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].timestamp + timeDelta())}
+                                        cy={yScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].value)}
                                         r="2" />
                                     <text
-                                        x={xScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].timestamp) + timeDelta() + 4}
-                                        y={yScale(appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value)}>
-                                        {appStore.metrics[item].data[appStore.metrics[item].data.length - 1].value.toFixed(1)}
+                                        x={xScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].timestamp) + timeDelta() + 4}
+                                        y={yScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].value)}>
+                                        {metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].value.toFixed(1)}
                                     </text>
                                 </Show>
                             </g>
                             {/* rate of rise */}
-                            <Show when={appStore.metrics[item].ror_enabled}>
+                            <Show when={metrics()[item].ror_enabled}>
                                 <path
                                     fill="none"
-                                    stroke={appStore.metrics[item].color}
+                                    stroke={metrics()[item].color}
                                     stroke-width="1.5"
-                                    d={lineROR(appStore.metrics[item].ror_filtered.filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
+                                    d={lineROR(metrics()[item].rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
                                     clip-path="url(#clip-path)"
                                 />
                                 <g
-                                    fill={appStore.metrics[item].color}
-                                    stroke={appStore.metrics[item].color}
+                                    fill={metrics()[item].color}
+                                    stroke={metrics()[item].color}
                                     stroke-width="1"
                                     clip-path="url(#clip-path)">
-                                    <Show when={appStore.metrics[item].ror_filtered.length > 0}>
+                                    <Show when={metrics()[item].rorFilteredSig[GET]().length > 0}>
                                         <circle
-                                            cx={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp + timeDelta())}
-                                            cy={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}
+                                            cx={xScale(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].timestamp + timeDelta())}
+                                            cy={yScaleROR(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].value)}
                                             r="2" />
 
                                         <text
-                                            x={xScale(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].timestamp) + timeDelta() + 4}
-                                            y={yScaleROR(appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value)}>
-                                            {appStore.metrics[item].ror_filtered[appStore.metrics[item].ror_filtered.length - 1].value.toFixed(1)}
+                                            x={xScale(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].timestamp) + timeDelta() + 4}
+                                            y={yScaleROR(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].value)}>
+                                            {metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].value.toFixed(1)}
                                         </text>
                                     </Show>
                                 </g>
                                 {/* BT ROR outlier */}
-                                <For each={appStore.metrics[item].ror_outlier.filter((p) => (p.timestamp + timeDelta() > 0))}>
+                                <For each={metrics()[item].rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
                                     {
                                         (outlier) => (
                                             <>
                                                 <g
                                                     fill="none"
-                                                    stroke={appStore.metrics[item].color}
+                                                    stroke={metrics()[item].color}
                                                     stroke-width="1"
                                                     stroke-opacity="50%"
                                                     clip-path="url(#clip-path)">

@@ -11,13 +11,14 @@ const [appStore, setAppStore] = useAppStore;
 
 const [appState, setAppState] = appStateSig;
 const [timer, setTimer] = appState().timerSig;
+const [metrics, setMetrics] = appState().metricsSig;
 
 export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
 export function calculateRor(metrics_index: number) {
-    let data: Array<Point> = unwrap(appStore.metrics[metrics_index].data);
+    let data: Array<Point> = unwrap(metrics()[metrics_index].dataSig[GET]());
 
     let ror_array = Array<Point>();
 
@@ -37,17 +38,19 @@ export function calculateRor(metrics_index: number) {
 
     }
 
-    setAppStore(
-        produce((appStore) => {
-            appStore.metrics[metrics_index].ror = ror_array;
-        })
-    )
+    metrics()[metrics_index].rorSig[SET](ror_array);
+
+    // setAppStore(
+    //     produce((appStore) => {
+    //         metrics()[metrics_index].ror = ror_array;
+    //     })
+    // )
 
 }
 
 export function findRorOutlier(metrics_index: number) {
 
-    let ror: Array<Point> = unwrap(appStore.metrics[metrics_index].ror);
+    let ror: Array<Point> = unwrap(metrics()[metrics_index].rorSig[GET]());
 
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();
@@ -82,12 +85,12 @@ export function findRorOutlier(metrics_index: number) {
 
         if (zScore > 3) {
             ror_outlier.push(
-                appStore.metrics[metrics_index].ror[i]
+                metrics()[metrics_index].rorSig[GET]()[i]
             )
 
         } else {
             ror_filtered.push(
-                appStore.metrics[metrics_index].ror[i]
+                metrics()[metrics_index].rorSig[GET]()[i]
             )
         }
     }
@@ -98,12 +101,8 @@ export function findRorOutlier(metrics_index: number) {
         ror_filtered[i].value = value_blurred[i];
     }
 
-    setAppStore(
-        produce((appStore) => {
-            appStore.metrics[metrics_index].ror_outlier = ror_outlier;
-            appStore.metrics[metrics_index].ror_filtered = ror_filtered;
-        })
-    )
+    metrics()[metrics_index].rorOutlierSig[SET](ror_outlier);
+    metrics()[metrics_index].rorFilteredSig[SET](ror_filtered);
 
     // find ROR TP
     if (appStore.event_state.TP == true && appStore.event_state.ROR_TP == false) {
@@ -152,7 +151,7 @@ export function findRorOutlier(metrics_index: number) {
 // . average delta after i-2 is negative and twice as high (absolute) as the one before
 export function autoDetectChargeDrop() {
     let m_index: number = 0 // metrics index for BT
-    let ror: Array<any> = unwrap(appStore.metrics[m_index].ror);
+    let ror: Array<any> = unwrap(metrics()[m_index].rorSig[GET]());
 
     let window_size = 5
     if (ror.length >= window_size) {
@@ -174,15 +173,15 @@ export function autoDetectChargeDrop() {
             if (appStore.event_state.CHARGE == false) {
                 info("auto detected charge at ror index: " + (target_index));
 
-                appState().timeDeltaSig[SET](- appStore.metrics[m_index].data[target_index].timestamp);
+                appState().timeDeltaSig[SET](- metrics()[m_index].dataSig[GET]()[target_index].timestamp);
 
                 setAppStore(
                     produce((appStore) => {
                         appStore.event_state.CHARGE = true;
                         appStore.events.push(new Event(
                             EventId.CHARGE,
-                            appStore.metrics[m_index].data[target_index].timestamp,
-                            appStore.metrics[m_index].data[target_index].value
+                            metrics()[m_index].dataSig[GET]()[target_index].timestamp,
+                            metrics()[m_index].dataSig[GET]()[target_index].value
                         ));
 
                         appStore.RoastPhase = RoastPhase.DRYING;
@@ -197,8 +196,8 @@ export function autoDetectChargeDrop() {
                         appStore.event_state.DROP = true;
                         appStore.events.push(new Event(
                             EventId.DROP,
-                            appStore.metrics[m_index].data[target_index].timestamp,
-                            appStore.metrics[m_index].data[target_index].value
+                            metrics()[m_index].dataSig[GET]()[target_index].timestamp,
+                            metrics()[m_index].dataSig[GET]()[target_index].value
                         ));
                         appStore.RoastPhase = RoastPhase.AFTER_DROP;
                     })
@@ -220,7 +219,7 @@ export function findTurningPoint() {
     let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
-    let data: Array<any> = unwrap(appStore.metrics[0].data);
+    let data: Array<any> = unwrap(metrics()[0].dataSig[GET]());
 
     let target_index = 0;
     let tp_found = false;
@@ -246,8 +245,8 @@ export function findTurningPoint() {
                 appStore.event_state.TP = true;
                 appStore.events.push(new Event(
                     EventId.TP,
-                    appStore.metrics[0].data[target_index].timestamp,
-                    appStore.metrics[0].data[target_index].value
+                    metrics()[0].dataSig[GET]()[target_index].timestamp,
+                    metrics()[0].dataSig[GET]()[target_index].value
                 ));
 
             })
@@ -262,7 +261,7 @@ export function findDryEnd() {
         return
     }
 
-    let data: Array<any> = appStore.metrics[0].data;
+    let data: Array<any> = metrics()[0].dataSig[GET]();
 
     let dry_end = 150;
 
@@ -274,8 +273,8 @@ export function findDryEnd() {
                 appStore.event_state.DRY_END = true;
                 appStore.events.push(new Event(
                     EventId.DRY_END,
-                    appStore.metrics[0].data[target_index].timestamp,
-                    appStore.metrics[0].data[target_index].value
+                    metrics()[0].dataSig[GET]()[target_index].timestamp,
+                    metrics()[0].dataSig[GET]()[target_index].value
                 ));
                 appStore.RoastPhase = RoastPhase.MAILLARD;
             })
@@ -290,7 +289,7 @@ export function calculatePhases() {
         let temp_rise = 0;
         if (appStore.event_state.TP) {
             let tp = (appStore.events.find(r => r.id == EventId.TP) as Event);
-            temp_rise = appStore.metrics[0].current_data - tp.value;
+            temp_rise = metrics()[0].currentDataSig[GET]() - tp.value;
         }
         setAppStore({
             Drying_Phase: new Phase(
@@ -307,7 +306,7 @@ export function calculatePhases() {
         let drying_temp_rise = de.value - tp.value;
 
         let maillard_time = timer() - de.timestamp;
-        let maillard_temp_rise = appStore.metrics[0].current_data - de.value;
+        let maillard_temp_rise = metrics()[0].currentDataSig[GET]() - de.value;
 
         setAppStore({
             Drying_Phase: new Phase(
@@ -334,7 +333,7 @@ export function calculatePhases() {
         let maillard_temp_rise = fc.value - de.value;
 
         let develop_time = timer() - fc.timestamp;
-        let develop_temp_rise = appStore.metrics[0].current_data - fc.value;
+        let develop_temp_rise = metrics()[0].currentDataSig[GET]() - fc.value;
 
         setAppStore({
             Drying_Phase: new Phase(
