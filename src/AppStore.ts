@@ -2,8 +2,10 @@
 
 import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
-import { Accessor, Setter, createSignal } from 'solid-js';
+import { Accessor, Setter, Signal, createSignal } from 'solid-js';
 
+export const GET = 0
+export const SET = 1
 
 export class Point {
     timestamp: number = 0;  // time in seconds
@@ -155,18 +157,13 @@ export default createStore(await init_store())
 
 export class ManualMetric {
     id: string;
-    currentData: Accessor<number>;
-    setCurrentData: Setter<number>;
-    data: Accessor<Point[]>;
-    setData: Setter<Point[]>;
-    constructor(id: string,
-        currentData: Accessor<number>, setCurrentData: Setter<number>,
-        data: Accessor<Point[]>, setData: Setter<Point[]>) {
+    currentDataSig: Signal<number>;
+    dataSig: Signal<Point[]>;
+
+    constructor(id: string, currentDataSig: Signal<number>, dataSig: Signal<Point[]>) {
         this.id = id;
-        this.currentData = currentData;
-        this.setCurrentData = setCurrentData;
-        this.data = data;
-        this.setData = setData;
+        this.currentDataSig = currentDataSig;
+        this.dataSig = dataSig;
     }
 }
 
@@ -174,20 +171,17 @@ async function init_manualMetrics() {
 
     let manualMetrics: Array<ManualMetric> = new Array<ManualMetric>();
 
-    const [data, setData] = createSignal([new Point(0, 40)]);
-    const [currentData, setCurrentData] = createSignal(40);
-
     manualMetrics.push(
         new ManualMetric(
             "gas",
-            currentData, setCurrentData,
-            data, setData
+            createSignal(40),
+            createSignal([new Point(0, 40)])
         )
     );
 
     return manualMetrics;
 }
 
-export const useManualMetrics = createSignal(await init_manualMetrics());
+export const manualMetricsSignal = createSignal(await init_manualMetrics());
 
 

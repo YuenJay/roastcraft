@@ -2,14 +2,14 @@
 
 import { createSignal, onMount, Show } from "solid-js";
 import * as d3 from "d3";
-import useAppStore, { Metric, Point, useManualMetrics } from "./AppStore";
+import useAppStore, { GET, Metric, Point, SET, manualMetricsSignal } from "./AppStore";
 import { produce } from "solid-js/store";
 
 export default function InputChart() {
 
     const [appStore, setAppStore] = useAppStore;
 
-    const [manualMetrics, setManualMetrics] = useManualMetrics;
+    const [manualMetrics, setManualMetrics] = manualMetricsSignal;
 
     const width = 800;
     const height = 200;
@@ -54,19 +54,10 @@ export default function InputChart() {
         let value = (event.target as HTMLInputElement).value;
         console.log(value);
 
-        manualMetrics()[0].setCurrentData(Number(value));
-        manualMetrics()[0].setData(
-            [...manualMetrics()[0].data(), new Point(appStore.timer, Number(value))]
+        manualMetrics()[0].currentDataSig[SET](Number(value));
+        manualMetrics()[0].dataSig[SET](
+            [...manualMetrics()[0].dataSig[GET](), new Point(appStore.timer, Number(value))]
         );
-
-        // setManualMetrics(
-        //     produce((manualMetrics) => {
-        //         manualMetrics[0].current_data = Number(value);
-        //         manualMetrics[0].data.push(
-        //             new Point(appStore.timer, Number(value))
-        //         );
-        //     })
-        // );
 
         console.log(manualMetrics);
 
@@ -80,8 +71,7 @@ export default function InputChart() {
                     stroke="currentColor"
                     stroke-width="1.5"
                     d={line(
-                        [...manualMetrics()[0].data(), { timestamp: appStore.timer, value: manualMetrics()[0].currentData() }] as any
-                        // [...manualMetrics[0].data, { timestamp: appStore.timer, value: manualMetrics[0].current_data }] as any
+                        [...manualMetrics()[0].dataSig[GET](), { timestamp: appStore.timer, value: manualMetrics()[0].currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
 
