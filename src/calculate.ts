@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { produce, unwrap } from "solid-js/store";
-import useAppStore, { AppState, Point, Event, EventId, RoastPhase, Phase } from "./AppStore";
+import useAppStore, { Point, Event, EventId, RoastPhase, Phase } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";

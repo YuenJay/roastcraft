@@ -9,7 +9,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import InputChart from "./InputChart";
-import useAppStore, { AppState, EventId, Point, RoastPhase } from "./AppStore";
+import useAppStore, { AppStatus, EventId, Point, RoastPhase } from "./AppStore";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -66,7 +66,7 @@ function App() {
             /* calculate ROR end */
 
             // write into history data
-            if (appStore.appState == AppState.RECORDING) {
+            if (appStore.appStatus == AppStatus.RECORDING) {
               appStore.metrics[i].data.push(
                 new Point(
                   appStore.timer,
@@ -104,13 +104,13 @@ function App() {
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
-    setAppStore({ appState: AppState.ON, logs: [...appStore.logs, "start reading metrics..."] });
+    setAppStore({ appStatus: AppStatus.ON, logs: [...appStore.logs, "start reading metrics..."] });
 
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
-    setAppStore({ appState: AppState.OFF, logs: [...appStore.logs, "stopped reading metrics"] });
+    setAppStore({ appStatus: AppStatus.OFF, logs: [...appStore.logs, "stopped reading metrics"] });
 
   }
 
@@ -120,17 +120,17 @@ function App() {
     timer_worker.onmessage = (event: any) => {
       setAppStore({ timer: event.data });
     };
-    setAppStore({ appState: AppState.RECORDING, logs: [...appStore.logs, "start recording"] });
+    setAppStore({ appStatus: AppStatus.RECORDING, logs: [...appStore.logs, "start recording"] });
   }
 
   async function buttonStopClicked() {
     timer_worker.terminate();
-    setAppStore({ appState: AppState.RECORDED, logs: [...appStore.logs, "stopped recording"] });
+    setAppStore({ appStatus: AppStatus.RECORDED, logs: [...appStore.logs, "stopped recording"] });
   }
 
   async function buttonResetClicked() {
     // todo: clear appStore
-    setAppStore({ appState: AppState.ON });
+    setAppStore({ appStatus: AppStatus.ON });
   }
 
   function handleKeyDownEvent(event: KeyboardEvent) {
@@ -316,14 +316,14 @@ function App() {
         </div>
 
         <div class="ml-auto self-center flex gap-3 mr-3">
-          <Show when={appStore.appState == AppState.OFF}>
+          <Show when={appStore.appStatus == AppStatus.OFF}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
               <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
             </div>
           </Show>
 
-          <Show when={appStore.appState == AppState.ON}>
+          <Show when={appStore.appStatus == AppStatus.ON}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
               <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
@@ -334,14 +334,14 @@ function App() {
             </div>
           </Show>
 
-          <Show when={appStore.appState == AppState.RECORDING}>
+          <Show when={appStore.appStatus == AppStatus.RECORDING}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
               <button class="btn btn-accent" onClick={buttonStopClicked}>STOP</button>
             </div>
           </Show>
 
-          <Show when={appStore.appState == AppState.RECORDED}>
+          <Show when={appStore.appStatus == AppStatus.RECORDED}>
             <div class="indicator">
               <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
               <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>

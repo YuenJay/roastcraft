@@ -66,7 +66,7 @@ export enum EventId {
     ROR_TP = 'ROR_TP'
 }
 
-export enum AppState {
+export enum AppStatus {
     OFF = 'OFF',
     ON = 'ON',
     RECORDING = 'RECORDING',
@@ -125,7 +125,7 @@ async function init_store() {
     metrics.unshift(metrics.splice(bt_index, 1)[0]);
 
     return {
-        appState: AppState.OFF,
+        appStatus: AppStatus.OFF,
         config: config,
         timer: 0,
         metrics: metrics,
