@@ -10,7 +10,8 @@ export default function MainChart() {
     const [appState, setAppState] = appStateSig;
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
     const [metrics, setMetrics] = appState().metricsSig;
-    const [metricIdList, setmetricIdList] = appState().metricsIdListSig;
+
+    const bt = metrics()[appState().btIndex];
 
     const width = 800;
     const height = 500;
@@ -90,88 +91,112 @@ export default function MainChart() {
                 y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
             ></line>
 
-            {/* a reversed key array such as : [2,1,0] 
-              draw BT (at index 0) at last so that it is on the top */}
-            <For each={[...metricIdList().keys()].reverse()}>
+            <For each={metrics().filter(m => m.id != "BT")}>
                 {
-                    (item) => (
+                    (m) => (
                         <>
                             {/* temperature */}
                             <path
                                 fill="none"
-                                stroke={metrics()[item].color}
+                                stroke={m.color}
                                 stroke-width="1.5"
-                                d={line(metrics()[item].dataSig[GET]() as any) as string | undefined}
+                                d={line(m.dataSig[GET]() as any) as string | undefined}
                                 clip-path="url(#clip-path)"
                             />
                             <g
-                                fill={metrics()[item].color}
-                                stroke={metrics()[item].color}
+                                fill={m.color}
+                                stroke={m.color}
                                 stroke-width="1"
                                 clip-path="url(#clip-path)" >
-                                <Show when={metrics()[item].dataSig[GET]().length > 0}>
+                                <Show when={m.dataSig[GET]().length > 0}>
                                     <circle
-                                        cx={xScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].timestamp + timeDelta())}
-                                        cy={yScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].value)}
+                                        cx={xScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].timestamp + timeDelta())}
+                                        cy={yScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].value)}
                                         r="2" />
                                     <text
-                                        x={xScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].timestamp) + timeDelta() + 4}
-                                        y={yScale(metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].value)}>
-                                        {metrics()[item].dataSig[GET]()[metrics()[item].dataSig[GET]().length - 1].value.toFixed(1)}
+                                        x={xScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].timestamp) + timeDelta() + 4}
+                                        y={yScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].value)}>
+                                        {m.dataSig[GET]()[m.dataSig[GET]().length - 1].value.toFixed(1)}
                                     </text>
                                 </Show>
                             </g>
-                            {/* rate of rise */}
-                            <Show when={metrics()[item].ror_enabled}>
-                                <path
-                                    fill="none"
-                                    stroke={metrics()[item].color}
-                                    stroke-width="1.5"
-                                    d={lineROR(metrics()[item].rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
-                                    clip-path="url(#clip-path)"
-                                />
-                                <g
-                                    fill={metrics()[item].color}
-                                    stroke={metrics()[item].color}
-                                    stroke-width="1"
-                                    clip-path="url(#clip-path)">
-                                    <Show when={metrics()[item].rorFilteredSig[GET]().length > 0}>
-                                        <circle
-                                            cx={xScale(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].timestamp + timeDelta())}
-                                            cy={yScaleROR(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].value)}
-                                            r="2" />
-
-                                        <text
-                                            x={xScale(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].timestamp) + timeDelta() + 4}
-                                            y={yScaleROR(metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].value)}>
-                                            {metrics()[item].rorFilteredSig[GET]()[metrics()[item].rorFilteredSig[GET]().length - 1].value.toFixed(1)}
-                                        </text>
-                                    </Show>
-                                </g>
-                                {/* BT ROR outlier */}
-                                <For each={metrics()[item].rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
-                                    {
-                                        (outlier) => (
-                                            <>
-                                                <g
-                                                    fill="none"
-                                                    stroke={metrics()[item].color}
-                                                    stroke-width="1"
-                                                    stroke-opacity="50%"
-                                                    clip-path="url(#clip-path)">
-                                                    <circle
-                                                        cx={xScale(outlier.timestamp + timeDelta())}
-                                                        cy={yScaleROR(outlier.value)}
-                                                        r="2" />
-                                                </g>
-                                            </>
-                                        )}
-                                </For>
-                            </Show>
                         </>
                     )
                 }
             </For>
+
+            {/* BT */}
+            <path
+                fill="none"
+                stroke={bt.color}
+                stroke-width="1.5"
+                d={line(bt.dataSig[GET]() as any) as string | undefined}
+                clip-path="url(#clip-path)"
+            />
+            <g
+                fill={bt.color}
+                stroke={bt.color}
+                stroke-width="1"
+                clip-path="url(#clip-path)" >
+                <Show when={bt.dataSig[GET]().length > 0}>
+                    <circle
+                        cx={xScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].timestamp + timeDelta())}
+                        cy={yScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].value)}
+                        r="2" />
+                    <text
+                        x={xScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].timestamp) + timeDelta() + 4}
+                        y={yScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].value)}>
+                        {bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].value.toFixed(1)}
+                    </text>
+                </Show>
+            </g>
+
+            {/* rate of rise */}
+            <path
+                fill="none"
+                stroke={bt.color}
+                stroke-width="1.5"
+                d={lineROR(bt.rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
+                clip-path="url(#clip-path)"
+            />
+            <g
+                fill={bt.color}
+                stroke={bt.color}
+                stroke-width="1"
+                clip-path="url(#clip-path)">
+                <Show when={bt.rorFilteredSig[GET]().length > 0}>
+                    <circle
+                        cx={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp + timeDelta())}
+                        cy={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}
+                        r="2" />
+
+                    <text
+                        x={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp) + timeDelta() + 4}
+                        y={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}>
+                        {bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value.toFixed(1)}
+                    </text>
+                </Show>
+            </g>
+            {/* BT ROR outlier */}
+            <For each={bt.rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
+                {
+                    (outlier) => (
+                        <>
+                            <g
+                                fill="none"
+                                stroke={bt.color}
+                                stroke-width="1"
+                                stroke-opacity="50%"
+                                clip-path="url(#clip-path)">
+                                <circle
+                                    cx={xScale(outlier.timestamp + timeDelta())}
+                                    cy={yScaleROR(outlier.value)}
+                                    r="2" />
+                            </g>
+                        </>
+                    )}
+            </For>
+
 
             <For each={appState().eventsSig[GET]()}>
                 {

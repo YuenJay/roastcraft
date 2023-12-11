@@ -20,7 +20,6 @@ export class Metric {
     label: string = "";
     unit: string = "";
     color: string = "";
-    ror_enabled: boolean = false;
     ror_color: string = "";
     currentDataSig: Signal<number> = createSignal(0);    // current 
     currentRorSig: Signal<number> = createSignal(0);     // current 
@@ -121,7 +120,7 @@ async function init_appStateSig() {
             label: s.label,
             unit: s.unit,
             color: s.color,
-            ror_enabled: s.ror_enabled,
+
             ror_color: s.ror_color,
             currentDataSig: createSignal(0),
             currentRorSig: createSignal(0),
@@ -141,7 +140,6 @@ async function init_appStateSig() {
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),
         metricsSig: createSignal(metrics),
-        metricsIdListSig: createSignal(metrics.map(m => m.id)), // metrics order is the same
         logsSig: createSignal(new Array<string>()),
         eventsSig: createSignal(new Array<Event>()),
         eventCHARGESig: createSignal(false),

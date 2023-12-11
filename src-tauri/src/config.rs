@@ -75,7 +75,6 @@ pub struct Slave {
     pub decode_type: String,
     pub unit: String,
     pub color: String,
-    pub ror_enabled: bool,
     pub ror_color: String,
 }
 
@@ -87,6 +86,5 @@ pub struct Channel {
     pub id: u16,
     pub unit: String,
     pub color: String,
-    pub ror_enabled: bool,
     pub ror_color: String,
 }

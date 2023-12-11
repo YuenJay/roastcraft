@@ -21,13 +21,13 @@ function App() {
   const [status, setStatus] = appState().statusSig;
   const [timer, setTimer] = appState().timerSig;
   const [metrics, setMetrics] = appState().metricsSig;
-  const [metricIdList, setmetricIdList] = appState().metricsIdListSig;
   const [logs, setLogs] = appState().logsSig;
   const [events, setEvents] = appState().eventsSig;
   const [roastPhase, setRoastPhase] = appState().roastPhaseSig;
   const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
   const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
   const [developPhase, setDevelopPhase] = appState().developPhaseSig;
+  const metricIdList = metrics().map(m => m.id);
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
@@ -48,15 +48,16 @@ function App() {
 
       // update current metrics reading and ror
 
-      let i;
-      for (i = 0; i < metricIdList().length; i++) {
 
-        metrics()[i].currentDataSig[SET](Number(event.payload[metricIdList()[i]]));
+      let i;
+      for (i = 0; i < metricIdList.length; i++) {
+
+        metrics()[i].currentDataSig[SET](Number(event.payload[metricIdList[i]]));
 
         /* calculate ROR start */
         metrics()[i].data_window.push(
           {
-            value: Number(event.payload[metricIdList()[i]]),
+            value: Number(event.payload[metricIdList[i]]),
             system_time: new Date().getTime()
           }
         );
@@ -80,7 +81,7 @@ function App() {
         // write into history data
         if (status() == AppStatus.RECORDING) {
           metrics()[i].dataSig[SET](
-            [...metrics()[i].dataSig[GET](), new Point(timer(), event.payload[metricIdList()[i]])]
+            [...metrics()[i].dataSig[GET](), new Point(timer(), event.payload[metricIdList[i]])]
           )
         }
       }
@@ -240,7 +241,7 @@ function App() {
           </p>
         </div>
 
-        <Index each={metricIdList()}>
+        <Index each={metricIdList}>
           {
             (item, index) => (
               <Show when={index > 0}>
@@ -404,19 +405,19 @@ function App() {
             title="Drying"
             data={[
               // { id: "Ref", opacity: 0.5, percent: 40.2, temp_rise: 57.2 },
-              { id: "#", opacity: 1, percent: dryingPhase().percent.toFixed(1), temp_rise: dryingPhase().temp_rise.toFixed(1) },
+              { id: "#", opacity: 1, phase: dryingPhase },
             ]} />
           <BarChart
             title="Maillard"
             data={[
               // { id: "Ref", opacity: 0.5, percent: 40.3, temp_rise: 44.8 },
-              { id: "#", opacity: 1, percent: maillardPhase().percent.toFixed(1), temp_rise: maillardPhase().temp_rise.toFixed(1) },
+              { id: "#", opacity: 1, phase: maillardPhase },
             ]} />
           <BarChart
             title="Develop"
             data={[
               // { id: "Ref", opacity: 0.5, percent: 19.5, temp_rise: 13.0 },
-              { id: "#", opacity: 1, percent: developPhase().percent.toFixed(1), temp_rise: developPhase().temp_rise.toFixed(1) },
+              { id: "#", opacity: 1, phase: developPhase },
             ]} />
         </div>
 

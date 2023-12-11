@@ -3,7 +3,6 @@
 import { createSignal, onMount, Show } from "solid-js";
 import * as d3 from "d3";
 import { GET, Metric, Point, SET, appStateSig, manualMetricsSig } from "./AppStore";
-import { produce } from "solid-js/store";
 
 export default function InputChart() {
 
