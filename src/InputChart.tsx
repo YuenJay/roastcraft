@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, } from "solid-js";
+import { For, onMount, } from "solid-js";
 import * as d3 from "d3";
 import { GET, SET, Point, appStateSig } from "./AppState";
 
@@ -18,12 +18,25 @@ export default function InputChart() {
     const marginBottom = 20;
     const marginLeft = 30;
 
+    let min = 0;
+    let max = 100;
+    let step = 5;
+    let defaultValue = 20;
+
+    let pips: number[] = [];
+    for (let i = 0; i < max / step; i++) {
+        pips.push(min + i * step);
+    }
+    pips.push(max);
+
+    console.log(pips);
+
     const xScale = d3.scaleLinear(
         [-60, 720],
         [marginLeft, width - marginRight]
     );
 
-    const yScale = d3.scaleLinear([0, 120], [
+    const yScale = d3.scaleLinear([min, max], [
         height - marginBottom,
         marginTop,
     ]);
@@ -34,6 +47,8 @@ export default function InputChart() {
         .curve(d3.curveStepAfter);
 
     let svgRef: SVGSVGElement | undefined;
+
+
 
     onMount(() => {
         if (svgRef) {
@@ -49,7 +64,7 @@ export default function InputChart() {
 
             svg.on("mousemove", (event) => {
                 setCursorLineX(d3.pointer(event)[0]);
-                console.log(xScale.invert(d3.pointer(event)[0]));
+                // console.log(xScale.invert(d3.pointer(event)[0]));
             });
         }
     });
@@ -96,32 +111,22 @@ export default function InputChart() {
             </svg>
             <input
                 type="range"
-                min="0"
-                max="100"
-                value="40"
                 class="range range-primary range-xs"
-                step="20"
+                min={min}
+                max={max}
+                value={defaultValue}
+                step={step}
                 onInput={handleInput}
             />
             <div class="w-full flex justify-between text-xs px-2 pb-4">
-                <span class="h-2 w-px bg-black">
-                    <span class="absolute -translate-x-1/2 translate-y-1/2">0</span>
-                </span>
-                <span class="h-2 w-px bg-black">
-                    <span class="absolute -translate-x-1/2 translate-y-1/2">20</span>
-                </span>
-                <span class="h-2 w-px bg-black">
-                    <span class="absolute -translate-x-1/2 translate-y-1/2">40</span>
-                </span>
-                <span class="h-2 w-px bg-black">
-                    <span class="absolute -translate-x-1/2 translate-y-1/2">60</span>
-                </span>
-                <span class="h-2 w-px bg-black">
-                    <span class="absolute -translate-x-1/2 translate-y-1/2">80</span>
-                </span>
-                <span class="h-2 w-px bg-black">
-                    <span class="absolute -translate-x-1/2 translate-y-1/2">100</span>
-                </span>
+                <For each={pips}>
+                    {(pip) => (
+                        <span class="h-2 w-px bg-black">
+                            <span class="absolute -translate-x-1/2 translate-y-1/2" >{pip}</span>
+                        </span>
+                    )}
+                </For>
+
             </div>
         </div>
     );

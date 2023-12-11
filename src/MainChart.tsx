@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, createEffect, Show, For, createSignal } from "solid-js";
+import { onMount, createEffect, Show, For, } from "solid-js";
 import * as d3 from "d3";
-import { GET, SET, EventId, Point, appStateSig } from "./AppState";
+import { GET, EventId, appStateSig, BT } from "./AppState";
 import Annotation from "./Annotation";
 
 export default function MainChart() {
@@ -64,7 +64,7 @@ export default function MainChart() {
 
         svg.on("mousemove", (event) => {
             setCursorLineX(d3.pointer(event)[0]);
-            console.log(xScale.invert(d3.pointer(event)[0]));
+            // console.log(xScale.invert(d3.pointer(event)[0]));
         });
     });
 
@@ -97,7 +97,7 @@ export default function MainChart() {
                 y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
             ></line>
 
-            <For each={metrics().filter(m => m.id != "BT")}>
+            <For each={metrics().filter(m => m.id != BT)}>
                 {
                     (m) => (
                         <>

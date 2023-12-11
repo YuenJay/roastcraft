@@ -5,6 +5,7 @@ import { Accessor, Setter, Signal, createSignal } from 'solid-js';
 
 export const GET = 0
 export const SET = 1
+export const BT = "BT"
 
 export class Point {
     timestamp: number = 0;  // time in seconds
@@ -30,9 +31,18 @@ export class Metric {
     rorOutlierSig: Signal<Array<Point>>;  // history records
     rorFilteredSig: Signal<Array<Point>>; // history records
 
-    constructor(id: string, label: string, unit: string, color: string, ror_color: string,
-        currentDataSig: Signal<number>, currentRorSig: Signal<number>, data_window: Array<any>,
-        dataSig: Signal<Array<Point>>, rorSig: Signal<Array<Point>>, rorOutlierSig: Signal<Array<Point>>,
+    constructor(
+        id: string,
+        label: string,
+        unit: string,
+        color: string,
+        ror_color: string,
+        currentDataSig: Signal<number>,
+        currentRorSig: Signal<number>,
+        data_window: Array<any>,
+        dataSig: Signal<Array<Point>>,
+        rorSig: Signal<Array<Point>>,
+        rorOutlierSig: Signal<Array<Point>>,
         rorFilteredSig: Signal<Array<Point>>) {
         this.id = id;
         this.label = label;
@@ -133,15 +143,15 @@ async function init_appStateSig() {
         )
     );
 
-    let btIndex = metrics.findIndex(m => m.id == "BT");
+    let btIndex = metrics.findIndex(m => m.id == BT);
 
     let manualMetrics: Array<ManualMetric> = new Array<ManualMetric>();
 
     manualMetrics.push(
         new ManualMetric(
             "gas",
-            createSignal(40),
-            createSignal([new Point(0, 40)])
+            createSignal(20),
+            createSignal([new Point(0, 20)])
         )
     );
 
