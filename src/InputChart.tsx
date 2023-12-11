@@ -2,16 +2,14 @@
 
 import { onMount, } from "solid-js";
 import * as d3 from "d3";
-import { GET, Point, SET, appStateSig, manualMetricsSig } from "./AppStore";
+import { GET, SET, Point, appStateSig } from "./AppState";
 
 export default function InputChart() {
 
     const [appState, setAppState] = appStateSig;
     const [timer, setTimer] = appState().timerSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-
-    const [manualMetrics, setManualMetrics] = manualMetricsSig;
-
+    const [manualMetrics, setManualMetrics] = appState().manualMetricsSig;
 
     const width = 800;
     const height = 200;
@@ -66,8 +64,6 @@ export default function InputChart() {
             [...manualMetrics()[0].dataSig[GET](), new Point(timer(), Number(value))]
         );
 
-        console.log(manualMetrics);
-
     }
 
     return (
@@ -77,7 +73,7 @@ export default function InputChart() {
                     {/* Defines clipping area, rect is inside axis*/}
                     <clipPath
                         clipPathUnits="userSpaceOnUse"
-                        id="clip-path">
+                        id="clip-path-input-0">
                         <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
                     </clipPath>
                 </defs>
@@ -91,7 +87,7 @@ export default function InputChart() {
                 />
                 <line stroke="#00FF00"
                     stroke-width="1"
-                    clip-path="url(#clip-path)"
+                    clip-path="url(#clip-path-input-0)"
                     x1={cursorLineX()}
                     y1={marginTop}
                     x2={cursorLineX()}

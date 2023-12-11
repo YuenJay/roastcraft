@@ -2,7 +2,7 @@
 
 import { onMount, createEffect, Show, For, createSignal } from "solid-js";
 import * as d3 from "d3";
-import { GET, SET, EventId, Point, appStateSig } from "./AppStore";
+import { GET, SET, EventId, Point, appStateSig } from "./AppState";
 import Annotation from "./Annotation";
 
 export default function MainChart() {
@@ -49,8 +49,6 @@ export default function MainChart() {
     let axisBottomRef!: SVGSVGElement;
     let axisLeftRef!: SVGSVGElement;
     let axisRightRef!: SVGSVGElement;
-
-
 
     onMount(() => {
         const svg = d3.select(svgRef);
@@ -108,7 +106,7 @@ export default function MainChart() {
                                 fill="none"
                                 stroke={m.color}
                                 stroke-width="1.5"
-                                d={line(m.dataSig[GET]() as any) as string | undefined}
+                                d={line(m.data() as any) as string | undefined}
                                 clip-path="url(#clip-path)"
                             />
                             <g
@@ -116,15 +114,15 @@ export default function MainChart() {
                                 stroke={m.color}
                                 stroke-width="1"
                                 clip-path="url(#clip-path)" >
-                                <Show when={m.dataSig[GET]().length > 0}>
+                                <Show when={m.data().length > 0}>
                                     <circle
-                                        cx={xScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].timestamp + timeDelta())}
-                                        cy={yScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].value)}
+                                        cx={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
+                                        cy={yScale(m.data()[m.data().length - 1].value)}
                                         r="2" />
                                     <text
-                                        x={xScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].timestamp) + timeDelta() + 4}
-                                        y={yScale(m.dataSig[GET]()[m.dataSig[GET]().length - 1].value)}>
-                                        {m.dataSig[GET]()[m.dataSig[GET]().length - 1].value.toFixed(1)}
+                                        x={xScale(m.data()[m.data().length - 1].timestamp) + timeDelta() + 4}
+                                        y={yScale(m.data()[m.data().length - 1].value)}>
+                                        {m.data()[m.data().length - 1].value.toFixed(1)}
                                     </text>
                                 </Show>
                             </g>
@@ -138,7 +136,7 @@ export default function MainChart() {
                 fill="none"
                 stroke={bt.color}
                 stroke-width="1.5"
-                d={line(bt.dataSig[GET]() as any) as string | undefined}
+                d={line(bt.data() as any) as string | undefined}
                 clip-path="url(#clip-path)"
             />
             <g
@@ -146,15 +144,15 @@ export default function MainChart() {
                 stroke={bt.color}
                 stroke-width="1"
                 clip-path="url(#clip-path)" >
-                <Show when={bt.dataSig[GET]().length > 0}>
+                <Show when={bt.data().length > 0}>
                     <circle
-                        cx={xScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].timestamp + timeDelta())}
-                        cy={yScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].value)}
+                        cx={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta())}
+                        cy={yScale(bt.data()[bt.data().length - 1].value)}
                         r="2" />
                     <text
-                        x={xScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].timestamp) + timeDelta() + 4}
-                        y={yScale(bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].value)}>
-                        {bt.dataSig[GET]()[bt.dataSig[GET]().length - 1].value.toFixed(1)}
+                        x={xScale(bt.data()[bt.data().length - 1].timestamp) + timeDelta() + 4}
+                        y={yScale(bt.data()[bt.data().length - 1].value)}>
+                        {bt.data()[bt.data().length - 1].value.toFixed(1)}
                     </text>
                 </Show>
             </g>

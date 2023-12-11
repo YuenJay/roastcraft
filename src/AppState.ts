@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { invoke } from "@tauri-apps/api/tauri";
-import { Signal, createSignal } from 'solid-js';
+import { Accessor, Setter, Signal, createSignal } from 'solid-js';
 
 export const GET = 0
 export const SET = 1
@@ -16,18 +16,38 @@ export class Point {
 }
 
 export class Metric {
-    id: string = "";
-    label: string = "";
-    unit: string = "";
-    color: string = "";
-    ror_color: string = "";
-    currentDataSig: Signal<number> = createSignal(0);    // current 
-    currentRorSig: Signal<number> = createSignal(0);     // current 
-    data_window: Array<any> = [];   // current, for calculate ror
-    dataSig: Signal<Array<Point>> = createSignal(new Array<Point>());        // history records
-    rorSig: Signal<Array<Point>> = createSignal(new Array<Point>());         // history records
-    rorOutlierSig: Signal<Array<Point>> = createSignal(new Array<Point>());  // history records
-    rorFilteredSig: Signal<Array<Point>> = createSignal(new Array<Point>()); // history records
+    id: string;
+    label: string;
+    unit: string;
+    color: string;
+    ror_color: string;
+    currentDataSig: Signal<number>;    // current 
+    currentRorSig: Signal<number>;     // current 
+    data_window: Array<any>;           // current, for calculate ror
+    data: Accessor<Point[]>;           // history records
+    setData: Setter<Point[]>;          // history records
+    rorSig: Signal<Array<Point>>;         // history records
+    rorOutlierSig: Signal<Array<Point>>;  // history records
+    rorFilteredSig: Signal<Array<Point>>; // history records
+
+    constructor(id: string, label: string, unit: string, color: string, ror_color: string,
+        currentDataSig: Signal<number>, currentRorSig: Signal<number>, data_window: Array<any>,
+        dataSig: Signal<Array<Point>>, rorSig: Signal<Array<Point>>, rorOutlierSig: Signal<Array<Point>>,
+        rorFilteredSig: Signal<Array<Point>>) {
+        this.id = id;
+        this.label = label;
+        this.unit = unit;
+        this.color = color;
+        this.ror_color = ror_color;
+        this.currentDataSig = currentDataSig;
+        this.currentRorSig = currentRorSig;
+        this.data_window = data_window;
+        this.data = dataSig[GET];
+        this.setData = dataSig[SET];
+        this.rorSig = rorSig;
+        this.rorOutlierSig = rorOutlierSig;
+        this.rorFilteredSig = rorFilteredSig;
+    }
 }
 
 export class Event {
@@ -91,7 +111,29 @@ export class ManualMetric {
     }
 }
 
-async function init_manualMetrics() {
+async function init_appStateSig() {
+    // get config from backend
+    let config: any;
+    await invoke("get_config").then(c => config = c);
+
+    let metrics: Metric[] = config.tcp.http.channel.map((s: any) =>
+        new Metric(
+            s.metrics_id, // id
+            s.label, // label 
+            s.unit,  // unit
+            s.color, // color
+            s.ror_color,     // ror_color
+            createSignal(0), //currentDataSig
+            createSignal(0), //currentRorSig
+            [], //data_window
+            createSignal(new Array<Point>()), // dataSig
+            createSignal(new Array<Point>()), // rorSig
+            createSignal(new Array<Point>()), // rorOutlierSig
+            createSignal(new Array<Point>()), // rorFilteredSig
+        )
+    );
+
+    let btIndex = metrics.findIndex(m => m.id == "BT");
 
     let manualMetrics: Array<ManualMetric> = new Array<ManualMetric>();
 
@@ -103,43 +145,13 @@ async function init_manualMetrics() {
         )
     );
 
-    return manualMetrics;
-}
-
-export const manualMetricsSig = createSignal(await init_manualMetrics());
-
-
-async function init_appStateSig() {
-    // get config from backend
-    let config: any;
-    await invoke("get_config").then(c => config = c);
-
-    let metrics: Metric[] = config.tcp.http.channel.map((s: any) => (
-        {
-            id: s.metrics_id,
-            label: s.label,
-            unit: s.unit,
-            color: s.color,
-
-            ror_color: s.ror_color,
-            currentDataSig: createSignal(0),
-            currentRorSig: createSignal(0),
-            data_window: [],
-            dataSig: createSignal(new Array<Point>()),
-            rorSig: createSignal(new Array<Point>()),
-            rorOutlierSig: createSignal(new Array<Point>()),
-            rorFilteredSig: createSignal(new Array<Point>()),
-        } as Metric
-    ));
-
-    let btIndex = metrics.findIndex(m => m.id == "BT");
-
     return {
         btIndex: btIndex,
         statusSig: createSignal(AppStatus.OFF),
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),
         metricsSig: createSignal(metrics),
+        manualMetricsSig: createSignal(manualMetrics),
         logsSig: createSignal(new Array<string>()),
         eventsSig: createSignal(new Array<Event>()),
         eventCHARGESig: createSignal(false),

@@ -8,7 +8,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import InputChart from "./InputChart";
-import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppStore";
+import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -79,8 +79,8 @@ function App() {
 
         // write into history data
         if (status() == AppStatus.RECORDING) {
-          metrics()[i].dataSig[SET](
-            [...metrics()[i].dataSig[GET](), new Point(timer(), event.payload[metricIdList[i]])]
+          metrics()[i].setData(
+            [...metrics()[i].data(), new Point(timer(), event.payload[metricIdList[i]])]
           )
         }
       }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppStore";
+import { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info } from "tauri-plugin-log-api";
@@ -26,7 +26,7 @@ export function timestamp_format(timestamp: number) {
 
 export function calculateRor() {
     let mIndex = appState().btIndex; // metrics index for BT
-    let data: Array<Point> = metrics()[mIndex].dataSig[GET]();
+    let data: Array<Point> = metrics()[mIndex].data();
 
     let ror_array = Array<Point>();
 
@@ -148,7 +148,7 @@ export function findRorOutlier() {
 export function autoDetectChargeDrop() {
     let mIndex: number = appState().btIndex; // metrics index for BT
 
-    let data: Array<Point> = metrics()[mIndex].dataSig[GET]();
+    let data: Array<Point> = metrics()[mIndex].data();
     let ror: Array<Point> = metrics()[mIndex].rorSig[GET]();
 
     let window_size = 5
@@ -206,7 +206,7 @@ export function findTurningPoint() {
     let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
-    let data: Array<Point> = metrics()[appState().btIndex].dataSig[GET]();
+    let data: Array<Point> = metrics()[appState().btIndex].data();
 
     let target_index = 0;
     let tp_found = false;
@@ -245,7 +245,7 @@ export function findDryEnd() {
         return
     }
 
-    let data: Array<Point> = metrics()[appState().btIndex].dataSig[GET]();
+    let data: Array<Point> = metrics()[appState().btIndex].data();
 
     let dry_end = 150;
 
