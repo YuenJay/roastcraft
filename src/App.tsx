@@ -35,6 +35,8 @@ function App() {
 
   onMount(async () => {
 
+    console.log(appState());
+
 
     // tauri-plugin-log-api
     // with LogTarget::Webview enabled this function will print logs to the browser console
@@ -84,8 +86,8 @@ function App() {
       }
 
       // BT only for now
-      calculateRor(0);
-      findRorOutlier(0);
+      calculateRor();
+      findRorOutlier();
       autoDetectChargeDrop();
       findTurningPoint();
       findDryEnd();
@@ -171,7 +173,7 @@ function App() {
   }
 
   async function handleCharge() {
-    setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
 
     appState().eventCHARGESig[SET](true);
     appState().timeDeltaSig[SET](- timer());
@@ -180,34 +182,34 @@ function App() {
   }
 
   async function handleDryEnd() {
-    setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventDRY_ENDSig[SET](true);
     setRoastPhase(RoastPhase.MAILLARD);
   }
 
   async function handleFCStart() {
-    setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventFC_STARTSig[SET](true);
     setRoastPhase(RoastPhase.DEVELOP);
   }
 
   async function handleFCEnd() {
-    setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventFC_ENDSig[SET](true);
   }
 
   async function handleSCStart() {
-    setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventSC_STARTSig[SET](true);
   }
 
   async function handleSCEnd() {
-    setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventSC_ENDSig[SET](true);
   }
 
   async function handleDrop() {
-    setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: metrics()[0].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventDROPSig[SET](true);
     setRoastPhase(RoastPhase.AFTER_DROP);
   }
@@ -225,16 +227,16 @@ function App() {
 
         {/* BT */}
         <div class="bg-base-300 rounded text-right w-20 p-1 ">
-          <p>{metrics()[0].id}</p>
+          <p>{metrics()[appState().btIndex].id}</p>
           <p class="text-2xl font-medium text-red-600">
-            {metrics()[0].currentDataSig[GET]().toFixed(1)}
+            {metrics()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
           </p>
         </div>
 
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">
-            {metrics()[0].currentRorSig[GET]().toFixed(1)}
+            {metrics()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
           </p>
         </div>
 

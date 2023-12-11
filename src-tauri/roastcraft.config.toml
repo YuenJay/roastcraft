@@ -96,21 +96,21 @@ model   = "modbus"
     [tcp.http]
 
         [[tcp.http.channel]]
-            metrics_id  = "BT"
-            label       = "bean temp"
-            id          = 1           # dummy
-            unit        = "celcius"
-            color       = "#00007f"
-            ror_enabled = true
-            ror_color   = "#dd0000"
-
-        [[tcp.http.channel]]
             metrics_id  = "ET"
             label       = "exhaust temp"
             id          = 1              # dummy
             unit        = "celcius"
             color       = "#ff0000"
             ror_enabled = false
+            ror_color   = "#dd0000"
+
+        [[tcp.http.channel]]
+            metrics_id  = "BT"
+            label       = "bean temp"
+            id          = 1           # dummy
+            unit        = "celcius"
+            color       = "#00007f"
+            ror_enabled = true
             ror_color   = "#dd0000"
 
         [[tcp.http.channel]]

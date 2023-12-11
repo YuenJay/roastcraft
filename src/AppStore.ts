@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { createStore } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { Signal, createSignal } from 'solid-js';
 
@@ -134,11 +133,10 @@ async function init_appStateSig() {
         } as Metric
     ));
 
-    // move BT to be the first element
-    let bt_index = metrics.findIndex(m => m.id == "BT");
-    metrics.unshift(metrics.splice(bt_index, 1)[0]);
+    let btIndex = metrics.findIndex(m => m.id == "BT");
 
     return {
+        btIndex: btIndex,
         statusSig: createSignal(AppStatus.OFF),
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),

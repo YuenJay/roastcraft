@@ -25,8 +25,9 @@ export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
-export function calculateRor(metrics_index: number) {
-    let data: Array<Point> = unwrap(metrics()[metrics_index].dataSig[GET]());
+export function calculateRor() {
+    let mIndex = appState().btIndex; // metrics index for BT
+    let data: Array<Point> = unwrap(metrics()[mIndex].dataSig[GET]());
 
     let ror_array = Array<Point>();
 
@@ -43,16 +44,16 @@ export function calculateRor(metrics_index: number) {
         ror_array.push(
             new Point(data[i].timestamp, ror)
         );
-
     }
 
-    metrics()[metrics_index].rorSig[SET](ror_array);
-
+    metrics()[mIndex].rorSig[SET](ror_array);
 }
 
-export function findRorOutlier(metrics_index: number) {
+export function findRorOutlier() {
 
-    let ror: Array<Point> = unwrap(metrics()[metrics_index].rorSig[GET]());
+    let mIndex = appState().btIndex; // metrics index for BT
+
+    let ror: Array<Point> = unwrap(metrics()[mIndex].rorSig[GET]());
 
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();
@@ -87,12 +88,12 @@ export function findRorOutlier(metrics_index: number) {
 
         if (zScore > 3) {
             ror_outlier.push(
-                metrics()[metrics_index].rorSig[GET]()[i]
+                metrics()[mIndex].rorSig[GET]()[i]
             )
 
         } else {
             ror_filtered.push(
-                metrics()[metrics_index].rorSig[GET]()[i]
+                metrics()[mIndex].rorSig[GET]()[i]
             )
         }
     }
@@ -103,8 +104,8 @@ export function findRorOutlier(metrics_index: number) {
         ror_filtered[i].value = value_blurred[i];
     }
 
-    metrics()[metrics_index].rorOutlierSig[SET](ror_outlier);
-    metrics()[metrics_index].rorFilteredSig[SET](ror_filtered);
+    metrics()[mIndex].rorOutlierSig[SET](ror_outlier);
+    metrics()[mIndex].rorFilteredSig[SET](ror_filtered);
 
     // find ROR TP
     if (eventTP() == true && eventROR_TP() == false) {
@@ -146,8 +147,10 @@ export function findRorOutlier(metrics_index: number) {
 // . average delta before i-2 is not negative
 // . average delta after i-2 is negative and twice as high (absolute) as the one before
 export function autoDetectChargeDrop() {
-    let m_index: number = 0 // metrics index for BT
-    let ror: Array<any> = unwrap(metrics()[m_index].rorSig[GET]());
+    let mIndex: number = appState().btIndex; // metrics index for BT
+
+    let data: Array<Point> = metrics()[mIndex].dataSig[GET]();
+    let ror: Array<Point> = metrics()[mIndex].rorSig[GET]();
 
     let window_size = 5
     if (ror.length >= window_size) {
@@ -169,13 +172,12 @@ export function autoDetectChargeDrop() {
             if (eventCHARGE() == false) {
                 info("auto detected charge at ror index: " + (target_index));
 
-                appState().timeDeltaSig[SET](- metrics()[m_index].dataSig[GET]()[target_index].timestamp);
+                appState().timeDeltaSig[SET](- data[target_index].timestamp);
                 setEventCHARGE(true);
                 setEvents([...events(), new Event(
                     EventId.CHARGE,
-                    metrics()[m_index].dataSig[GET]()[target_index].timestamp,
-                    metrics()[m_index].dataSig[GET]()[target_index].value
-                )]);
+                    data[target_index].timestamp,
+                    data[target_index].value)]);
                 setRoastPhase(RoastPhase.DRYING);
 
             } else if (eventCHARGE() == true && eventTP() == true && eventDROP() == false) {
@@ -184,8 +186,8 @@ export function autoDetectChargeDrop() {
                 setEventDROP(true);
                 setEvents([...events(), new Event(
                     EventId.DROP,
-                    metrics()[m_index].dataSig[GET]()[target_index].timestamp,
-                    metrics()[m_index].dataSig[GET]()[target_index].value
+                    data[target_index].timestamp,
+                    data[target_index].value
                 )]);
                 setRoastPhase(RoastPhase.AFTER_DROP);
             }
@@ -205,7 +207,7 @@ export function findTurningPoint() {
     let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
-    let data: Array<any> = unwrap(metrics()[0].dataSig[GET]());
+    let data: Array<Point> = metrics()[appState().btIndex].dataSig[GET]();
 
     let target_index = 0;
     let tp_found = false;
@@ -230,8 +232,8 @@ export function findTurningPoint() {
         setEventTP(true);
         setEvents([...events(), new Event(
             EventId.TP,
-            metrics()[0].dataSig[GET]()[target_index].timestamp,
-            metrics()[0].dataSig[GET]()[target_index].value
+            data[target_index].timestamp,
+            data[target_index].value
         )]);
 
     }
@@ -244,7 +246,7 @@ export function findDryEnd() {
         return
     }
 
-    let data: Array<any> = metrics()[0].dataSig[GET]();
+    let data: Array<Point> = metrics()[appState().btIndex].dataSig[GET]();
 
     let dry_end = 150;
 
@@ -255,8 +257,8 @@ export function findDryEnd() {
         setEventDRY_END(true);
         setEvents([...events(), new Event(
             EventId.DRY_END,
-            metrics()[0].dataSig[GET]()[target_index].timestamp,
-            metrics()[0].dataSig[GET]()[target_index].value
+            data[target_index].timestamp,
+            data[target_index].value
         )]);
         setRoastPhase(RoastPhase.MAILLARD);
     }
@@ -264,12 +266,14 @@ export function findDryEnd() {
 
 export function calculatePhases() {
 
+    let mIndex = appState().btIndex; // metrics index for BT
+
     if (roastPhase() == RoastPhase.DRYING) {
         let charge = events().find(r => r.id == EventId.CHARGE) as Event;
         let temp_rise = 0;
         if (eventTP()) {
             let tp = (events().find(r => r.id == EventId.TP) as Event);
-            temp_rise = metrics()[0].currentDataSig[GET]() - tp.value;
+            temp_rise = metrics()[mIndex].currentDataSig[GET]() - tp.value;
         }
         setDryingPhase(new Phase(
             timer() - charge.timestamp,
@@ -285,7 +289,7 @@ export function calculatePhases() {
         let drying_temp_rise = de.value - tp.value;
 
         let maillard_time = timer() - de.timestamp;
-        let maillard_temp_rise = metrics()[0].currentDataSig[GET]() - de.value;
+        let maillard_temp_rise = metrics()[mIndex].currentDataSig[GET]() - de.value;
 
         setDryingPhase(new Phase(
             drying_time,
@@ -312,7 +316,7 @@ export function calculatePhases() {
         let maillard_temp_rise = fc.value - de.value;
 
         let develop_time = timer() - fc.timestamp;
-        let develop_temp_rise = metrics()[0].currentDataSig[GET]() - fc.value;
+        let develop_temp_rise = metrics()[mIndex].currentDataSig[GET]() - fc.value;
 
         setDryingPhase(new Phase(
             drying_time,
