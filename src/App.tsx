@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { onMount, onCleanup, Show, For, Index } from "solid-js";
-import { produce, unwrap } from 'solid-js/store'
 import { invoke } from "@tauri-apps/api/tauri";
 import { trace, attachConsole, info } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";

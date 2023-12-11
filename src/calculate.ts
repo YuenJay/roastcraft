@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { produce, unwrap } from "solid-js/store";
 import { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppStore";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
@@ -27,7 +26,7 @@ export function timestamp_format(timestamp: number) {
 
 export function calculateRor() {
     let mIndex = appState().btIndex; // metrics index for BT
-    let data: Array<Point> = unwrap(metrics()[mIndex].dataSig[GET]());
+    let data: Array<Point> = metrics()[mIndex].dataSig[GET]();
 
     let ror_array = Array<Point>();
 
@@ -53,7 +52,7 @@ export function findRorOutlier() {
 
     let mIndex = appState().btIndex; // metrics index for BT
 
-    let ror: Array<Point> = unwrap(metrics()[mIndex].rorSig[GET]());
+    let ror: Array<Point> = metrics()[mIndex].rorSig[GET]();
 
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();

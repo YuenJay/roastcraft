@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { createSignal, onMount, Show } from "solid-js";
+import { onMount, } from "solid-js";
 import * as d3 from "d3";
-import { GET, Metric, Point, SET, appStateSig, manualMetricsSig } from "./AppStore";
+import { GET, Point, SET, appStateSig, manualMetricsSig } from "./AppStore";
 
 export default function InputChart() {
 
     const [appState, setAppState] = appStateSig;
     const [timer, setTimer] = appState().timerSig;
+    const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
 
     const [manualMetrics, setManualMetrics] = manualMetricsSig;
+
 
     const width = 800;
     const height = 200;
@@ -46,6 +48,11 @@ export default function InputChart() {
             svg.append("g")
                 .attr("transform", `translate(${marginLeft}, 0)`)
                 .call(d3.axisLeft(yScale));
+
+            svg.on("mousemove", (event) => {
+                setCursorLineX(d3.pointer(event)[0]);
+                console.log(xScale.invert(d3.pointer(event)[0]));
+            });
         }
     });
 
@@ -66,6 +73,14 @@ export default function InputChart() {
     return (
         <div>
             <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 200" >
+                <defs>
+                    {/* Defines clipping area, rect is inside axis*/}
+                    <clipPath
+                        clipPathUnits="userSpaceOnUse"
+                        id="clip-path">
+                        <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
+                    </clipPath>
+                </defs>
                 <path
                     fill="none"
                     stroke="currentColor"
@@ -74,7 +89,14 @@ export default function InputChart() {
                         [...manualMetrics()[0].dataSig[GET](), { timestamp: timer(), value: manualMetrics()[0].currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
-
+                <line stroke="#00FF00"
+                    stroke-width="1"
+                    clip-path="url(#clip-path)"
+                    x1={cursorLineX()}
+                    y1={marginTop}
+                    x2={cursorLineX()}
+                    y2={height - marginBottom}
+                ></line>
             </svg>
             <input
                 type="range"

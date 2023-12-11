@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, createEffect, Show, For } from "solid-js";
+import { onMount, createEffect, Show, For, createSignal } from "solid-js";
 import * as d3 from "d3";
 import { GET, SET, EventId, Point, appStateSig } from "./AppStore";
 import Annotation from "./Annotation";
@@ -10,6 +10,7 @@ export default function MainChart() {
     const [appState, setAppState] = appStateSig;
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
     const [metrics, setMetrics] = appState().metricsSig;
+    const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
 
     const bt = metrics()[appState().btIndex];
 
@@ -49,6 +50,8 @@ export default function MainChart() {
     let axisLeftRef!: SVGSVGElement;
     let axisRightRef!: SVGSVGElement;
 
+
+
     onMount(() => {
         const svg = d3.select(svgRef);
 
@@ -60,6 +63,11 @@ export default function MainChart() {
 
         d3.select(axisRightRef)
             .call(d3.axisRight(yScaleROR));
+
+        svg.on("mousemove", (event) => {
+            setCursorLineX(d3.pointer(event)[0]);
+            console.log(xScale.invert(d3.pointer(event)[0]));
+        });
     });
 
     createEffect(() => {
@@ -197,7 +205,6 @@ export default function MainChart() {
                     )}
             </For>
 
-
             <For each={appState().eventsSig[GET]()}>
                 {
                     (item) => (
@@ -219,6 +226,14 @@ export default function MainChart() {
                         </g>
                     )}
             </For>
+            <line stroke="#00FF00"
+                stroke-width="1"
+                clip-path="url(#clip-path)"
+                x1={cursorLineX()}
+                y1={marginTop}
+                x2={cursorLineX()}
+                y2={height - marginBottom}
+            ></line>
         </svg >
     );
 }
