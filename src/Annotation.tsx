@@ -1,42 +1,45 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import { createEffect, createSignal, onMount } from "solid-js";
 import { timestamp_format } from "./calculate";
 
 export default function Annotation(props: any) {
 
-    let angle = 150 * (Math.PI / 180);
-    let radius = 20;
+    let divRef!: HTMLDivElement;
+
+    const [w, setW] = createSignal(0);
+    const [h, setH] = createSignal(0);
+
+    let length = 20;
 
     let text = props.text;
-    let deltaY = -2;
 
-    if (text == "CHARGE" || text == "DROP" || text == "ROR_TP" || text == "FC_END" || text == "SC_END") {
-        angle = 30 * (Math.PI / 180);
-        deltaY = 36;
+    let upward = true;
+
+    if (text == "TP" || text == "DRY_END" || text == "FC_END" || text == "SC_END") {
+        upward = false;
     }
 
-    let fromX = props.x + Math.sin(angle) * radius * 0.2;
-    let fromY = props.y - Math.cos(angle) * radius * 0.2;
-
-    let toX = fromX + Math.sin(angle) * radius;
-    let toY = fromY - Math.cos(angle) * radius;
-
+    onMount(() => {
+        setW(divRef.getBoundingClientRect().width);
+        setH(divRef.getBoundingClientRect().height);
+    });
 
     return (
         <>
-            <line stroke="#000000"
+            <line stroke="#777777"
                 stroke-width="1"
-                x1={fromX}
-                y1={fromY}
-                x2={toX}
-                y2={toY}
+                x1={props.x}
+                y1={upward ? props.y - 4 : props.y + 4}
+                x2={props.x}
+                y2={upward ? props.y - length : props.y + length}
             ></line>
 
-            <foreignObject width="100%" height="100%" pointer-events="none"
-                x={toX}
-                y={toY - deltaY}
+            <foreignObject width={`${w()}px`} height={`${h()}px`} pointer-events="none"
+                x={props.x - 0.4 * w()}
+                y={upward ? props.y - length - h() + 6 : props.y + length + 2}
             >
-                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-[8px] p-0.5 pb-0 leading-tight">
+                <div ref={divRef} class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-[8px] p-0.5 pb-0 leading-tight">
                     <div>{text}</div>
                     <div>{timestamp_format(props.timestamp)}</div>
                     <div>{props.value}</div>
