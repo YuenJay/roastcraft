@@ -4,7 +4,7 @@ import { For, onMount, } from "solid-js";
 import * as d3 from "d3";
 import { GET, SET, Point, appStateSig } from "./AppState";
 
-export default function InputChart() {
+export default function SecondaryChart() {
 
     const [appState, setAppState] = appStateSig;
     const [timer, setTimer] = appState().timerSig;
@@ -18,25 +18,12 @@ export default function InputChart() {
     const marginBottom = 20;
     const marginLeft = 30;
 
-    let min = 0;
-    let max = 100;
-    let step = 5;
-    let defaultValue = 20;
-
-    let pips: number[] = [];
-    for (let i = 0; i < max / step; i++) {
-        pips.push(min + i * step);
-    }
-    pips.push(max);
-
-    console.log(pips);
-
     const xScale = d3.scaleLinear(
         [-60, 720],
         [marginLeft, width - marginRight]
     );
 
-    const yScale = d3.scaleLinear([min, max], [
+    const yScale = d3.scaleLinear([20, 50], [
         height - marginBottom,
         marginTop,
     ]);
@@ -47,8 +34,6 @@ export default function InputChart() {
         .curve(d3.curveStepAfter);
 
     let svgRef: SVGSVGElement | undefined;
-
-
 
     onMount(() => {
         if (svgRef) {
@@ -69,20 +54,9 @@ export default function InputChart() {
         }
     });
 
-    async function handleInput(event: InputEvent) {
-
-        let value = (event.target as HTMLInputElement).value;
-        console.log(value);
-
-        manualMetrics()[0].currentDataSig[SET](Number(value));
-        manualMetrics()[0].dataSig[SET](
-            [...manualMetrics()[0].dataSig[GET](), new Point(timer(), Number(value))]
-        );
-
-    }
-
     return (
-        <div>
+        <>
+            <div>FAN</div>
             <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 200" >
                 <defs>
                     {/* Defines clipping area, rect is inside axis*/}
@@ -109,25 +83,6 @@ export default function InputChart() {
                     y2={height - marginBottom}
                 ></line>
             </svg>
-            <input
-                type="range"
-                class="range range-primary range-xs"
-                min={min}
-                max={max}
-                value={defaultValue}
-                step={step}
-                onInput={handleInput}
-            />
-            <div class="w-full flex justify-between text-xs px-2 pb-4">
-                <For each={pips}>
-                    {(pip) => (
-                        <span class="h-2 w-px bg-black">
-                            <span class="absolute -translate-x-1/2 translate-y-1/2" >{pip}</span>
-                        </span>
-                    )}
-                </For>
-
-            </div>
-        </div>
+        </>
     );
 }

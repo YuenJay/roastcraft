@@ -7,11 +7,12 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
-import InputChart from "./InputChart";
+import ManualChart from "./ManualChart";
 import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
+import SecondaryChart from "./SecondaryChart";
 
 
 function App() {
@@ -420,7 +421,9 @@ function App() {
             ]} />
         </div>
 
-        <InputChart />
+        <SecondaryChart />
+
+        <ManualChart />
 
         <Show when={logs().length > 0}>
 
