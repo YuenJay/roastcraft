@@ -343,28 +343,28 @@ function App() {
         <div class="m-2 mb-4 flex justify-evenly">
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventCHARGESig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventCHARGESig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleCharge}>
               {appState().eventCHARGESig[GET]() ? "✓ " : ""}CHARGE
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventDRY_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventDRY_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleDryEnd}>
               {appState().eventDRY_ENDSig[GET]() ? "✓ " : ""}DRY END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventFC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventFC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleFCStart}>
               {appState().eventFC_STARTSig[GET]() ? "✓ " : ""}FC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventFC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventFC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleFCEnd}>
               {appState().eventFC_ENDSig[GET]() ? "✓ " : ""}FC END
             </button>
@@ -372,21 +372,21 @@ function App() {
 
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventSC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventSC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleSCStart}>
               {appState().eventSC_STARTSig[GET]() ? "✓ " : ""}SC START
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventSC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventSC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleSCEnd}>
               {appState().eventSC_ENDSig[GET]() ? "✓ " : ""}SC END
             </button>
           </div>
           <div class="indicator">
             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-            <button class={`btn btn-outline btn-primary ${appState().eventDROPSig[GET]() ? "btn-active btn-disabled" : ""}`}
+            <button class={`btn btn-sm btn-outline btn-primary ${appState().eventDROPSig[GET]() ? "btn-active btn-disabled" : ""}`}
               onClick={handleDrop}>
               {appState().eventDROPSig[GET]() ? "✓ " : ""}DROP
             </button>

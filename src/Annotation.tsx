@@ -5,15 +5,14 @@ import { timestamp_format } from "./calculate";
 export default function Annotation(props: any) {
 
     let angle = 150 * (Math.PI / 180);
-    let radius = 30;
+    let radius = 20;
 
     let text = props.text;
-
-    let dy_base = "1.1em";
+    let deltaY = -2;
 
     if (text == "CHARGE" || text == "DROP" || text == "ROR_TP" || text == "FC_END" || text == "SC_END") {
         angle = 30 * (Math.PI / 180);
-        dy_base = "-2.2em"
+        deltaY = 36;
     }
 
     let fromX = props.x + Math.sin(angle) * radius * 0.2;
@@ -22,8 +21,6 @@ export default function Annotation(props: any) {
     let toX = fromX + Math.sin(angle) * radius;
     let toY = fromY - Math.cos(angle) * radius;
 
-    let toXtext = fromX + Math.sin(angle) * radius * 1.1;
-    let toYtext = fromY - Math.cos(angle) * radius * 1.1;
 
     return (
         <>
@@ -35,15 +32,17 @@ export default function Annotation(props: any) {
                 x2={toX}
                 y2={toY}
             ></line>
-            <text
-                stroke="#000000"
-                font-size="0.6em"
-                x={toXtext}
-                y={toYtext}>
-                <tspan x={toX} dy={dy_base}>{text}</tspan>
-                <tspan x={toX} dy="1.1em">{timestamp_format(props.timestamp)}</tspan>
-                <tspan x={toX} dy="1.1em">{props.value}</tspan>
-            </text>
+
+            <foreignObject width="100%" height="100%" pointer-events="none"
+                x={toX}
+                y={toY - deltaY}
+            >
+                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-[8px] p-0.5 pb-0 leading-tight"               >
+                    <div>{text}</div>
+                    <div>{timestamp_format(props.timestamp)}</div>
+                    <div>{props.value}</div>
+                </div>
+            </foreignObject>
         </>
 
     )
