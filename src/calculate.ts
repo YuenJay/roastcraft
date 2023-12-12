@@ -126,7 +126,8 @@ export function findRorOutlier() {
     if (eventROR_TP() == true && eventDROP() == false) {
         let ROR_TP_timestamp = (events().find(r => r.id == EventId.ROR_TP) as Event).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
-        let l = linearRegressionLine(linearRegression(window));
+        let mb = linearRegression(window); // m: slope, b: intersect
+        let l = linearRegressionLine(mb);
 
         appState().rorLinearStartSig[SET](new Point(
             window[0][0],
@@ -136,7 +137,7 @@ export function findRorOutlier() {
             window[window.length - 1][0],
             l(window[window.length - 1][0])
         ));
-
+        appState().rorLinearSlopeSig[SET](mb.m);
     }
 
 }

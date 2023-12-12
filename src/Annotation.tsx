@@ -26,7 +26,6 @@ export default function Annotation(props: any) {
         <>
             <line stroke="#000000"
                 stroke-width="1"
-                clip-path="url(#clip-path)"
                 x1={fromX}
                 y1={fromY}
                 x2={toX}
@@ -37,7 +36,7 @@ export default function Annotation(props: any) {
                 x={toX}
                 y={toY - deltaY}
             >
-                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-[8px] p-0.5 pb-0 leading-tight"               >
+                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-[8px] p-0.5 pb-0 leading-tight">
                     <div>{text}</div>
                     <div>{timestamp_format(props.timestamp)}</div>
                     <div>{props.value}</div>

@@ -175,6 +175,7 @@ async function init_appStateSig() {
         eventROR_TPSig: createSignal(false),
         rorLinearStartSig: createSignal(new Point(0, 0)),
         rorLinearEndSig: createSignal(new Point(0, 0)),
+        rorLinearSlopeSig: createSignal(0),
         roastPhaseSig: createSignal(RoastPhase.BEFORE_CHARGE),
         dryingPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         maillardPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),

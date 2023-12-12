@@ -88,14 +88,26 @@ export default function MainChart() {
                     <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
                 </clipPath>
             </defs>
-            <line stroke="#00FF00"
-                stroke-width="3"
+
+            {/* ROR linear regression */}
+            <line stroke="#00DD00"
+                stroke-width="2"
                 clip-path="url(#clip-path)"
                 x1={xScale(appState().rorLinearStartSig[GET]().timestamp + timeDelta())}
                 y1={yScaleROR(appState().rorLinearStartSig[GET]().value)}
                 x2={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
                 y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
             ></line>
+            <foreignObject clip-path="url(#clip-path)" width="100%" height="100%" pointer-events="none"
+                x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta()) - 40}
+                y={yScaleROR(appState().rorLinearEndSig[GET]().value) + 5}
+            >
+                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
+                    style={`color: #00BB00;`}>
+                    {(appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
+                </div>
+            </foreignObject>
+
 
             <For each={metrics().filter(m => m.id != BT)}>
                 {
