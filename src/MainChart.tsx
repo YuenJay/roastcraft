@@ -119,11 +119,16 @@ export default function MainChart() {
                                         cx={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
                                         cy={yScale(m.data()[m.data().length - 1].value)}
                                         r="2" />
-                                    <text
-                                        x={xScale(m.data()[m.data().length - 1].timestamp) + timeDelta() + 4}
-                                        y={yScale(m.data()[m.data().length - 1].value)}>
-                                        {m.data()[m.data().length - 1].value.toFixed(1)}
-                                    </text>
+
+                                    <foreignObject width="100%" height="100%" pointer-events="none"
+                                        x={xScale(m.data()[m.data().length - 1].timestamp + timeDelta()) + 5}
+                                        y={yScale(m.data()[m.data().length - 1].value) - 10}
+                                    >
+                                        <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
+                                            style={`color: ${m.color};`}>
+                                            {m.data()[m.data().length - 1].value.toFixed(1)}
+                                        </div>
+                                    </foreignObject>
                                 </Show>
                             </g>
                         </>
@@ -149,11 +154,16 @@ export default function MainChart() {
                         cx={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta())}
                         cy={yScale(bt.data()[bt.data().length - 1].value)}
                         r="2" />
-                    <text
-                        x={xScale(bt.data()[bt.data().length - 1].timestamp) + timeDelta() + 4}
-                        y={yScale(bt.data()[bt.data().length - 1].value)}>
-                        {bt.data()[bt.data().length - 1].value.toFixed(1)}
-                    </text>
+
+                    <foreignObject width="100%" height="100%" pointer-events="none"
+                        x={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta()) + 5}
+                        y={yScale(bt.data()[bt.data().length - 1].value) - 8}
+                    >
+                        <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
+                            style={`color: ${bt.color};`}>
+                            {bt.data()[bt.data().length - 1].value.toFixed(1)}
+                        </div>
+                    </foreignObject>
                 </Show>
             </g>
 
@@ -176,11 +186,15 @@ export default function MainChart() {
                         cy={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}
                         r="2" />
 
-                    <text
-                        x={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp) + timeDelta() + 4}
-                        y={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}>
-                        {bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value.toFixed(1)}
-                    </text>
+                    <foreignObject width="100%" height="100%" pointer-events="none"
+                        x={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp + timeDelta()) + 5}
+                        y={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value) - 8}
+                    >
+                        <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
+                            style={`color: ${bt.color};`}>
+                            {bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value.toFixed(1)}
+                        </div>
+                    </foreignObject>
                 </Show>
             </g>
             {/* BT ROR outlier */}
@@ -232,6 +246,7 @@ export default function MainChart() {
                 x2={cursorLineX()}
                 y2={height - marginBottom}
             ></line>
+
         </svg >
     );
 }
