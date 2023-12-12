@@ -4,6 +4,8 @@ import { onMount, createEffect, Show, For, } from "solid-js";
 import * as d3 from "d3";
 import { GET, EventId, appStateSig, BT } from "./AppState";
 import Annotation from "./Annotation";
+import ToolTip, { ToolTipDirection } from "./ToolTip";
+
 
 export default function MainChart() {
 
@@ -99,10 +101,10 @@ export default function MainChart() {
                 y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
             ></line>
             <foreignObject clip-path="url(#clip-path)" width="100%" height="100%" pointer-events="none"
-                x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta()) - 40}
-                y={yScaleROR(appState().rorLinearEndSig[GET]().value) + 5}
+                x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta()) - 60}
+                y={yScaleROR(appState().rorLinearEndSig[GET]().value) - 10}
             >
-                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
+                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-xs px-0.5"
                     style={`color: #00BB00;`}>
                     {(appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
                 </div>
@@ -122,25 +124,15 @@ export default function MainChart() {
                                 clip-path="url(#clip-path)"
                             />
                             <g
-                                fill={m.color}
-                                stroke={m.color}
-                                stroke-width="1"
                                 clip-path="url(#clip-path)" >
                                 <Show when={m.data().length > 0}>
-                                    <circle
-                                        cx={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
-                                        cy={yScale(m.data()[m.data().length - 1].value)}
-                                        r="2" />
-
-                                    <foreignObject width="100%" height="100%" pointer-events="none"
-                                        x={xScale(m.data()[m.data().length - 1].timestamp + timeDelta()) + 5}
-                                        y={yScale(m.data()[m.data().length - 1].value) - 10}
-                                    >
-                                        <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
-                                            style={`color: ${m.color};`}>
-                                            {m.data()[m.data().length - 1].value.toFixed(1)}
-                                        </div>
-                                    </foreignObject>
+                                    <ToolTip
+                                        direction={ToolTipDirection.RIGHT}
+                                        x={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
+                                        y={yScale(m.data()[m.data().length - 1].value)}
+                                        text={m.data()[m.data().length - 1].value.toFixed(1)}
+                                        color={m.color}
+                                    />
                                 </Show>
                             </g>
                         </>
@@ -157,25 +149,15 @@ export default function MainChart() {
                 clip-path="url(#clip-path)"
             />
             <g
-                fill={bt.color}
-                stroke={bt.color}
-                stroke-width="1"
                 clip-path="url(#clip-path)" >
                 <Show when={bt.data().length > 0}>
-                    <circle
-                        cx={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta())}
-                        cy={yScale(bt.data()[bt.data().length - 1].value)}
-                        r="2" />
-
-                    <foreignObject width="100%" height="100%" pointer-events="none"
-                        x={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta()) + 5}
-                        y={yScale(bt.data()[bt.data().length - 1].value) - 8}
-                    >
-                        <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
-                            style={`color: ${bt.color};`}>
-                            {bt.data()[bt.data().length - 1].value.toFixed(1)}
-                        </div>
-                    </foreignObject>
+                    <ToolTip
+                        direction={ToolTipDirection.RIGHT}
+                        x={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta())}
+                        y={yScale(bt.data()[bt.data().length - 1].value)}
+                        text={bt.data()[bt.data().length - 1].value.toFixed(1)}
+                        color={bt.color}
+                    />
                 </Show>
             </g>
 
@@ -188,25 +170,15 @@ export default function MainChart() {
                 clip-path="url(#clip-path)"
             />
             <g
-                fill={bt.color}
-                stroke={bt.color}
-                stroke-width="1"
                 clip-path="url(#clip-path)">
                 <Show when={bt.rorFilteredSig[GET]().length > 0}>
-                    <circle
-                        cx={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp + timeDelta())}
-                        cy={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}
-                        r="2" />
-
-                    <foreignObject width="100%" height="100%" pointer-events="none"
-                        x={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp + timeDelta()) + 5}
-                        y={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value) - 8}
-                    >
-                        <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-gray-100 border rounded-sm text-xs px-0.5"
-                            style={`color: ${bt.color};`}>
-                            {bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value.toFixed(1)}
-                        </div>
-                    </foreignObject>
+                    <ToolTip
+                        direction={ToolTipDirection.RIGHT}
+                        x={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp + timeDelta())}
+                        y={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}
+                        text={bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value.toFixed(1)}
+                        color={bt.color}
+                    />
                 </Show>
             </g>
             {/* BT ROR outlier */}
@@ -230,25 +202,15 @@ export default function MainChart() {
             </For>
 
             <For each={appState().eventsSig[GET]()}>
-                {
-                    (item) => (
-                        <g clip-path="url(#clip-path)">
-                            <circle
-                                fill="none"
-                                stroke="#000000"
-                                stroke-width="1"
-                                cx={xScale(item.timestamp + timeDelta())}
-                                cy={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
-                                r="2" />
-                            <Annotation
-                                x={xScale(item.timestamp + timeDelta())}
-                                y={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
-                                text={item.id}
-                                timestamp={item.timestamp + timeDelta()}
-                                value={item.value.toFixed(1)}
-                            />
-                        </g>
-                    )}
+                {(item) => (
+                    <Annotation
+                        x={xScale(item.timestamp + timeDelta())}
+                        y={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
+                        text={item.id}
+                        timestamp={item.timestamp + timeDelta()}
+                        value={item.value.toFixed(1)}
+                    />
+                )}
             </For>
             <line stroke="#00FF00"
                 stroke-width="1"
