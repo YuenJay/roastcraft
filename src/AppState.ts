@@ -30,6 +30,7 @@ export class Metric {
     rorSig: Signal<Array<Point>>;         // history records
     rorOutlierSig: Signal<Array<Point>>;  // history records
     rorFilteredSig: Signal<Array<Point>>; // history records
+    rorConvolveSig: Signal<Array<Point>>; // history records
 
     constructor(
         id: string,
@@ -43,7 +44,8 @@ export class Metric {
         dataSig: Signal<Array<Point>>,
         rorSig: Signal<Array<Point>>,
         rorOutlierSig: Signal<Array<Point>>,
-        rorFilteredSig: Signal<Array<Point>>) {
+        rorFilteredSig: Signal<Array<Point>>,
+        rorConvolveSig: Signal<Array<Point>>,) {
         this.id = id;
         this.label = label;
         this.unit = unit;
@@ -57,6 +59,8 @@ export class Metric {
         this.rorSig = rorSig;
         this.rorOutlierSig = rorOutlierSig;
         this.rorFilteredSig = rorFilteredSig;
+        this.rorConvolveSig = rorConvolveSig;
+
     }
 }
 
@@ -140,6 +144,7 @@ async function init_appStateSig() {
             createSignal(new Array<Point>()), // rorSig
             createSignal(new Array<Point>()), // rorOutlierSig
             createSignal(new Array<Point>()), // rorFilteredSig
+            createSignal(new Array<Point>()), // rorConvolveSig
         )
     );
 

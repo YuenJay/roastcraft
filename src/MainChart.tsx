@@ -161,10 +161,11 @@ export default function MainChart() {
                 </Show>
             </g>
 
-            {/* rate of rise */}
+            {/* rate of rise filtered*/}
             <path
                 fill="none"
                 stroke={bt.color}
+                stroke-opacity="30%"
                 stroke-width="1.5"
                 d={lineROR(bt.rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
                 clip-path="url(#clip-path)"
@@ -181,6 +182,16 @@ export default function MainChart() {
                     />
                 </Show>
             </g>
+
+            {/* rate of rise convolve */}
+            <path
+                fill="none"
+                stroke="#00DD00"
+                stroke-width="1.5"
+                d={lineROR(bt.rorConvolveSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
+                clip-path="url(#clip-path)"
+            />
+
             {/* BT ROR outlier */}
             <For each={bt.rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
                 {

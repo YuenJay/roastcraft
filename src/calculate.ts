@@ -57,6 +57,7 @@ export function findRorOutlier() {
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();
 
+
     for (let i = 0; i < ror.length; i++) {
         if (i == 0) {
             continue;
@@ -97,14 +98,39 @@ export function findRorOutlier() {
         }
     }
 
-    // smooth 
-    let value_blurred = d3.blur(ror_filtered.map(p => p.value), 2);
-    for (let i = 0; i < ror_filtered.length; i++) {
-        ror_filtered[i].value = value_blurred[i];
+    let hann_window = [];
+    let window_len = 11;
+    let half_window_len = Math.floor((window_len - 1) / 2);
+
+    for (let i = 0; i < window_len; i++) {
+        hann_window.push(hann(i, window_len))
+    }
+
+    let sum = hann_window.reduce((partialSum, a) => partialSum + a, 0);
+
+    let filter = hann_window.map((m) => (m / sum));
+
+    // let data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+    let data = ror_filtered.map(p => p.value);
+    let dataLeft = data.slice(1, window_len).reverse();
+    let dataRight = data.slice(-window_len, -1).reverse();
+    let input = [...dataLeft, ...data, ...dataRight];
+    let conv = convValid(filter, input);
+    let result = conv.slice(half_window_len, -half_window_len);
+
+    let ror_convolve = new Array<Point>();
+    let lag = 2;
+    for (let i = 0; i < ror_filtered.length - lag; i++) {
+        ror_convolve.push(new Point(
+            ror_filtered[i].timestamp,
+            result[i]
+        ));
     }
 
     metrics()[mIndex].rorOutlierSig[SET](ror_outlier);
     metrics()[mIndex].rorFilteredSig[SET](ror_filtered);
+    metrics()[mIndex].rorConvolveSig[SET](ror_convolve);
+
 
     // find ROR TP
     if (eventTP() == true && eventROR_TP() == false) {
@@ -370,4 +396,27 @@ export function calculatePhases() {
             develop_temp_rise
         ));
     }
+}
+
+function hann(i: number, N: number) {
+    return 0.5 * (1 - Math.cos(6.283185307179586 * i / (N - 1)))
+}
+
+// reference: https://stackoverflow.com/questions/24518989/how-to-perform-1-dimensional-valid-convolution
+function convValid(f: Array<number>, g: Array<number>) {
+    const nf = f.length;
+    const ng = g.length;
+    const minV = (nf < ng) ? f : g;
+    const maxV = (nf < ng) ? g : f;
+    const n = Math.max(nf, ng) - Math.min(nf, ng) + 1;
+    const out = new Array(n).fill(0);
+
+    for (let i = 0; i < n; ++i) {
+        for (let j = minV.length - 1, k = i; j >= 0; --j) {
+            out[i] += minV[j] * maxV[k];
+            ++k;
+        }
+    }
+
+    return out;
 }
