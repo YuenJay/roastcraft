@@ -119,7 +119,7 @@ export function findRorOutlier() {
     let result = conv.slice(half_window_len, -half_window_len);
 
     let ror_convolve = new Array<Point>();
-    let lag = 2;
+    let lag = 3; // lag few samples, so that end of convolve line won't look like jumping around
     for (let i = 0; i < ror_filtered.length - lag; i++) {
         ror_convolve.push(new Point(
             ror_filtered[i].timestamp,
