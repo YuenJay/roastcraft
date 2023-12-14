@@ -24,10 +24,10 @@ struct RoastCraftState {
 }
 
 impl RoastCraftState {
-    fn new(config: Config) -> Self {
+    fn new() -> Self {
         Self {
             reader_handle: None,
-            config: config,
+            config: Config::new(),
         }
     }
 }
@@ -104,41 +104,6 @@ async fn get_config(app: tauri::AppHandle) -> Config {
 }
 
 fn main() {
-    // in dev mode, put roastcraft.config.toml in /src-tauri
-    let mut parse_config_err_msg: String = String::new();
-    let mut parse_config_ok = false;
-    let mut toml_content = String::new();
-    let mut config = Config::new();
-    match File::open("roastcraft.config.toml") {
-        Ok(mut file) => {
-            match file.read_to_string(&mut toml_content) {
-                Ok(_) => {
-                    // At this point, `contents` contains the content of the TOML file
-                    match toml::from_str::<Config>(toml_content.as_str()) {
-                        Ok(c) => {
-                            parse_config_ok = true;
-                            config = c;
-                        }
-                        Err(e) => {
-                            parse_config_err_msg
-                                .push_str("Failed to parse roastcraft.config.toml \n");
-                            parse_config_err_msg.push_str(e.message());
-                        }
-                    }
-                }
-                Err(_) => {
-                    parse_config_err_msg = "Failed to read roastcraft.config.toml".to_string();
-                }
-            }
-        }
-        Err(_) => {
-            parse_config_err_msg = "Failed to open roastcraft.config.toml".to_string();
-        }
-    }
-
-    println!("parsed Config: ");
-    println!("{}", toml::to_string(&config).unwrap());
-
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let close = CustomMenuItem::new("close".to_string(), "Close");
     let submenu = Submenu::new("File", Menu::new().add_item(quit).add_item(close));
@@ -161,8 +126,70 @@ fn main() {
                 .level(LevelFilter::Trace)
                 .build(),
         )
-        .manage(Mutex::new(RoastCraftState::new(config)))
-        .setup(move |app| {
+        .manage(Mutex::new(RoastCraftState::new()))
+        .setup(|app| {
+            let mut config_file_name = String::from("roastcraft.config.toml");
+
+            // get cli argument
+            match app.get_cli_matches() {
+                // pass cli args in dev mode:
+                // pnpm tauri dev -- -- --config kapok501.toml
+                Ok(matches) => {
+                    if (matches.args.get("config").unwrap().value.is_string()) {
+                        config_file_name = matches
+                            .args
+                            .get("config")
+                            .unwrap()
+                            .value
+                            .as_str()
+                            .unwrap()
+                            .to_string();
+                    }
+                    println!("{}", config_file_name);
+                }
+                Err(_) => {}
+            }
+
+            // in dev mode, put roastcraft.config.toml in /src-tauri
+
+            let mut parse_config_err_msg: String = String::new();
+            let mut parse_config_ok = false;
+            let mut toml_content = String::new();
+
+            let state_mutex = app.state::<Mutex<RoastCraftState>>();
+            let mut state = state_mutex.lock().unwrap();
+
+            match File::open(config_file_name) {
+                Ok(mut file) => {
+                    match file.read_to_string(&mut toml_content) {
+                        Ok(_) => {
+                            // At this point, `contents` contains the content of the TOML file
+                            match toml::from_str::<Config>(toml_content.as_str()) {
+                                Ok(c) => {
+                                    parse_config_ok = true;
+                                    state.config = c;
+                                }
+                                Err(e) => {
+                                    parse_config_err_msg
+                                        .push_str("Failed to parse roastcraft.config.toml \n");
+                                    parse_config_err_msg.push_str(e.message());
+                                }
+                            }
+                        }
+                        Err(_) => {
+                            parse_config_err_msg =
+                                "Failed to read roastcraft.config.toml".to_string();
+                        }
+                    }
+                }
+                Err(_) => {
+                    parse_config_err_msg = "Failed to open roastcraft.config.toml".to_string();
+                }
+            }
+
+            println!("parsed Config: ");
+            println!("{}", toml::to_string(&state.config).unwrap());
+
             if !parse_config_ok {
                 let main_window = app.get_window("main").unwrap();
                 tauri::api::dialog::message(Some(&main_window), "RoastCraft", parse_config_err_msg);

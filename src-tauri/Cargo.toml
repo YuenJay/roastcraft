@@ -18,7 +18,7 @@
     ] }
 
 [dependencies]
-    tauri = { version = "1.5", features = [
+    tauri = { version = "1.5", features = [ "cli",
         "window-all",
         "dialog-all",
         "shell-open",

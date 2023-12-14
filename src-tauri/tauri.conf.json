@@ -47,6 +47,15 @@
         "width": 1280,
         "height": 720
       }
-    ]
+    ],
+    "cli": {
+      "args": [
+        {
+          "name": "config",
+          "short": "c",
+          "takesValue": true
+        }
+      ]
+    }
   }
 }
