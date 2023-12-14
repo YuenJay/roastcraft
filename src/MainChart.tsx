@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, createEffect, Show, For, } from "solid-js";
+import { onMount, Show, For, } from "solid-js";
 import * as d3 from "d3";
 import { GET, EventId, appStateSig, BT } from "./AppState";
 import Annotation from "./Annotation";
@@ -70,11 +70,6 @@ export default function MainChart() {
         });
     });
 
-    createEffect(() => {
-        // use d3.select(ref) to replace d3.append
-        // use attributes in jsx directly, to replace d3.attr
-    });
-
     return (
 
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`} >
@@ -92,64 +87,59 @@ export default function MainChart() {
             </defs>
 
             {/* ROR linear regression */}
-            <line stroke="#00DD00"
-                stroke-width="2"
-                clip-path="url(#clip-path)"
-                x1={xScale(appState().rorLinearStartSig[GET]().timestamp + timeDelta())}
-                y1={yScaleROR(appState().rorLinearStartSig[GET]().value)}
-                x2={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
-                y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
-            ></line>
-            <foreignObject clip-path="url(#clip-path)" width="100%" height="100%" pointer-events="none"
-                x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta()) - 60}
-                y={yScaleROR(appState().rorLinearEndSig[GET]().value) - 10}
-            >
-                <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-xs px-0.5"
-                    style={`color: #00BB00;`}>
-                    {(appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
-                </div>
-            </foreignObject>
-
+            <Show when={appState().eventROR_TPSig[GET]() && appState().toggleShowRorRegressionSig[GET]()}>
+                <line stroke="#00DD00"
+                    stroke-width="2"
+                    clip-path="url(#clip-path)"
+                    x1={xScale(appState().rorLinearStartSig[GET]().timestamp + timeDelta())}
+                    y1={yScaleROR(appState().rorLinearStartSig[GET]().value)}
+                    x2={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
+                    y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
+                ></line>
+                <foreignObject clip-path="url(#clip-path)" width="100%" height="100%" pointer-events="none"
+                    x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta()) - 60}
+                    y={yScaleROR(appState().rorLinearEndSig[GET]().value) - 10}
+                >
+                    <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-xs px-0.5"
+                        style={`color: #00BB00;`}>
+                        {(appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
+                    </div>
+                </foreignObject>
+            </Show>
 
             <For each={metrics().filter(m => m.id != BT)}>
-                {
-                    (m) => (
-                        <>
-                            {/* temperature */}
-                            <path
-                                fill="none"
-                                stroke={m.color}
-                                stroke-width="1.5"
-                                d={line(m.data() as any) as string | undefined}
-                                clip-path="url(#clip-path)"
+                {(m) => (
+                    <g
+                        clip-path="url(#clip-path)" >
+                        <path
+                            fill="none"
+                            stroke={m.color}
+                            stroke-width="1.5"
+                            d={line(m.data() as any) as string | undefined}
+
+                        />
+                        <Show when={m.data().length > 0}>
+                            <ToolTip
+                                direction={ToolTipDirection.RIGHT}
+                                x={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
+                                y={yScale(m.data()[m.data().length - 1].value)}
+                                text={m.data()[m.data().length - 1].value.toFixed(1)}
+                                color={m.color}
                             />
-                            <g
-                                clip-path="url(#clip-path)" >
-                                <Show when={m.data().length > 0}>
-                                    <ToolTip
-                                        direction={ToolTipDirection.RIGHT}
-                                        x={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
-                                        y={yScale(m.data()[m.data().length - 1].value)}
-                                        text={m.data()[m.data().length - 1].value.toFixed(1)}
-                                        color={m.color}
-                                    />
-                                </Show>
-                            </g>
-                        </>
-                    )
-                }
+                        </Show>
+                    </g>
+                )}
             </For>
 
             {/* BT */}
-            <path
-                fill="none"
-                stroke={bt.color}
-                stroke-width="1.5"
-                d={line(bt.data() as any) as string | undefined}
-                clip-path="url(#clip-path)"
-            />
             <g
                 clip-path="url(#clip-path)" >
+                <path
+                    fill="none"
+                    stroke={bt.color}
+                    stroke-width="1.5"
+                    d={line(bt.data() as any) as string | undefined}
+                />
                 <Show when={bt.data().length > 0}>
                     <ToolTip
                         direction={ToolTipDirection.RIGHT}
@@ -162,16 +152,18 @@ export default function MainChart() {
             </g>
 
             {/* rate of rise filtered*/}
-            <path
-                fill="none"
-                stroke={bt.color}
-                stroke-opacity="30%"
-                stroke-width="1.5"
-                d={lineROR(bt.rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
-                clip-path="url(#clip-path)"
-            />
+
             <g
                 clip-path="url(#clip-path)">
+                <Show when={appState().toggleShowRorFilteredSig[GET]()}>
+                    <path
+                        fill="none"
+                        stroke={bt.color}
+                        stroke-opacity="30%"
+                        stroke-width="1.5"
+                        d={lineROR(bt.rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
+                    />
+                </Show>
                 <Show when={bt.rorFilteredSig[GET]().length > 0}>
                     <ToolTip
                         direction={ToolTipDirection.RIGHT}
@@ -193,25 +185,23 @@ export default function MainChart() {
             />
 
             {/* BT ROR outlier */}
-            <For each={bt.rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
-                {
-                    (outlier) => (
-                        <>
-                            <g
-                                fill="none"
-                                stroke={bt.color}
-                                stroke-width="1"
-                                stroke-opacity="50%"
-                                clip-path="url(#clip-path)">
-                                <circle
-                                    cx={xScale(outlier.timestamp + timeDelta())}
-                                    cy={yScaleROR(outlier.value)}
-                                    r="2" />
-                            </g>
-                        </>
-                    )}
-            </For>
-
+            <Show when={appState().toggleShowRorOutlierSig[GET]()}>
+                <g
+                    fill="none"
+                    stroke={bt.color}
+                    stroke-width="1"
+                    stroke-opacity="50%"
+                    clip-path="url(#clip-path)">
+                    <For each={bt.rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
+                        {(outlier) => (
+                            <circle
+                                cx={xScale(outlier.timestamp + timeDelta())}
+                                cy={yScaleROR(outlier.value)}
+                                r="2" />
+                        )}
+                    </For>
+                </g>
+            </Show>
             <For each={appState().eventsSig[GET]()}>
                 {(item) => (
                     <Annotation

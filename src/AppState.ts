@@ -186,6 +186,9 @@ async function init_appStateSig() {
         maillardPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         developPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         cursorLineXSig: createSignal(0),
+        toggleShowRorFilteredSig: createSignal(false),
+        toggleShowRorOutlierSig: createSignal(false),
+        toggleShowRorRegressionSig: createSignal(false),
     }
 }
 

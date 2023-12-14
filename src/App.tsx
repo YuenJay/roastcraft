@@ -425,6 +425,26 @@ function App() {
 
         <ManualChart />
 
+        <div class="grid grid-cols-3">
+          <label class="label cursor-pointer">
+            <span class="label-text ml-auto mr-2">ROR filtered</span>
+            <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
+              appState().toggleShowRorFilteredSig[SET](Boolean(e.currentTarget.checked));
+            }} />
+          </label>
+          <label class="label cursor-pointer">
+            <span class="label-text ml-auto mr-2">ROR outlier</span>
+            <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
+              appState().toggleShowRorOutlierSig[SET](Boolean(e.currentTarget.checked));
+            }} />
+          </label>
+          <label class="label cursor-pointer">
+            <span class="label-text ml-auto mr-2">ROR regression</span>
+            <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
+              appState().toggleShowRorRegressionSig[SET](Boolean(e.currentTarget.checked));
+            }} />
+          </label>
+        </div>
         <Show when={logs().length > 0}>
 
           <div class="text-sm">
@@ -435,7 +455,6 @@ function App() {
 
           </div>
         </Show>
-
 
       </div>
       {/* side bar end*/}
