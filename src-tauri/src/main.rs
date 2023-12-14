@@ -159,7 +159,7 @@ fn main() {
             let state_mutex = app.state::<Mutex<RoastCraftState>>();
             let mut state = state_mutex.lock().unwrap();
 
-            match File::open(config_file_name) {
+            match File::open(&config_file_name) {
                 Ok(mut file) => {
                     match file.read_to_string(&mut toml_content) {
                         Ok(_) => {
@@ -170,20 +170,20 @@ fn main() {
                                     state.config = c;
                                 }
                                 Err(e) => {
-                                    parse_config_err_msg
-                                        .push_str("Failed to parse roastcraft.config.toml \n");
-                                    parse_config_err_msg.push_str(e.message());
+                                    parse_config_err_msg = format!(
+                                        "Failed to parse {config_file_name} \n{}",
+                                        e.message()
+                                    );
                                 }
                             }
                         }
                         Err(_) => {
-                            parse_config_err_msg =
-                                "Failed to read roastcraft.config.toml".to_string();
+                            parse_config_err_msg = format!("Failed to read {config_file_name}");
                         }
                     }
                 }
                 Err(_) => {
-                    parse_config_err_msg = "Failed to open roastcraft.config.toml".to_string();
+                    parse_config_err_msg = format!("Failed to open {config_file_name}");
                 }
             }
 
