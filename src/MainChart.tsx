@@ -11,10 +11,10 @@ export default function MainChart() {
 
     const [appState, setAppState] = appStateSig;
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
-    const [metrics, setMetrics] = appState().metricsSig;
+    const [channelList, setChannelList] = appState().channelListSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
 
-    const bt = metrics()[appState().btIndex];
+    const bt = channelList()[appState().btIndex];
 
     const width = 800;
     const height = 500;
@@ -107,7 +107,7 @@ export default function MainChart() {
                 </foreignObject>
             </Show>
 
-            <For each={metrics().filter(m => m.id != BT)}>
+            <For each={channelList().filter(m => m.id != BT)}>
                 {(m) => (
                     <g
                         clip-path="url(#clip-path)" >

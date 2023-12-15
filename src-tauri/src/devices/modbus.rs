@@ -85,9 +85,9 @@ impl Device for ModbusDevice {
                     Ok(v) => {
                         let result = *v.get(0).unwrap() as f32 / slave.divisor as f32;
 
-                        trace!("{} : {:.1}", slave.metrics_id, result);
+                        trace!("{} : {:.1}", slave.channel_id, result);
                         map.insert(
-                            slave.metrics_id.clone(),
+                            slave.channel_id.clone(),
                             Value::String(format!("{:.1}", result)),
                         );
                     }

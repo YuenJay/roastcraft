@@ -9,7 +9,7 @@ export default function ManualChart() {
     const [appState, setAppState] = appStateSig;
     const [timer, setTimer] = appState().timerSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-    const [manualMetrics, setManualMetrics] = appState().manualMetricsSig;
+    const [manualChannelList, setManualChannelList] = appState().manualChannelListSig;
 
     const width = 800;
     const height = 200;
@@ -72,9 +72,9 @@ export default function ManualChart() {
         let value = (event.target as HTMLInputElement).value;
         console.log(value);
 
-        manualMetrics()[0].currentDataSig[SET](Number(value));
-        manualMetrics()[0].dataSig[SET](
-            [...manualMetrics()[0].dataSig[GET](), new Point(timer(), Number(value))]
+        manualChannelList()[0].currentDataSig[SET](Number(value));
+        manualChannelList()[0].dataSig[SET](
+            [...manualChannelList()[0].dataSig[GET](), new Point(timer(), Number(value))]
         );
 
     }
@@ -96,7 +96,7 @@ export default function ManualChart() {
                     stroke="currentColor"
                     stroke-width="1.5"
                     d={line(
-                        [...manualMetrics()[0].dataSig[GET](), { timestamp: timer(), value: manualMetrics()[0].currentDataSig[GET]() }] as any
+                        [...manualChannelList()[0].dataSig[GET](), { timestamp: timer(), value: manualChannelList()[0].currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
                 <line stroke="#00FF00"

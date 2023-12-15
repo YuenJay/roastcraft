@@ -9,7 +9,7 @@ export default function SecondaryChart() {
     const [appState, setAppState] = appStateSig;
     const [timer, setTimer] = appState().timerSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-    const [manualMetrics, setManualMetrics] = appState().manualMetricsSig;
+    const [manualChannelList, setManualChannelList] = appState().manualChannelListSig;
 
     const width = 800;
     const height = 200;
@@ -71,7 +71,7 @@ export default function SecondaryChart() {
                     stroke="currentColor"
                     stroke-width="1.5"
                     d={line(
-                        [...manualMetrics()[0].dataSig[GET](), { timestamp: timer(), value: manualMetrics()[0].currentDataSig[GET]() }] as any
+                        [...manualChannelList()[0].dataSig[GET](), { timestamp: timer(), value: manualChannelList()[0].currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
                 <line stroke="#00FF00"

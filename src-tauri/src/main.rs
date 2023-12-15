@@ -60,8 +60,8 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
 
                     match device.read().await {
                         Ok(json_value) => {
-                            app2.emit_all("read_metrics", json_value).unwrap();
-                            trace!("event read_metrics emitted");
+                            app2.emit_all("read_channels", json_value).unwrap();
+                            trace!("event read_channels emitted");
                         }
                         Err(_) => {}
                     }

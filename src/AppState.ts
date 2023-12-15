@@ -16,7 +16,7 @@ export class Point {
     }
 }
 
-export class Metric {
+export class Channel {
     id: string;
     label: string;
     unit: string;
@@ -113,7 +113,7 @@ export enum RoastPhase {
     AFTER_DROP = 'AFTER_DROP',
 }
 
-export class ManualMetric {
+export class ManualChannel {
     id: string;
     currentDataSig: Signal<number>;
     dataSig: Signal<Point[]>;
@@ -130,9 +130,9 @@ async function init_appStateSig() {
     let config: any;
     await invoke("get_config").then(c => config = c);
 
-    let metrics: Metric[] = config.tcp.http.channel.map((s: any) =>
-        new Metric(
-            s.metrics_id, // id
+    let channelList: Channel[] = config.tcp.http.channel.map((s: any) =>
+        new Channel(
+            s.channel_id, // id
             s.label, // label 
             s.unit,  // unit
             s.color, // color
@@ -148,12 +148,12 @@ async function init_appStateSig() {
         )
     );
 
-    let btIndex = metrics.findIndex(m => m.id == BT);
+    let btIndex = channelList.findIndex(m => m.id == BT);
 
-    let manualMetrics: Array<ManualMetric> = new Array<ManualMetric>();
+    let manualChannelList: Array<ManualChannel> = new Array<ManualChannel>();
 
-    manualMetrics.push(
-        new ManualMetric(
+    manualChannelList.push(
+        new ManualChannel(
             "gas",
             createSignal(20),
             createSignal([new Point(0, 20)])
@@ -165,8 +165,8 @@ async function init_appStateSig() {
         statusSig: createSignal(AppStatus.OFF),
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),
-        metricsSig: createSignal(metrics),
-        manualMetricsSig: createSignal(manualMetrics),
+        channelListSig: createSignal(channelList),
+        manualChannelListSig: createSignal(manualChannelList),
         logsSig: createSignal(new Array<string>()),
         eventsSig: createSignal(new Array<Event>()),
         eventCHARGESig: createSignal(false),

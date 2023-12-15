@@ -20,14 +20,14 @@ function App() {
   const [appState, setAppState] = appStateSig;
   const [status, setStatus] = appState().statusSig;
   const [timer, setTimer] = appState().timerSig;
-  const [metrics, setMetrics] = appState().metricsSig;
+  const [channelList, setChannelList] = appState().channelListSig;
   const [logs, setLogs] = appState().logsSig;
   const [events, setEvents] = appState().eventsSig;
   const [roastPhase, setRoastPhase] = appState().roastPhaseSig;
   const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
   const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
   const [developPhase, setDevelopPhase] = appState().developPhaseSig;
-  const metricIdList = metrics().map(m => m.id);
+  const channelIdList = channelList().map(m => m.id);
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
@@ -43,45 +43,43 @@ function App() {
     detach = await attachConsole();
 
     // event listener
-    unlisten_reader = await listen("read_metrics", (event: any) => {
-      trace("event \"read_metrics\" catched :" + JSON.stringify(event.payload));
+    unlisten_reader = await listen("read_channels", (event: any) => {
+      trace("event \"read_channels\" catched :" + JSON.stringify(event.payload));
 
-      // update current metrics reading and ror
-
-
+      // update current channels and ror
       let i;
-      for (i = 0; i < metricIdList.length; i++) {
+      for (i = 0; i < channelIdList.length; i++) {
 
-        metrics()[i].currentDataSig[SET](Number(event.payload[metricIdList[i]]));
+        channelList()[i].currentDataSig[SET](Number(event.payload[channelIdList[i]]));
 
         /* calculate ROR start */
-        metrics()[i].data_window.push(
+        channelList()[i].data_window.push(
           {
-            value: Number(event.payload[metricIdList[i]]),
+            value: Number(event.payload[channelIdList[i]]),
             system_time: new Date().getTime()
           }
         );
 
         // buffer size of 5
-        if (metrics()[i].data_window.length > 5) {
-          metrics()[i].data_window.shift();
+        if (channelList()[i].data_window.length > 5) {
+          channelList()[i].data_window.shift();
         }
 
-        let delta = metrics()[i].data_window[metrics()[i].data_window.length - 1].value
-          - metrics()[i].data_window[0].value;
-        let time_elapsed_sec = (metrics()[i].data_window[metrics()[i].data_window.length - 1].system_time
-          - metrics()[i].data_window[0].system_time)
+        let delta = channelList()[i].data_window[channelList()[i].data_window.length - 1].value
+          - channelList()[i].data_window[0].value;
+        let time_elapsed_sec = (channelList()[i].data_window[channelList()[i].data_window.length - 1].system_time
+          - channelList()[i].data_window[0].system_time)
           / 1000;
 
-        metrics()[i].currentRorSig[SET](
+        channelList()[i].currentRorSig[SET](
           (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
         );
         /* calculate ROR end */
 
         // write into history data
         if (status() == AppStatus.RECORDING) {
-          metrics()[i].setData(
-            [...metrics()[i].data(), new Point(timer(), event.payload[metricIdList[i]])]
+          channelList()[i].setData(
+            [...channelList()[i].data(), new Point(timer(), event.payload[channelIdList[i]])]
           )
         }
       }
@@ -112,13 +110,13 @@ function App() {
   async function buttonOnClicked() {
     await invoke("button_on_clicked");
     setStatus(AppStatus.ON);
-    setLogs([...logs(), "start reading metrics..."]);
+    setLogs([...logs(), "start reading channels..."]);
   }
 
   async function buttonOffClicked() {
     await invoke("button_off_clicked");
     setStatus(AppStatus.OFF);
-    setLogs([...logs(), "stopped reading metrics"]);
+    setLogs([...logs(), "stopped reading channels"]);
   }
 
   async function buttonStartClicked() {
@@ -174,7 +172,7 @@ function App() {
   }
 
   async function handleCharge() {
-    setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
 
     appState().eventCHARGESig[SET](true);
     appState().timeDeltaSig[SET](- timer());
@@ -183,34 +181,34 @@ function App() {
   }
 
   async function handleDryEnd() {
-    setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventDRY_ENDSig[SET](true);
     setRoastPhase(RoastPhase.MAILLARD);
   }
 
   async function handleFCStart() {
-    setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventFC_STARTSig[SET](true);
     setRoastPhase(RoastPhase.DEVELOP);
   }
 
   async function handleFCEnd() {
-    setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventFC_ENDSig[SET](true);
   }
 
   async function handleSCStart() {
-    setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventSC_STARTSig[SET](true);
   }
 
   async function handleSCEnd() {
-    setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventSC_ENDSig[SET](true);
   }
 
   async function handleDrop() {
-    setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: metrics()[appState().btIndex].currentDataSig[GET]() }]);
+    setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
     appState().eventDROPSig[SET](true);
     setRoastPhase(RoastPhase.AFTER_DROP);
   }
@@ -228,27 +226,27 @@ function App() {
 
         {/* BT */}
         <div class="bg-base-300 rounded text-right w-20 p-1 ">
-          <p>{metrics()[appState().btIndex].id}</p>
+          <p>{channelList()[appState().btIndex].id}</p>
           <p class="text-2xl font-medium text-red-600">
-            {metrics()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
+            {channelList()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
           </p>
         </div>
 
         <div class="bg-base-300 rounded text-right w-20 p-1">
           <p>Δ BT</p>
           <p class="text-2xl font-medium text-blue-600">
-            {metrics()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
+            {channelList()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
           </p>
         </div>
 
-        <Index each={metricIdList}>
+        <Index each={channelIdList}>
           {
             (item, index) => (
               <Show when={index > 0}>
                 <div class="bg-base-300 rounded text-right w-20 p-1">
-                  <p>{metrics()[index].id}</p>
+                  <p>{channelList()[index].id}</p>
                   <p class="text-2xl font-medium text-red-600">
-                    {metrics()[index].currentDataSig[GET]().toFixed(1)}
+                    {channelList()[index].currentDataSig[GET]().toFixed(1)}
                   </p>
                 </div>
               </Show>

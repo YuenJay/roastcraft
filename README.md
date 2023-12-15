@@ -11,7 +11,7 @@ Roastcraft is a cross-platform software to log and analyze coffee roasting, much
   - config with [TOML](https://toml.io/) 
 
 ## interactive roast chart
-  - mouse move to show metrics(Bean temp, ROR, etc.) in specific time
+  - mouse move to show data (Bean temp, ROR, etc.) in specific time
   - drag to select range
 
 ## provide data through HTTP endpoint

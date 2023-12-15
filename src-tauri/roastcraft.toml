@@ -12,7 +12,7 @@ model   = "modbus"
     [serial.ta612c]
 
         [[serial.ta612c.channel]]
-            metrics_id  = "ET"
+            channel_id  = "ET"
             label       = "exhaust temp"
             id          = 1
             unit        = "celcius"
@@ -20,7 +20,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[serial.ta612c.channel]]
-            metrics_id  = "BT"
+            channel_id  = "BT"
             label       = "bean temp"
             id          = 2
             unit        = "celcius"
@@ -32,7 +32,7 @@ model   = "modbus"
         protocol = "modbus-rtu"
 
         [[serial.modbus.slave]]
-            metrics_id  = "ET"
+            channel_id  = "ET"
             label       = "exhaust temp"
             id          = 1
             function    = 3
@@ -44,7 +44,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
-            metrics_id  = "BT"
+            channel_id  = "BT"
             label       = "bean temp"
             id          = 2
             function    = 3
@@ -56,7 +56,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
-            metrics_id  = "inlet"
+            channel_id  = "inlet"
             label       = "inlet temp"
             id          = 3
             function    = 3
@@ -76,7 +76,7 @@ model   = "modbus"
         protocol = "modbus-tcp"
 
         [[tcp.modbus.slave]]
-            metrics_id  = "fan"
+            channel_id  = "fan"
             label       = "air pressure"
             id          = 4
             function    = 3
@@ -90,7 +90,7 @@ model   = "modbus"
     [tcp.http]
 
         [[tcp.http.channel]]
-            metrics_id  = "ET"
+            channel_id  = "ET"
             label       = "exhaust temp"
             id          = 1              # dummy
             unit        = "celcius"
@@ -98,7 +98,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[tcp.http.channel]]
-            metrics_id  = "BT"
+            channel_id  = "BT"
             label       = "bean temp"
             id          = 1           # dummy
             unit        = "celcius"
@@ -106,7 +106,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[tcp.http.channel]]
-            metrics_id  = "inlet"
+            channel_id  = "inlet"
             label       = "inlet temp"
             id          = 1            # dummy
             unit        = "celcius"

@@ -14,7 +14,7 @@ model   = "modbus"
         protocol = "modbus-rtu"
 
         [[serial.modbus.slave]]
-            metrics_id  = "ET"
+            channel_id  = "ET"
             label       = "exhaust temp"
             id          = 1
             function    = 3
@@ -26,7 +26,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
-            metrics_id  = "BT"
+            channel_id  = "BT"
             label       = "bean temp"
             id          = 2
             function    = 3
@@ -38,7 +38,7 @@ model   = "modbus"
             ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
-            metrics_id  = "inlet"
+            channel_id  = "inlet"
             label       = "inlet temp"
             id          = 3
             function    = 3

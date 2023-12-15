@@ -66,7 +66,7 @@ pub struct Http {
 // LEVEL 3
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Slave {
-    pub metrics_id: String,
+    pub channel_id: String,
     pub label: String,
     pub id: u16,
     pub function: u16,
@@ -81,7 +81,7 @@ pub struct Slave {
 // LEVEL 3
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Channel {
-    pub metrics_id: String,
+    pub channel_id: String,
     pub label: String,
     pub id: u16,
     pub unit: String,

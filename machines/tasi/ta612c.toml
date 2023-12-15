@@ -1,10 +1,6 @@
 version = "v1"
 brand = "tasi"
 model = "ta612c"
-metrics_ids = [
-    "bean_temp",
-    "exhaust_temp",
-]
 
 [serial]
     port      = "COM4"
@@ -12,3 +8,21 @@ metrics_ids = [
     data_bits = 8
     parity    = "none"
     stop_bits = 1
+
+    [serial.ta612c]
+
+        [[serial.ta612c.channel]]
+            channel_id  = "ET"
+            label       = "exhaust temp"
+            id          = 1
+            unit        = "celcius"
+            color       = "#00007f"
+            ror_color   = "#dd0000"
+
+        [[serial.ta612c.channel]]
+            channel_id  = "BT"
+            label       = "bean temp"
+            id          = 2
+            unit        = "celcius"
+            color       = "#00007f"
+            ror_color   = "#dd0000" 
