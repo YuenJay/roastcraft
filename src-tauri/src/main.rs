@@ -128,14 +128,17 @@ fn main() {
         )
         .manage(Mutex::new(RoastCraftState::new()))
         .setup(|app| {
-            let mut config_file_name = String::from("roastcraft.config.toml");
+            // default config file name
+            // in reldase/debug mode, put roastcraft.toml in the same folder with roastcraft.exe
+            // in dev mode, put roastcraft.toml in /src-tauri
+            let mut config_file_name = String::from("roastcraft.toml");
 
             // get cli argument
             match app.get_cli_matches() {
                 // pass cli args in dev mode:
-                // pnpm tauri dev -- -- --config kapok501.toml
+                // pnpm tauri dev -- -- --config=../machines/kapok/501_inlet.toml
                 Ok(matches) => {
-                    if (matches.args.get("config").unwrap().value.is_string()) {
+                    if matches.args.get("config").unwrap().value.is_string() {
                         config_file_name = matches
                             .args
                             .get("config")
@@ -149,8 +152,6 @@ fn main() {
                 }
                 Err(_) => {}
             }
-
-            // in dev mode, put roastcraft.config.toml in /src-tauri
 
             let mut parse_config_err_msg: String = String::new();
             let mut parse_config_ok = false;

@@ -1,11 +1,6 @@
 version = "v1"
-brand = "kapok"
-model = "501_inlet"
-metrics_ids = [
-    "exhaust_temp",
-    "bean_temp",
-    "inlet_temp",
-]
+brand   = "roastcraft"
+model   = "modbus"
 
 [serial]
     port      = "COM4"
@@ -16,25 +11,42 @@ metrics_ids = [
 
     [serial.modbus]
         # modbus-ascii, modbus-rtu
-        protocol = "modbus-ascii"
+        protocol = "modbus-rtu"
 
         [[serial.modbus.slave]]
-            metrics_id = "exhaust_temp"
-            id         = 1
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+            metrics_id  = "ET"
+            label       = "exhaust temp"
+            id          = 1
+            function    = 3
+            registry    = 18176     # = 4700h
+            divisor     = 10        # 1, 10, 100
+            decode_type = "u16"     # u16, u32, i16, i32, f32
+            unit        = "celcius"
+            color       = "#ff0000"
+            ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
-            metrics_id = "bean_temp"
-            id         = 2
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+            metrics_id  = "BT"
+            label       = "bean temp"
+            id          = 2
+            function    = 3
+            registry    = 18176     # = 4700h
+            divisor     = 10        # 1, 10, 100
+            decode_type = "u16"     # u16, u32, i16, i32, f32
+            unit        = "celcius"
+            color       = "#00007f"
+            ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
-            metrics_id = "inlet_temp"
-            id         = 3
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+            metrics_id  = "inlet"
+            label       = "inlet temp"
+            id          = 3
+            function    = 3
+            registry    = 18176     # = 4700h
+            divisor     = 10        # 1, 10, 100
+            decode_type = "u16"     # u16, u32, i16, i32, f32
+            unit        = "celcius"
+            color       = "#007f00"
+            ror_color   = "#dd0000"
+
+

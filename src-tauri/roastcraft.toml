@@ -9,7 +9,7 @@ model   = "modbus"
     parity    = "none"
     stop_bits = 1
 
-    [tcp.ta612c]
+    [serial.ta612c]
 
         [[serial.ta612c.channel]]
             metrics_id  = "ET"
@@ -25,7 +25,7 @@ model   = "modbus"
             id          = 2
             unit        = "celcius"
             color       = "#00007f"
-            ror_color   = "#dd0000"
+            ror_color   = "#dd0000" 
 
     [serial.modbus]
         # modbus-ascii, modbus-rtu
