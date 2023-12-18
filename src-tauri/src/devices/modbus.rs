@@ -86,7 +86,7 @@ impl Device for ModbusDevice {
                         let result = *v.get(0).unwrap() as f64 / slave.divisor as f64;
                         let rounded_number = (result * 10.0).round() / 10.0;
 
-                        trace!("{} : {}", slave.channel_id, rounded_number);
+                        // trace!("{} : {}", slave.channel_id, rounded_number);
 
                         map.insert(
                             slave.channel_id.clone(),
@@ -110,7 +110,7 @@ impl Device for ModbusDevice {
                 ));
             }
         }
-
+        // trace!("result map : {:?} ", map);
         Ok(Value::Object(map))
     }
 }

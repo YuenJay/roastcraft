@@ -66,8 +66,8 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
 
                     match device.read().await {
                         Ok(json_value) => {
-                            app2.emit_all("read_channels", json_value).unwrap();
-                            trace!("event read_channels emitted");
+                            app2.emit_all("read_channels", &json_value).unwrap();
+                            trace!("event read_channels emitted : {}", json_value);
                         }
                         Err(_) => {}
                     }
@@ -110,13 +110,26 @@ async fn get_config(app: tauri::AppHandle) -> Config {
 }
 
 fn main() {
+    let open = CustomMenuItem::new("open".to_string(), "Open");
+    let save = CustomMenuItem::new("save".to_string(), "Save");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
 
-    let submenu = Submenu::new("File", Menu::new().add_item(quit));
+    let submenu = Submenu::new(
+        "File",
+        Menu::new().add_item(open).add_item(save).add_item(quit),
+    );
     let menu = Menu::new().add_submenu(submenu);
 
     tauri::Builder::default()
         .menu(menu)
+        .on_menu_event(|event| match event.menu_item_id() {
+            "quit" => {
+                std::process::exit(0);
+            }
+            "open" => {}
+            "save" => {}
+            _ => {}
+        })
         .invoke_handler(tauri::generate_handler![
             button_on_clicked,
             button_off_clicked,
