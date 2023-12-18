@@ -48,11 +48,17 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
             state.reader_handle = Some(spawn(async move {
                 let mut interval = interval(Duration::from_secs(2));
 
-                // todo: choose device based on config
-                // let mut device: Box<dyn Device + Send> =
-                //     Box::new(devices::modbus::ModbusDevice::new(config));
-                let mut device: Box<dyn Device + Send> =
-                    Box::new(devices::http::HttpDevice::new(config));
+                let mut device: Box<dyn Device + Send>;
+
+                // serial has priority over tcp
+                match config.serial {
+                    Some(_) => {
+                        device = Box::new(devices::modbus::ModbusDevice::new(config));
+                    }
+                    None => {
+                        device = Box::new(devices::http::HttpDevice::new(config));
+                    }
+                }
 
                 loop {
                     interval.tick().await;
@@ -105,12 +111,9 @@ async fn get_config(app: tauri::AppHandle) -> Config {
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let close = CustomMenuItem::new("close".to_string(), "Close");
-    let submenu = Submenu::new("File", Menu::new().add_item(quit).add_item(close));
-    let menu = Menu::new()
-        // .add_native_item(MenuItem::Copy)
-        // .add_item(CustomMenuItem::new("hide", "Hide"))
-        .add_submenu(submenu);
+
+    let submenu = Submenu::new("File", Menu::new().add_item(quit));
+    let menu = Menu::new().add_submenu(submenu);
 
     tauri::Builder::default()
         .menu(menu)

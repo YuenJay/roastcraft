@@ -37,7 +37,6 @@ function App() {
 
     console.log(appState());
 
-
     // tauri-plugin-log-api
     // with LogTarget::Webview enabled this function will print logs to the browser console
     detach = await attachConsole();

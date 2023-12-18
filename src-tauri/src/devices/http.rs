@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use async_trait::async_trait;
-use log::{debug, error, trace};
+use log::{debug, error, info};
 use serde_json::{Map, Value};
 use std::io::{Error, ErrorKind};
 use tokio::time;
@@ -33,14 +33,13 @@ impl Device for HttpDevice {
             // read channels
             let config = &self.config;
             let tcp = config.tcp.as_ref().unwrap();
-            let http = tcp.http.as_ref().unwrap();
-            let channels = &http.channel;
 
-            let req = self.client.get("http://localhost:3000");
+            let url = format!("http://{}:{}", tcp.ip, tcp.port);
+            info!("url : {}", url);
+
+            let req = self.client.get(url);
             let res_str = req.send().await.unwrap().text().await.unwrap();
             res_json = serde_json::from_str(&res_str).unwrap();
-
-            // for channel in channels {}
         });
 
         match res.await {

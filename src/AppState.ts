@@ -130,23 +130,46 @@ async function init_appStateSig() {
     let config: any;
     await invoke("get_config").then(c => config = c);
 
-    let channelList: Channel[] = config.tcp.http.channel.map((s: any) =>
-        new Channel(
-            s.channel_id, // id
-            s.label, // label 
-            s.unit,  // unit
-            s.color, // color
-            s.ror_color,     // ror_color
-            createSignal(0), //currentDataSig
-            createSignal(0), //currentRorSig
-            [], //data_window
-            createSignal(new Array<Point>()), // dataSig
-            createSignal(new Array<Point>()), // rorSig
-            createSignal(new Array<Point>()), // rorOutlierSig
-            createSignal(new Array<Point>()), // rorFilteredSig
-            createSignal(new Array<Point>()), // rorConvolveSig
-        )
-    );
+    console.log(config);
+    let channelList: Channel[];
+    if (config.serial != null) {
+        channelList = config.serial.modbus.slave.map((s: any) =>
+            new Channel(
+                s.channel_id,    // id
+                s.label,         // label 
+                s.unit,          // unit
+                s.color,         // color
+                s.ror_color,     // ror_color
+                createSignal(0), //currentDataSig
+                createSignal(0), //currentRorSig
+                [], //data_window
+                createSignal(new Array<Point>()), // dataSig
+                createSignal(new Array<Point>()), // rorSig
+                createSignal(new Array<Point>()), // rorOutlierSig
+                createSignal(new Array<Point>()), // rorFilteredSig
+                createSignal(new Array<Point>()), // rorConvolveSig
+            )
+        );
+    } else {
+        channelList = config.tcp.http.channel.map((s: any) =>
+            new Channel(
+                s.channel_id,    // id
+                s.label,         // label 
+                s.unit,          // unit
+                s.color,         // color
+                s.ror_color,     // ror_color
+                createSignal(0), //currentDataSig
+                createSignal(0), //currentRorSig
+                [], //data_window
+                createSignal(new Array<Point>()), // dataSig
+                createSignal(new Array<Point>()), // rorSig
+                createSignal(new Array<Point>()), // rorOutlierSig
+                createSignal(new Array<Point>()), // rorFilteredSig
+                createSignal(new Array<Point>()), // rorConvolveSig
+            )
+        );
+    }
+
 
     let btIndex = channelList.findIndex(m => m.id == BT);
 

@@ -65,26 +65,25 @@ pub struct Http {
 
 // LEVEL 3
 #[derive(Serialize, Deserialize, Clone)]
-pub struct Slave {
+pub struct Channel {
     pub channel_id: String,
     pub label: String,
+    pub unit: String,
+    pub color: String,
+    pub ror_color: Option<String>,
+}
+
+// LEVEL 3
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Slave {
+    pub channel_id: String,        // Channel
+    pub label: String,             // Channel
+    pub unit: String,              // Channel
+    pub color: String,             // Channel
+    pub ror_color: Option<String>, // Channel
     pub id: u16,
     pub function: u16,
     pub registry: u16,
     pub divisor: u16,
     pub decode_type: String,
-    pub unit: String,
-    pub color: String,
-    pub ror_color: String,
-}
-
-// LEVEL 3
-#[derive(Serialize, Deserialize, Clone)]
-pub struct Channel {
-    pub channel_id: String,
-    pub label: String,
-    pub id: u16,
-    pub unit: String,
-    pub color: String,
-    pub ror_color: String,
 }
