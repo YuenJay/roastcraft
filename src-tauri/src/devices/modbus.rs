@@ -83,12 +83,14 @@ impl Device for ModbusDevice {
                     .await
                 {
                     Ok(v) => {
-                        let result = *v.get(0).unwrap() as f32 / slave.divisor as f32;
+                        let result = *v.get(0).unwrap() as f64 / slave.divisor as f64;
+                        let rounded_number = (result * 10.0).round() / 10.0;
 
-                        trace!("{} : {:.1}", slave.channel_id, result);
+                        trace!("{} : {}", slave.channel_id, rounded_number);
+
                         map.insert(
                             slave.channel_id.clone(),
-                            to_value(result).expect("Conversion failed"),
+                            to_value(rounded_number).expect("Conversion failed"),
                         );
                     }
                     Err(_) => {
