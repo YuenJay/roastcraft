@@ -13,6 +13,8 @@ import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
+import { open, save } from '@tauri-apps/api/dialog';
+import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 
 
 function App() {
@@ -31,6 +33,7 @@ function App() {
 
   let detach: UnlistenFn;
   let unlisten_reader: UnlistenFn;
+  let unlisten_menu_event_listener: UnlistenFn;
   let timer_worker: Worker;
 
   onMount(async () => {
@@ -93,6 +96,24 @@ function App() {
 
     });
 
+    // event listener
+    unlisten_menu_event_listener = await listen("menu_event", (event: any) => {
+
+      switch (event.payload) {
+        case "OPEN":
+          console.log(event);
+          openFile();
+          break;
+        case "SAVE":
+          console.log(event);
+          saveFile();
+          break;
+
+        default:
+          break;
+      }
+    });
+
     setLogs([...logs(), "RoastCraft is ready"]);
 
     // alternative: https://tauri.app/v1/api/js/globalshortcut/
@@ -103,8 +124,31 @@ function App() {
   onCleanup(() => {
     detach();
     unlisten_reader();
-
+    unlisten_menu_event_listener();
   })
+
+  async function openFile() {
+    try {
+      let filepath = await open() as string;
+      let content = await readTextFile(filepath);
+
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async function saveFile() {
+    try {
+      let filepath = await save() as string;
+      if (!filepath) return;
+
+      let content = "save test";
+      await writeTextFile(filepath, content);
+
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   async function buttonOnClicked() {
     await invoke("button_on_clicked");

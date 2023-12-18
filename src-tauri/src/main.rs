@@ -126,8 +126,12 @@ fn main() {
             "quit" => {
                 std::process::exit(0);
             }
-            "open" => {}
-            "save" => {}
+            "open" => {
+                event.window().emit("menu_event", "OPEN").unwrap();
+            }
+            "save" => {
+                event.window().emit("menu_event", "SAVE").unwrap();
+            }
             _ => {}
         })
         .invoke_handler(tauri::generate_handler![
