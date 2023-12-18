@@ -2,7 +2,7 @@
 
 use async_trait::async_trait;
 use log::{debug, error, trace};
-use serde_json::{Map, Value};
+use serde_json::{to_value, Map, Value};
 use std::io::{Error, ErrorKind};
 use tokio::time;
 use tokio_modbus::{
@@ -88,7 +88,7 @@ impl Device for ModbusDevice {
                         trace!("{} : {:.1}", slave.channel_id, result);
                         map.insert(
                             slave.channel_id.clone(),
-                            Value::String(format!("{:.1}", result)),
+                            to_value(result).expect("Conversion failed"),
                         );
                     }
                     Err(_) => {

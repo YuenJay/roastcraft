@@ -16,37 +16,33 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "ET"
             label       = "exhaust temp"
+            unit        = "celcius"
+            color       = "#ff0000"
             id          = 1
             function    = 3
             registry    = 18176     # = 4700h
             divisor     = 10        # 1, 10, 100
             decode_type = "u16"     # u16, u32, i16, i32, f32
-            unit        = "celcius"
-            color       = "#ff0000"
-            ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
             channel_id  = "BT"
             label       = "bean temp"
+            unit        = "celcius"
+            color       = "#00007f"
+            ror_color   = "#dd0000" # BT only
             id          = 2
             function    = 3
             registry    = 18176     # = 4700h
             divisor     = 10        # 1, 10, 100
             decode_type = "u16"     # u16, u32, i16, i32, f32
-            unit        = "celcius"
-            color       = "#00007f"
-            ror_color   = "#dd0000"
 
         [[serial.modbus.slave]]
             channel_id  = "inlet"
             label       = "inlet temp"
+            unit        = "celcius"
+            color       = "#007f00"
             id          = 3
             function    = 3
             registry    = 18176     # = 4700h
             divisor     = 10        # 1, 10, 100
             decode_type = "u16"     # u16, u32, i16, i32, f32
-            unit        = "celcius"
-            color       = "#007f00"
-            ror_color   = "#dd0000"
-
-

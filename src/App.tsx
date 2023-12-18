@@ -241,7 +241,7 @@ function App() {
         <Index each={channelIdList}>
           {
             (item, index) => (
-              <Show when={index > 0}>
+              <Show when={index != appState().btIndex}>
                 <div class="bg-base-300 rounded text-right w-20 p-1">
                   <p>{channelList()[index].id}</p>
                   <p class="text-2xl font-medium text-red-600">
