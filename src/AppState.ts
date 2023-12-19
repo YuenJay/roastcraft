@@ -102,7 +102,6 @@ export enum AppStatus {
     OFF = 'OFF',
     ON = 'ON',
     RECORDING = 'RECORDING',
-    RECORDED = 'RECORDED'
 }
 
 export enum RoastPhase {
@@ -217,3 +216,15 @@ async function init_appStateSig() {
 
 export const appStateSig = createSignal(await init_appStateSig());
 
+export function reset() {
+    const [appState, setAppState] = appStateSig;
+    const [channelList, setChannelList] = appState().channelListSig;
+
+    appState().timerSig[SET](0);
+    appState().timeDeltaSig[SET](0);
+
+    channelList().forEach((channel) => {
+        channel.setData(new Array<Point>())
+    })
+
+}

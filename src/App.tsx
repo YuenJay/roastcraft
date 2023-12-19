@@ -8,7 +8,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import ManualChart from "./ManualChart";
-import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppState";
+import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig, reset } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -126,6 +126,10 @@ function App() {
     })
 
     async function buttonOnClicked() {
+
+        // implicit reset data
+        reset();
+
         await invoke("button_on_clicked");
         setStatus(AppStatus.ON);
         setLogs([...logs(), "start reading channels..."]);
@@ -133,7 +137,12 @@ function App() {
 
     async function buttonOffClicked() {
         await invoke("button_off_clicked");
+        if (timer_worker) {
+            timer_worker.terminate()
+        };
+
         setStatus(AppStatus.OFF);
+
         setLogs([...logs(), "stopped reading channels"]);
     }
 
@@ -148,17 +157,11 @@ function App() {
         setLogs([...logs(), "start recording"]);
     }
 
-    async function buttonStopClicked() {
-        timer_worker.terminate();
-
-        setStatus(AppStatus.RECORDED);
-        setLogs([...logs(), "stopped recording"]);
-    }
-
     async function buttonResetClicked() {
-        // todo: clear appStore
-        setStatus(AppStatus.ON);
+        reset();
+        setStatus(AppStatus.OFF);
     }
+
 
     function handleKeyDownEvent(event: KeyboardEvent) {
         trace("key down event: " + event.code);
@@ -319,11 +322,14 @@ function App() {
                 <div class="ml-auto self-center flex gap-3 mr-3">
                     <Show when={status() == AppStatus.OFF}>
                         <div class="indicator">
+                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
+                            <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>
+                        </div>
+                        <div class="indicator">
                             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
                             <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
                         </div>
                     </Show>
-
                     <Show when={status() == AppStatus.ON}>
                         <div class="indicator">
                             <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
@@ -334,20 +340,13 @@ function App() {
                             <button class="btn btn-accent " onClick={buttonStartClicked}>START</button>
                         </div>
                     </Show>
-
                     <Show when={status() == AppStatus.RECORDING}>
                         <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
-                            <button class="btn btn-accent" onClick={buttonStopClicked}>STOP</button>
+                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
+                            <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
                         </div>
                     </Show>
 
-                    <Show when={status() == AppStatus.RECORDED}>
-                        <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
-                            <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>
-                        </div>
-                    </Show>
                 </div>
             </div>
             {/* header end*/}
