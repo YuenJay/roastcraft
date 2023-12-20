@@ -11,10 +11,10 @@ export default function MainChart() {
 
     const [appState, setAppState] = appStateSig;
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
-    const [channelList, setChannelList] = appState().channelListSig;
+    const [channelArr, setChannelArr] = appState().channelArrSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
 
-    const bt = channelList()[appState().btIndex];
+    const bt = channelArr()[appState().btIndex];
 
     const width = 800;
     const height = 500;
@@ -107,7 +107,7 @@ export default function MainChart() {
                 </foreignObject>
             </Show>
 
-            <For each={channelList().filter(m => m.id != BT)}>
+            <For each={channelArr().filter(m => m.id != BT)}>
                 {(m) => (
                     <g
                         clip-path="url(#clip-path)" >
@@ -202,7 +202,7 @@ export default function MainChart() {
                     </For>
                 </g>
             </Show>
-            <For each={appState().eventsSig[GET]()}>
+            <For each={appState().eventArrSig[GET]()}>
                 {(item) => (
                     <Annotation
                         x={xScale(item.timestamp + timeDelta())}

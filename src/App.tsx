@@ -20,14 +20,14 @@ function App() {
     const [appState, setAppState] = appStateSig;
     const [status, setStatus] = appState().statusSig;
     const [timer, setTimer] = appState().timerSig;
-    const [channelList, setChannelList] = appState().channelListSig;
-    const [logs, setLogs] = appState().logsSig;
-    const [events, setEvents] = appState().eventsSig;
+    const [channelArr, setChannelArr] = appState().channelArrSig;
+    const [logArr, setLogArr] = appState().logArrSig;
+    const [eventArr, setEventArr] = appState().eventArrSig;
     const [roastPhase, setRoastPhase] = appState().roastPhaseSig;
     const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
     const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
     const [developPhase, setDevelopPhase] = appState().developPhaseSig;
-    const channelIdList = channelList().map(m => m.id);
+    const channelIdList = channelArr().map(m => m.id);
 
     let detach: UnlistenFn;
     let unlisten_reader: UnlistenFn;
@@ -39,7 +39,7 @@ function App() {
         console.log(appState());
 
         // tauri-plugin-log-api
-        // with LogTarget::Webview enabled this function will print logs to the browser console
+        // with LogTarget::Webview enabled this function will print logArr to the browser console
         detach = await attachConsole();
 
         // event listener
@@ -50,10 +50,10 @@ function App() {
             let i;
             for (i = 0; i < channelIdList.length; i++) {
 
-                channelList()[i].currentDataSig[SET](Number(event.payload[channelIdList[i]]));
+                channelArr()[i].currentDataSig[SET](Number(event.payload[channelIdList[i]]));
 
                 /* calculate ROR start */
-                channelList()[i].data_window.push(
+                channelArr()[i].data_window.push(
                     {
                         value: Number(event.payload[channelIdList[i]]),
                         system_time: new Date().getTime()
@@ -61,25 +61,25 @@ function App() {
                 );
 
                 // buffer size of 5
-                if (channelList()[i].data_window.length > 5) {
-                    channelList()[i].data_window.shift();
+                if (channelArr()[i].data_window.length > 5) {
+                    channelArr()[i].data_window.shift();
                 }
 
-                let delta = channelList()[i].data_window[channelList()[i].data_window.length - 1].value
-                    - channelList()[i].data_window[0].value;
-                let time_elapsed_sec = (channelList()[i].data_window[channelList()[i].data_window.length - 1].system_time
-                    - channelList()[i].data_window[0].system_time)
+                let delta = channelArr()[i].data_window[channelArr()[i].data_window.length - 1].value
+                    - channelArr()[i].data_window[0].value;
+                let time_elapsed_sec = (channelArr()[i].data_window[channelArr()[i].data_window.length - 1].system_time
+                    - channelArr()[i].data_window[0].system_time)
                     / 1000;
 
-                channelList()[i].currentRorSig[SET](
+                channelArr()[i].currentRorSig[SET](
                     (Math.floor(delta / time_elapsed_sec * 60 * 10)) / 10 || 0
                 );
                 /* calculate ROR end */
 
                 // write into history data
                 if (status() == AppStatus.RECORDING) {
-                    channelList()[i].setData(
-                        [...channelList()[i].data(), new Point(timer(), event.payload[channelIdList[i]])]
+                    channelArr()[i].setData(
+                        [...channelArr()[i].data(), new Point(timer(), event.payload[channelIdList[i]])]
                     )
                 }
             }
@@ -112,7 +112,7 @@ function App() {
             }
         });
 
-        setLogs([...logs(), "RoastCraft is ready"]);
+        setLogArr([...logArr(), "RoastCraft is ready"]);
 
         // alternative: https://tauri.app/v1/api/js/globalshortcut/
         // but I think this is ok
@@ -132,7 +132,7 @@ function App() {
 
         await invoke("button_on_clicked");
         setStatus(AppStatus.ON);
-        setLogs([...logs(), "start reading channels..."]);
+        setLogArr([...logArr(), "start reading channels..."]);
     }
 
     async function buttonOffClicked() {
@@ -143,7 +143,7 @@ function App() {
 
         setStatus(AppStatus.OFF);
 
-        setLogs([...logs(), "stopped reading channels"]);
+        setLogArr([...logArr(), "stopped reading channels"]);
     }
 
     async function buttonStartClicked() {
@@ -154,7 +154,7 @@ function App() {
         };
 
         setStatus(AppStatus.RECORDING);
-        setLogs([...logs(), "start recording"]);
+        setLogArr([...logArr(), "start recording"]);
     }
 
     async function buttonResetClicked() {
@@ -193,7 +193,7 @@ function App() {
     }
 
     async function handleCharge() {
-        setEvents([...events(), { id: EventId.CHARGE, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.CHARGE, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
 
         appState().eventCHARGESig[SET](true);
         appState().timeDeltaSig[SET](- timer());
@@ -202,34 +202,34 @@ function App() {
     }
 
     async function handleDryEnd() {
-        setEvents([...events(), { id: EventId.DRY_END, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.DRY_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventDRY_ENDSig[SET](true);
         setRoastPhase(RoastPhase.MAILLARD);
     }
 
     async function handleFCStart() {
-        setEvents([...events(), { id: EventId.FC_START, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.FC_START, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventFC_STARTSig[SET](true);
         setRoastPhase(RoastPhase.DEVELOP);
     }
 
     async function handleFCEnd() {
-        setEvents([...events(), { id: EventId.FC_END, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.FC_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventFC_ENDSig[SET](true);
     }
 
     async function handleSCStart() {
-        setEvents([...events(), { id: EventId.SC_START, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.SC_START, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventSC_STARTSig[SET](true);
     }
 
     async function handleSCEnd() {
-        setEvents([...events(), { id: EventId.SC_END, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.SC_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventSC_ENDSig[SET](true);
     }
 
     async function handleDrop() {
-        setEvents([...events(), { id: EventId.DROP, timestamp: timer(), value: channelList()[appState().btIndex].currentDataSig[GET]() }]);
+        setEventArr([...eventArr(), { id: EventId.DROP, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventDROPSig[SET](true);
         setRoastPhase(RoastPhase.AFTER_DROP);
     }
@@ -247,16 +247,16 @@ function App() {
 
                 {/* BT */}
                 <div class="bg-base-300 rounded text-right w-20 p-1 ">
-                    <p>{channelList()[appState().btIndex].id}</p>
+                    <p>{channelArr()[appState().btIndex].id}</p>
                     <p class="text-2xl font-medium text-red-600">
-                        {channelList()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
+                        {channelArr()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
                     </p>
                 </div>
 
                 <div class="bg-base-300 rounded text-right w-20 p-1">
                     <p>Δ BT</p>
                     <p class="text-2xl font-medium text-blue-600">
-                        {channelList()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
+                        {channelArr()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
                     </p>
                 </div>
 
@@ -265,9 +265,9 @@ function App() {
                         (item, index) => (
                             <Show when={index != appState().btIndex}>
                                 <div class="bg-base-300 rounded text-right w-20 p-1">
-                                    <p>{channelList()[index].id}</p>
+                                    <p>{channelArr()[index].id}</p>
                                     <p class="text-2xl font-medium text-red-600">
-                                        {channelList()[index].currentDataSig[GET]().toFixed(1)}
+                                        {channelArr()[index].currentDataSig[GET]().toFixed(1)}
                                     </p>
                                 </div>
                             </Show>
@@ -460,11 +460,11 @@ function App() {
                         }} />
                     </label>
                 </div>
-                <Show when={logs().length > 0}>
+                <Show when={logArr().length > 0}>
 
                     <div class="text-sm">
-                        {/* show 5 lines of logs, newest on top */}
-                        <For each={logs().slice(-5).reverse()}>
+                        {/* show 5 lines of logArr, newest on top */}
+                        <For each={logArr().slice(-5).reverse()}>
                             {(item) => <p class="px-1 border-b first:bg-base-200">{item.toString()}</p>}
                         </For>
 

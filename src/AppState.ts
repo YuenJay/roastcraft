@@ -130,9 +130,9 @@ async function init_appStateSig() {
     await invoke("get_config").then(c => config = c);
 
     console.log(config);
-    let channelList: Channel[];
+    let channelArr: Channel[];
     if (config.serial != null) {
-        channelList = config.serial.modbus.slave.map((s: any) =>
+        channelArr = config.serial.modbus.slave.map((s: any) =>
             new Channel(
                 s.channel_id,    // id
                 s.label,         // label 
@@ -150,15 +150,15 @@ async function init_appStateSig() {
             )
         );
     } else {
-        channelList = config.tcp.http.channel.map((s: any) =>
+        channelArr = config.tcp.http.channel.map((s: any) =>
             new Channel(
                 s.channel_id,    // id
                 s.label,         // label 
                 s.unit,          // unit
                 s.color,         // color
                 s.ror_color,     // ror_color
-                createSignal(0), //currentDataSig
-                createSignal(0), //currentRorSig
+                createSignal(0), // currentDataSig
+                createSignal(0), // currentRorSig
                 [], //data_window
                 createSignal(new Array<Point>()), // dataSig
                 createSignal(new Array<Point>()), // rorSig
@@ -170,11 +170,11 @@ async function init_appStateSig() {
     }
 
 
-    let btIndex = channelList.findIndex(m => m.id == BT);
+    let btIndex = channelArr.findIndex(m => m.id == BT);
 
-    let manualChannelList: Array<ManualChannel> = new Array<ManualChannel>();
+    let manualChannelArr: Array<ManualChannel> = new Array<ManualChannel>();
 
-    manualChannelList.push(
+    manualChannelArr.push(
         new ManualChannel(
             "gas",
             createSignal(20),
@@ -187,10 +187,10 @@ async function init_appStateSig() {
         statusSig: createSignal(AppStatus.OFF),
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),
-        channelListSig: createSignal(channelList),
-        manualChannelListSig: createSignal(manualChannelList),
-        logsSig: createSignal(new Array<string>()),
-        eventsSig: createSignal(new Array<Event>()),
+        channelArrSig: createSignal(channelArr),
+        manualChannelArrSig: createSignal(manualChannelArr),
+        logArrSig: createSignal(new Array<string>()),
+        eventArrSig: createSignal(new Array<Event>()),
         eventCHARGESig: createSignal(false),
         eventDRY_ENDSig: createSignal(false),
         eventFC_STARTSig: createSignal(false),
@@ -218,13 +218,29 @@ export const appStateSig = createSignal(await init_appStateSig());
 
 export function reset() {
     const [appState, setAppState] = appStateSig;
-    const [channelList, setChannelList] = appState().channelListSig;
+    const [channelArr, setChannelArr] = appState().channelArrSig;
 
     appState().timerSig[SET](0);
     appState().timeDeltaSig[SET](0);
 
-    channelList().forEach((channel) => {
-        channel.setData(new Array<Point>())
+    // reset channelArr
+    channelArr().forEach((channel) => {
+        channel.currentDataSig[SET](0);
+        channel.setData(new Array<Point>());
+        channel.rorSig[SET](new Array<Point>());
     })
+
+    // todo: reset manualChannelArr
+
+    appState().eventArrSig[SET](new Array<Event>());
+    appState().eventCHARGESig[SET](false);
+    appState().eventDRY_ENDSig[SET](false);
+    appState().eventFC_STARTSig[SET](false);
+    appState().eventFC_ENDSig[SET](false);
+    appState().eventSC_STARTSig[SET](false);
+    appState().eventSC_ENDSig[SET](false);
+    appState().eventDROPSig[SET](false);
+    appState().eventTPSig[SET](false);
+    appState().eventROR_TPSig[SET](false);
 
 }

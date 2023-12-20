@@ -8,8 +8,8 @@ import * as d3 from "d3-array";
 
 const [appState, setAppState] = appStateSig;
 const [timer, setTimer] = appState().timerSig;
-const [channelList, setChannelList] = appState().channelListSig;
-const [events, setEvents] = appState().eventsSig;
+const [channelArr, setChannelArr] = appState().channelArrSig;
+const [eventArr, setEventArr] = appState().eventArrSig;
 const [eventCHARGE, setEventCHARGE] = appState().eventCHARGESig;
 const [eventDRY_END, setEventDRY_END] = appState().eventDRY_ENDSig;
 const [eventDROP, setEventDROP] = appState().eventDROPSig;
@@ -26,7 +26,7 @@ export function timestamp_format(timestamp: number) {
 
 export function calculateRor() {
     let mIndex = appState().btIndex; // channel index for BT
-    let data: Array<Point> = channelList()[mIndex].data();
+    let data: Array<Point> = channelArr()[mIndex].data();
 
     let ror_array = Array<Point>();
 
@@ -45,14 +45,14 @@ export function calculateRor() {
         );
     }
 
-    channelList()[mIndex].rorSig[SET](ror_array);
+    channelArr()[mIndex].rorSig[SET](ror_array);
 }
 
 export function findRorOutlier() {
 
     let mIndex = appState().btIndex; // channel index for BT
 
-    let ror: Array<Point> = channelList()[mIndex].rorSig[GET]();
+    let ror: Array<Point> = channelArr()[mIndex].rorSig[GET]();
 
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();
@@ -88,12 +88,12 @@ export function findRorOutlier() {
 
         if (zScore > 3) {
             ror_outlier.push(
-                channelList()[mIndex].rorSig[GET]()[i]
+                channelArr()[mIndex].rorSig[GET]()[i]
             )
 
         } else {
             ror_filtered.push(
-                channelList()[mIndex].rorSig[GET]()[i]
+                channelArr()[mIndex].rorSig[GET]()[i]
             )
         }
     }
@@ -127,9 +127,9 @@ export function findRorOutlier() {
         ));
     }
 
-    channelList()[mIndex].rorOutlierSig[SET](ror_outlier);
-    channelList()[mIndex].rorFilteredSig[SET](ror_filtered);
-    channelList()[mIndex].rorConvolveSig[SET](ror_convolve);
+    channelArr()[mIndex].rorOutlierSig[SET](ror_outlier);
+    channelArr()[mIndex].rorFilteredSig[SET](ror_filtered);
+    channelArr()[mIndex].rorConvolveSig[SET](ror_convolve);
 
 
     // find ROR TP
@@ -140,7 +140,7 @@ export function findRorOutlier() {
             let target_index = window.length - 5;
 
             setEventROR_TP(true);
-            setEvents([...events(), new Event(
+            setEventArr([...eventArr(), new Event(
                 EventId.ROR_TP,
                 window[target_index][0],
                 window[target_index][1]
@@ -150,7 +150,7 @@ export function findRorOutlier() {
 
     // ROR linear regression all
     if (eventROR_TP() == true && eventDROP() == false) {
-        let ROR_TP_timestamp = (events().find(r => r.id == EventId.ROR_TP) as Event).timestamp;
+        let ROR_TP_timestamp = (eventArr().find(r => r.id == EventId.ROR_TP) as Event).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let mb = linearRegression(window); // m: slope, b: intersect
         let l = linearRegressionLine(mb);
@@ -175,8 +175,8 @@ export function findRorOutlier() {
 export function autoDetectChargeDrop() {
     let mIndex: number = appState().btIndex; // channel index for BT
 
-    let data: Array<Point> = channelList()[mIndex].data();
-    let ror: Array<Point> = channelList()[mIndex].rorSig[GET]();
+    let data: Array<Point> = channelArr()[mIndex].data();
+    let ror: Array<Point> = channelArr()[mIndex].rorSig[GET]();
 
     let window_size = 5
     if (ror.length >= window_size) {
@@ -200,7 +200,7 @@ export function autoDetectChargeDrop() {
 
                 appState().timeDeltaSig[SET](- data[target_index].timestamp);
                 setEventCHARGE(true);
-                setEvents([...events(), new Event(
+                setEventArr([...eventArr(), new Event(
                     EventId.CHARGE,
                     data[target_index].timestamp,
                     data[target_index].value)]);
@@ -210,7 +210,7 @@ export function autoDetectChargeDrop() {
                 info("auto detected drop at ror index: " + (target_index));
 
                 setEventDROP(true);
-                setEvents([...events(), new Event(
+                setEventArr([...eventArr(), new Event(
                     EventId.DROP,
                     data[target_index].timestamp,
                     data[target_index].value
@@ -233,7 +233,7 @@ export function findTurningPoint() {
     let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
-    let data: Array<Point> = channelList()[appState().btIndex].data();
+    let data: Array<Point> = channelArr()[appState().btIndex].data();
 
     let target_index = 0;
     let tp_found = false;
@@ -256,7 +256,7 @@ export function findTurningPoint() {
     if (tp_found) {
 
         setEventTP(true);
-        setEvents([...events(), new Event(
+        setEventArr([...eventArr(), new Event(
             EventId.TP,
             data[target_index].timestamp,
             data[target_index].value
@@ -272,7 +272,7 @@ export function findDryEnd() {
         return
     }
 
-    let data: Array<Point> = channelList()[appState().btIndex].data();
+    let data: Array<Point> = channelArr()[appState().btIndex].data();
 
     let dry_end = 150;
 
@@ -281,7 +281,7 @@ export function findDryEnd() {
         let target_index = data.length - 2;
 
         setEventDRY_END(true);
-        setEvents([...events(), new Event(
+        setEventArr([...eventArr(), new Event(
             EventId.DRY_END,
             data[target_index].timestamp,
             data[target_index].value
@@ -295,11 +295,11 @@ export function calculatePhases() {
     let mIndex = appState().btIndex; // channel index for BT
 
     if (roastPhase() == RoastPhase.DRYING) {
-        let charge = events().find(r => r.id == EventId.CHARGE) as Event;
+        let charge = eventArr().find(r => r.id == EventId.CHARGE) as Event;
         let temp_rise = 0;
         if (eventTP()) {
-            let tp = (events().find(r => r.id == EventId.TP) as Event);
-            temp_rise = channelList()[mIndex].currentDataSig[GET]() - tp.value;
+            let tp = (eventArr().find(r => r.id == EventId.TP) as Event);
+            temp_rise = channelArr()[mIndex].currentDataSig[GET]() - tp.value;
         }
         setDryingPhase(new Phase(
             timer() - charge.timestamp,
@@ -307,15 +307,15 @@ export function calculatePhases() {
             temp_rise
         ));
     } else if (roastPhase() == RoastPhase.MAILLARD) {
-        let charge = events().find(r => r.id == EventId.CHARGE) as Event;
-        let tp = events().find(r => r.id == EventId.TP) as Event;
-        let de = events().find(r => r.id == EventId.DRY_END) as Event;
+        let charge = eventArr().find(r => r.id == EventId.CHARGE) as Event;
+        let tp = eventArr().find(r => r.id == EventId.TP) as Event;
+        let de = eventArr().find(r => r.id == EventId.DRY_END) as Event;
 
         let drying_time = de.timestamp - charge.timestamp;
         let drying_temp_rise = de.value - tp.value;
 
         let maillard_time = timer() - de.timestamp;
-        let maillard_temp_rise = channelList()[mIndex].currentDataSig[GET]() - de.value;
+        let maillard_temp_rise = channelArr()[mIndex].currentDataSig[GET]() - de.value;
 
         setDryingPhase(new Phase(
             drying_time,
@@ -330,10 +330,10 @@ export function calculatePhases() {
         ));
 
     } else if (roastPhase() == RoastPhase.DEVELOP) {
-        let charge = events().find(r => r.id == EventId.CHARGE) as Event;
-        let tp = events().find(r => r.id == EventId.TP) as Event;
-        let de = events().find(r => r.id == EventId.DRY_END) as Event;
-        let fc = events().find(r => r.id == EventId.FC_START) as Event;
+        let charge = eventArr().find(r => r.id == EventId.CHARGE) as Event;
+        let tp = eventArr().find(r => r.id == EventId.TP) as Event;
+        let de = eventArr().find(r => r.id == EventId.DRY_END) as Event;
+        let fc = eventArr().find(r => r.id == EventId.FC_START) as Event;
 
         let drying_time = de.timestamp - charge.timestamp;
         let drying_temp_rise = de.value - tp.value;
@@ -342,7 +342,7 @@ export function calculatePhases() {
         let maillard_temp_rise = fc.value - de.value;
 
         let develop_time = timer() - fc.timestamp;
-        let develop_temp_rise = channelList()[mIndex].currentDataSig[GET]() - fc.value;
+        let develop_temp_rise = channelArr()[mIndex].currentDataSig[GET]() - fc.value;
 
         setDryingPhase(new Phase(
             drying_time,
@@ -363,11 +363,11 @@ export function calculatePhases() {
         ));
 
     } else if (roastPhase() == RoastPhase.AFTER_DROP) {
-        let charge = events().find(r => r.id == EventId.CHARGE) as Event;
-        let tp = events().find(r => r.id == EventId.TP) as Event;
-        let de = events().find(r => r.id == EventId.DRY_END) as Event;
-        let fc = events().find(r => r.id == EventId.FC_START) as Event;
-        let drop = events().find(r => r.id == EventId.DROP) as Event;
+        let charge = eventArr().find(r => r.id == EventId.CHARGE) as Event;
+        let tp = eventArr().find(r => r.id == EventId.TP) as Event;
+        let de = eventArr().find(r => r.id == EventId.DRY_END) as Event;
+        let fc = eventArr().find(r => r.id == EventId.FC_START) as Event;
+        let drop = eventArr().find(r => r.id == EventId.DROP) as Event;
 
         let drying_time = de.timestamp - charge.timestamp;
         let drying_temp_rise = de.value - tp.value;

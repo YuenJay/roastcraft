@@ -10,8 +10,8 @@ export async function openFile() {
         let content = await readTextFile(filepath);
 
         let loadObject = JSON.parse(content);
-        loadObject.channelList.forEach((c: any) => {
-            let channel = appState().channelListSig[GET]().find((channel) => channel.id == c.id);
+        loadObject.channelArr.forEach((c: any) => {
+            let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
                 c.data.forEach((p: Point) => {
                     channel?.setData([...channel.data(), p]);
@@ -30,10 +30,10 @@ export async function saveFile() {
         if (!filepath) return;
 
         let saveObject = {
-            channelList: new Array<any>()
+            channelArr: new Array<any>()
         };
 
-        appState().channelListSig[GET]().forEach((channel) => {
+        appState().channelArrSig[GET]().forEach((channel) => {
 
             let saveData = new Array<Point>();
 
@@ -41,7 +41,7 @@ export async function saveFile() {
                 saveData.push(p)
             });
 
-            saveObject.channelList.push({
+            saveObject.channelArr.push({
                 id: channel.id,
                 data: saveData
             });
