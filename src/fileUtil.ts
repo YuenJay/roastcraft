@@ -1,6 +1,7 @@
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppState";
+import { calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
     const [appState, _setAppState] = appStateSig;
@@ -13,11 +14,21 @@ export async function openFile() {
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
-                c.data.forEach((p: Point) => {
+                c.dataArr.forEach((p: Point) => {
                     channel?.setDataArr([...channel.dataArr(), p]);
                 });
             }
         });
+
+        appState().eventArrSig[SET](loadObject.eventArr);
+
+        let chargeEvent = appState().eventArrSig[GET]().find((event) => event.id == EventId.CHARGE);
+        if (chargeEvent) {
+            appState().timeDeltaSig[SET](- chargeEvent.timestamp);
+        }
+
+        calculateRor();
+        findRorOutlier();
     } catch (e) {
         console.log(e);
     }
@@ -30,20 +41,21 @@ export async function saveFile() {
         if (!filepath) return;
 
         let saveObject = {
-            channelArr: new Array<any>()
+            channelArr: new Array<any>(),
+            eventArr: appState().eventArrSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((channel) => {
 
-            let saveData = new Array<Point>();
+            let saveDataArr = new Array<Point>();
 
             channel.dataArr().forEach((p) => {
-                saveData.push(p)
+                saveDataArr.push(p)
             });
 
             saveObject.channelArr.push({
                 id: channel.id,
-                data: saveData
+                dataArr: saveDataArr
             });
         });
 
