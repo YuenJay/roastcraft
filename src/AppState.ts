@@ -21,45 +21,45 @@ export class Channel {
     label: string;
     unit: string;
     color: string;
-    ror_color: string;
+    rorColor: string;
     currentDataSig: Signal<number>;    // current 
     currentRorSig: Signal<number>;     // current 
-    data_window: Array<any>;           // current, for calculate ror
-    data: Accessor<Point[]>;           // history records
-    setData: Setter<Point[]>;          // history records
-    rorSig: Signal<Array<Point>>;         // history records
-    rorOutlierSig: Signal<Array<Point>>;  // history records
-    rorFilteredSig: Signal<Array<Point>>; // history records
-    rorConvolveSig: Signal<Array<Point>>; // history records
+    dataWindowArr: Array<any>;           // current, for calculate ror
+    dataArr: Accessor<Point[]>;           // history records
+    setDataArr: Setter<Point[]>;          // history records
+    rorArrSig: Signal<Array<Point>>;         // history records
+    rorOutlierArrSig: Signal<Array<Point>>;  // history records
+    rorFilteredArrSig: Signal<Array<Point>>; // history records
+    rorConvolveArrSig: Signal<Array<Point>>; // history records
 
     constructor(
         id: string,
         label: string,
         unit: string,
         color: string,
-        ror_color: string,
+        rorColor: string,
         currentDataSig: Signal<number>,
         currentRorSig: Signal<number>,
-        data_window: Array<any>,
-        dataSig: Signal<Array<Point>>,
-        rorSig: Signal<Array<Point>>,
-        rorOutlierSig: Signal<Array<Point>>,
-        rorFilteredSig: Signal<Array<Point>>,
-        rorConvolveSig: Signal<Array<Point>>,) {
+        dataWindowArr: Array<any>,
+        dataArrSig: Signal<Array<Point>>,
+        rorArrSig: Signal<Array<Point>>,
+        rorOutlierArrSig: Signal<Array<Point>>,
+        rorFilteredArrSig: Signal<Array<Point>>,
+        rorConvolveArrSig: Signal<Array<Point>>,) {
         this.id = id;
         this.label = label;
         this.unit = unit;
         this.color = color;
-        this.ror_color = ror_color;
+        this.rorColor = rorColor;
         this.currentDataSig = currentDataSig;
         this.currentRorSig = currentRorSig;
-        this.data_window = data_window;
-        this.data = dataSig[GET];
-        this.setData = dataSig[SET];
-        this.rorSig = rorSig;
-        this.rorOutlierSig = rorOutlierSig;
-        this.rorFilteredSig = rorFilteredSig;
-        this.rorConvolveSig = rorConvolveSig;
+        this.dataWindowArr = dataWindowArr;
+        this.dataArr = dataArrSig[GET];
+        this.setDataArr = dataArrSig[SET];
+        this.rorArrSig = rorArrSig;
+        this.rorOutlierArrSig = rorOutlierArrSig;
+        this.rorFilteredArrSig = rorFilteredArrSig;
+        this.rorConvolveArrSig = rorConvolveArrSig;
 
     }
 }
@@ -226,13 +226,22 @@ export function reset() {
     // reset channelArr
     channelArr().forEach((channel) => {
         channel.currentDataSig[SET](0);
-        channel.setData(new Array<Point>());
-        channel.rorSig[SET](new Array<Point>());
+        channel.currentRorSig[SET](0);
+        channel.dataWindowArr = [];
+        channel.setDataArr(new Array<Point>());
+        channel.rorArrSig[SET](new Array<Point>());
+        channel.rorOutlierArrSig[SET](new Array<Point>());
+        channel.rorFilteredArrSig[SET](new Array<Point>());
+        channel.rorConvolveArrSig[SET](new Array<Point>());
     })
 
     // todo: reset manualChannelArr
 
+    // not reset logs
+    // appState().logArrSig[SET](new Array<string>());
+
     appState().eventArrSig[SET](new Array<Event>());
+
     appState().eventCHARGESig[SET](false);
     appState().eventDRY_ENDSig[SET](false);
     appState().eventFC_STARTSig[SET](false);
@@ -242,5 +251,17 @@ export function reset() {
     appState().eventDROPSig[SET](false);
     appState().eventTPSig[SET](false);
     appState().eventROR_TPSig[SET](false);
+
+    appState().rorLinearStartSig[SET](new Point(0, 0));
+    appState().rorLinearEndSig[SET](new Point(0, 0));
+    appState().rorLinearSlopeSig[SET](0);
+    appState().roastPhaseSig[SET](RoastPhase.BEFORE_CHARGE);
+    appState().dryingPhaseSig[SET](new Phase(0, 0.0, 0.0));
+    appState().maillardPhaseSig[SET](new Phase(0, 0.0, 0.0));
+    appState().developPhaseSig[SET](new Phase(0, 0.0, 0.0));
+    appState().cursorLineXSig[SET](0);
+    appState().toggleShowRorFilteredSig[SET](false);
+    appState().toggleShowRorOutlierSig[SET](false);
+    appState().toggleShowRorRegressionSig[SET](false);
 
 }

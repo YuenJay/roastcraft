@@ -25,8 +25,9 @@ export function timestamp_format(timestamp: number) {
 }
 
 export function calculateRor() {
-    let mIndex = appState().btIndex; // channel index for BT
-    let data: Array<Point> = channelArr()[mIndex].data();
+
+    let bt = channelArr()[appState().btIndex];
+    let data: Array<Point> = bt.dataArr();
 
     let ror_array = Array<Point>();
 
@@ -45,14 +46,14 @@ export function calculateRor() {
         );
     }
 
-    channelArr()[mIndex].rorSig[SET](ror_array);
+    bt.rorArrSig[SET](ror_array);
 }
 
 export function findRorOutlier() {
 
     let mIndex = appState().btIndex; // channel index for BT
 
-    let ror: Array<Point> = channelArr()[mIndex].rorSig[GET]();
+    let ror: Array<Point> = channelArr()[mIndex].rorArrSig[GET]();
 
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();
@@ -88,12 +89,12 @@ export function findRorOutlier() {
 
         if (zScore > 3) {
             ror_outlier.push(
-                channelArr()[mIndex].rorSig[GET]()[i]
+                channelArr()[mIndex].rorArrSig[GET]()[i]
             )
 
         } else {
             ror_filtered.push(
-                channelArr()[mIndex].rorSig[GET]()[i]
+                channelArr()[mIndex].rorArrSig[GET]()[i]
             )
         }
     }
@@ -127,9 +128,9 @@ export function findRorOutlier() {
         ));
     }
 
-    channelArr()[mIndex].rorOutlierSig[SET](ror_outlier);
-    channelArr()[mIndex].rorFilteredSig[SET](ror_filtered);
-    channelArr()[mIndex].rorConvolveSig[SET](ror_convolve);
+    channelArr()[mIndex].rorOutlierArrSig[SET](ror_outlier);
+    channelArr()[mIndex].rorFilteredArrSig[SET](ror_filtered);
+    channelArr()[mIndex].rorConvolveArrSig[SET](ror_convolve);
 
 
     // find ROR TP
@@ -175,8 +176,8 @@ export function findRorOutlier() {
 export function autoDetectChargeDrop() {
     let mIndex: number = appState().btIndex; // channel index for BT
 
-    let data: Array<Point> = channelArr()[mIndex].data();
-    let ror: Array<Point> = channelArr()[mIndex].rorSig[GET]();
+    let data: Array<Point> = channelArr()[mIndex].dataArr();
+    let ror: Array<Point> = channelArr()[mIndex].rorArrSig[GET]();
 
     let window_size = 5
     if (ror.length >= window_size) {
@@ -233,7 +234,7 @@ export function findTurningPoint() {
     let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
-    let data: Array<Point> = channelArr()[appState().btIndex].data();
+    let data: Array<Point> = channelArr()[appState().btIndex].dataArr();
 
     let target_index = 0;
     let tp_found = false;
@@ -272,7 +273,7 @@ export function findDryEnd() {
         return
     }
 
-    let data: Array<Point> = channelArr()[appState().btIndex].data();
+    let data: Array<Point> = channelArr()[appState().btIndex].dataArr();
 
     let dry_end = 150;
 

@@ -107,24 +107,24 @@ export default function MainChart() {
                 </foreignObject>
             </Show>
 
-            <For each={channelArr().filter(m => m.id != BT)}>
-                {(m) => (
+            <For each={channelArr().filter(c => c.id != BT)}>
+                {(c) => (
                     <g
                         clip-path="url(#clip-path)" >
                         <path
                             fill="none"
-                            stroke={m.color}
+                            stroke={c.color}
                             stroke-width="1.5"
-                            d={line(m.data() as any) as string | undefined}
+                            d={line(c.dataArr() as any) as string | undefined}
 
                         />
-                        <Show when={m.data().length > 0}>
+                        <Show when={c.dataArr().length > 0}>
                             <ToolTip
                                 direction={ToolTipDirection.RIGHT}
-                                x={xScale(m.data()[m.data().length - 1].timestamp + timeDelta())}
-                                y={yScale(m.data()[m.data().length - 1].value)}
-                                text={m.data()[m.data().length - 1].value.toFixed(1)}
-                                color={m.color}
+                                x={xScale(c.dataArr()[c.dataArr().length - 1].timestamp + timeDelta())}
+                                y={yScale(c.dataArr()[c.dataArr().length - 1].value)}
+                                text={c.dataArr()[c.dataArr().length - 1].value.toFixed(1)}
+                                color={c.color}
                             />
                         </Show>
                     </g>
@@ -138,14 +138,14 @@ export default function MainChart() {
                     fill="none"
                     stroke={bt.color}
                     stroke-width="1.5"
-                    d={line(bt.data() as any) as string | undefined}
+                    d={line(bt.dataArr() as any) as string | undefined}
                 />
-                <Show when={bt.data().length > 0}>
+                <Show when={bt.dataArr().length > 0}>
                     <ToolTip
                         direction={ToolTipDirection.RIGHT}
-                        x={xScale(bt.data()[bt.data().length - 1].timestamp + timeDelta())}
-                        y={yScale(bt.data()[bt.data().length - 1].value)}
-                        text={bt.data()[bt.data().length - 1].value.toFixed(1)}
+                        x={xScale(bt.dataArr()[bt.dataArr().length - 1].timestamp + timeDelta())}
+                        y={yScale(bt.dataArr()[bt.dataArr().length - 1].value)}
+                        text={bt.dataArr()[bt.dataArr().length - 1].value.toFixed(1)}
                         color={bt.color}
                     />
                 </Show>
@@ -161,15 +161,15 @@ export default function MainChart() {
                         stroke={bt.color}
                         stroke-opacity="30%"
                         stroke-width="1.5"
-                        d={lineROR(bt.rorFilteredSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
+                        d={lineROR(bt.rorFilteredArrSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
                     />
                 </Show>
-                <Show when={bt.rorFilteredSig[GET]().length > 0}>
+                <Show when={bt.rorFilteredArrSig[GET]().length > 0}>
                     <ToolTip
                         direction={ToolTipDirection.RIGHT}
-                        x={xScale(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].timestamp + timeDelta())}
-                        y={yScaleROR(bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value)}
-                        text={bt.rorFilteredSig[GET]()[bt.rorFilteredSig[GET]().length - 1].value.toFixed(1)}
+                        x={xScale(bt.rorFilteredArrSig[GET]()[bt.rorFilteredArrSig[GET]().length - 1].timestamp + timeDelta())}
+                        y={yScaleROR(bt.rorFilteredArrSig[GET]()[bt.rorFilteredArrSig[GET]().length - 1].value)}
+                        text={bt.rorFilteredArrSig[GET]()[bt.rorFilteredArrSig[GET]().length - 1].value.toFixed(1)}
                         color={bt.color}
                     />
                 </Show>
@@ -180,7 +180,7 @@ export default function MainChart() {
                 fill="none"
                 stroke="#00DD00"
                 stroke-width="1.5"
-                d={lineROR(bt.rorConvolveSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
+                d={lineROR(bt.rorConvolveArrSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
                 clip-path="url(#clip-path)"
             />
 
@@ -192,7 +192,7 @@ export default function MainChart() {
                     stroke-width="1"
                     stroke-opacity="50%"
                     clip-path="url(#clip-path)">
-                    <For each={bt.rorOutlierSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
+                    <For each={bt.rorOutlierArrSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0))}>
                         {(outlier) => (
                             <circle
                                 cx={xScale(outlier.timestamp + timeDelta())}

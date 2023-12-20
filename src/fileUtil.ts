@@ -14,7 +14,7 @@ export async function openFile() {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
                 c.data.forEach((p: Point) => {
-                    channel?.setData([...channel.data(), p]);
+                    channel?.setDataArr([...channel.dataArr(), p]);
                 });
             }
         });
@@ -37,7 +37,7 @@ export async function saveFile() {
 
             let saveData = new Array<Point>();
 
-            channel.data().forEach((p) => {
+            channel.dataArr().forEach((p) => {
                 saveData.push(p)
             });
 

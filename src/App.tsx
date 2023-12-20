@@ -53,7 +53,7 @@ function App() {
                 channelArr()[i].currentDataSig[SET](Number(event.payload[channelIdList[i]]));
 
                 /* calculate ROR start */
-                channelArr()[i].data_window.push(
+                channelArr()[i].dataWindowArr.push(
                     {
                         value: Number(event.payload[channelIdList[i]]),
                         system_time: new Date().getTime()
@@ -61,14 +61,14 @@ function App() {
                 );
 
                 // buffer size of 5
-                if (channelArr()[i].data_window.length > 5) {
-                    channelArr()[i].data_window.shift();
+                if (channelArr()[i].dataWindowArr.length > 5) {
+                    channelArr()[i].dataWindowArr.shift();
                 }
 
-                let delta = channelArr()[i].data_window[channelArr()[i].data_window.length - 1].value
-                    - channelArr()[i].data_window[0].value;
-                let time_elapsed_sec = (channelArr()[i].data_window[channelArr()[i].data_window.length - 1].system_time
-                    - channelArr()[i].data_window[0].system_time)
+                let delta = channelArr()[i].dataWindowArr[channelArr()[i].dataWindowArr.length - 1].value
+                    - channelArr()[i].dataWindowArr[0].value;
+                let time_elapsed_sec = (channelArr()[i].dataWindowArr[channelArr()[i].dataWindowArr.length - 1].system_time
+                    - channelArr()[i].dataWindowArr[0].system_time)
                     / 1000;
 
                 channelArr()[i].currentRorSig[SET](
@@ -78,8 +78,8 @@ function App() {
 
                 // write into history data
                 if (status() == AppStatus.RECORDING) {
-                    channelArr()[i].setData(
-                        [...channelArr()[i].data(), new Point(timer(), event.payload[channelIdList[i]])]
+                    channelArr()[i].setDataArr(
+                        [...channelArr()[i].dataArr(), new Point(timer(), event.payload[channelIdList[i]])]
                     )
                 }
             }
