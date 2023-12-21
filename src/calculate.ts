@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, Event, EventId, RoastPhase, Phase, appStateSig } from "./AppState";
+import { GET, SET, Point, Event, EventId, Phase, appStateSig } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
@@ -14,7 +14,6 @@ const [eventDRY_END, setEventDRY_END] = appState().eventDRY_ENDSig;
 const [eventDROP, setEventDROP] = appState().eventDROPSig;
 const [eventTP, setEventTP] = appState().eventTPSig;
 const [eventROR_TP, setEventROR_TP] = appState().eventROR_TPSig;
-const [roastPhase, setRoastPhase] = appState().roastPhaseSig
 const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
 const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
 const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
@@ -204,7 +203,6 @@ export function autoDetectChargeDrop() {
                     EventId.CHARGE,
                     data[target_index].timestamp,
                     data[target_index].value)]);
-                setRoastPhase(RoastPhase.DRYING);
 
             } else if (eventCHARGE() == true && eventTP() == true && eventDROP() == false) {
                 info("auto detected drop at ror index: " + (target_index));
@@ -215,7 +213,7 @@ export function autoDetectChargeDrop() {
                     data[target_index].timestamp,
                     data[target_index].value
                 )]);
-                setRoastPhase(RoastPhase.AFTER_DROP);
+
             }
         }
     }
@@ -286,7 +284,6 @@ export function findDryEnd() {
             data[target_index].timestamp,
             data[target_index].value
         )]);
-        setRoastPhase(RoastPhase.MAILLARD);
     }
 }
 

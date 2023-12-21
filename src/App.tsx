@@ -8,7 +8,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import ManualChart from "./ManualChart";
-import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig, reset } from "./AppState";
+import { GET, SET, AppStatus, EventId, Point, appStateSig, reset } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -23,7 +23,6 @@ function App() {
     const [channelArr, setChannelArr] = appState().channelArrSig;
     const [logArr, setLogArr] = appState().logArrSig;
     const [eventArr, setEventArr] = appState().eventArrSig;
-    const [roastPhase, setRoastPhase] = appState().roastPhaseSig;
     const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
     const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
     const [developPhase, setDevelopPhase] = appState().developPhaseSig;
@@ -197,20 +196,16 @@ function App() {
 
         appState().eventCHARGESig[SET](true);
         appState().timeDeltaSig[SET](- timer());
-
-        setRoastPhase(RoastPhase.DRYING);
     }
 
     async function handleDryEnd() {
         setEventArr([...eventArr(), { id: EventId.DRY_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventDRY_ENDSig[SET](true);
-        setRoastPhase(RoastPhase.MAILLARD);
     }
 
     async function handleFCStart() {
         setEventArr([...eventArr(), { id: EventId.FC_START, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventFC_STARTSig[SET](true);
-        setRoastPhase(RoastPhase.DEVELOP);
     }
 
     async function handleFCEnd() {
@@ -231,7 +226,6 @@ function App() {
     async function handleDrop() {
         setEventArr([...eventArr(), { id: EventId.DROP, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
         appState().eventDROPSig[SET](true);
-        setRoastPhase(RoastPhase.AFTER_DROP);
     }
 
     return (

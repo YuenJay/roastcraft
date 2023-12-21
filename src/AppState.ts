@@ -104,14 +104,6 @@ export enum AppStatus {
     RECORDING = 'RECORDING',
 }
 
-export enum RoastPhase {
-    BEFORE_CHARGE = 'BEFORE_CHARGE',
-    DRYING = 'DRYING',
-    MAILLARD = 'MAILLARD',
-    DEVELOP = 'DEVELOP',
-    AFTER_DROP = 'AFTER_DROP',
-}
-
 export class ManualChannel {
     id: string;
     currentDataSig: Signal<number>;
@@ -203,7 +195,6 @@ async function init_appStateSig() {
         rorLinearStartSig: createSignal(new Point(0, 0)),
         rorLinearEndSig: createSignal(new Point(0, 0)),
         rorLinearSlopeSig: createSignal(0),
-        roastPhaseSig: createSignal(RoastPhase.BEFORE_CHARGE),
         dryingPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         maillardPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         developPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
@@ -255,7 +246,6 @@ export function reset() {
     appState().rorLinearStartSig[SET](new Point(0, 0));
     appState().rorLinearEndSig[SET](new Point(0, 0));
     appState().rorLinearSlopeSig[SET](0);
-    appState().roastPhaseSig[SET](RoastPhase.BEFORE_CHARGE);
     appState().dryingPhaseSig[SET](new Phase(0, 0.0, 0.0));
     appState().maillardPhaseSig[SET](new Phase(0, 0.0, 0.0));
     appState().developPhaseSig[SET](new Phase(0, 0.0, 0.0));

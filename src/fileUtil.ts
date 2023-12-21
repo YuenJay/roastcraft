@@ -1,6 +1,6 @@
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppState";
+import { GET, SET, AppStatus, EventId, Point, appStateSig } from "./AppState";
 import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
