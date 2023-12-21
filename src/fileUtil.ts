@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { GET, SET, AppStatus, EventId, Point, appStateSig } from "./AppState";

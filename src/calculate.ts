@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, Event, EventId, Phase, appStateSig } from "./AppState";
+import { GET, SET, Point, Event, EventId, Phase, appStateSig, AppStatus } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
@@ -41,6 +41,14 @@ export function calculateRor() {
 
         ror_array.push(
             new Point(data[i].timestamp, ror)
+        );
+    }
+
+    // remove ror data points after drop
+    let drop = eventArr().find(r => r.id == EventId.DROP);
+    if (drop) {
+        ror_array = ror_array.filter((p) =>
+            (p.timestamp <= (drop as Event).timestamp)
         );
     }
 
@@ -118,7 +126,12 @@ export function findRorOutlier() {
     let result = conv.slice(half_window_len, -half_window_len);
 
     let ror_convolve = new Array<Point>();
-    let lag = 3; // lag few samples, so that end of convolve line won't look like jumping around
+
+    let lag = 0;
+    if (appState().statusSig[GET]() == AppStatus.RECORDING) {
+        lag = 3; // lag few samples, so that end of convolve line won't look like jumping up and down
+    }
+
     for (let i = 0; i < ror_filtered.length - lag; i++) {
         ror_convolve.push(new Point(
             ror_filtered[i].timestamp,
@@ -126,10 +139,10 @@ export function findRorOutlier() {
         ));
     }
 
+
     channelArr()[mIndex].rorOutlierArrSig[SET](ror_outlier);
     channelArr()[mIndex].rorFilteredArrSig[SET](ror_filtered);
     channelArr()[mIndex].rorConvolveArrSig[SET](ror_convolve);
-
 
     // find ROR TP
     if (eventTP() == true && eventROR_TP() == false) {

@@ -11,7 +11,7 @@
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@tauri-apps/api": "^1.5.1",
+    "@tauri-apps/api": "^1.5.3",
     "@types/d3": "^7.4.3",
     "@types/d3-array": "^3.2.1",
     "d3": "^7.8.5",
@@ -21,13 +21,13 @@
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.7",
+    "@tauri-apps/cli": "^1.5.9",
     "autoprefixer": "^10.4.16",
-    "daisyui": "^4.4.19",
+    "daisyui": "^4.4.23",
     "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.3.2",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3",
     "vite": "^4.5.1",
-    "vite-plugin-solid": "^2.7.2"
+    "vite-plugin-solid": "^2.8.0"
   }
 }
