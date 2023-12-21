@@ -1,7 +1,7 @@
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { GET, SET, AppStatus, EventId, Point, RoastPhase, appStateSig } from "./AppState";
-import { calculateRor, findRorOutlier } from './calculate';
+import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
     const [appState, _setAppState] = appStateSig;
@@ -11,6 +11,9 @@ export async function openFile() {
         let content = await readTextFile(filepath);
 
         let loadObject = JSON.parse(content);
+
+        appState().timerSig[SET](loadObject.timer);
+
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
@@ -23,12 +26,14 @@ export async function openFile() {
         appState().eventArrSig[SET](loadObject.eventArr);
 
         let chargeEvent = appState().eventArrSig[GET]().find((event) => event.id == EventId.CHARGE);
+
         if (chargeEvent) {
             appState().timeDeltaSig[SET](- chargeEvent.timestamp);
         }
 
         calculateRor();
         findRorOutlier();
+        calculatePhases();
     } catch (e) {
         console.log(e);
     }
@@ -41,6 +46,7 @@ export async function saveFile() {
         if (!filepath) return;
 
         let saveObject = {
+            timer: appState().timerSig[GET](),
             channelArr: new Array<any>(),
             eventArr: appState().eventArrSig[GET](),
         };

@@ -292,51 +292,63 @@ export function findDryEnd() {
 
 export function calculatePhases() {
 
-    let mIndex = appState().btIndex; // channel index for BT
+    //   charge	tp	de	fc	drop	last point  phases	                    
+    //   ------------------------------------------------------------------
+    //   o	    x	x	x	x	    timer	    drying
+    // 1 o	    o	x	x	x	    timer	    drying
+    // 2 o	    o	o	x	x	    timer	    drying + maillard
+    // 3 o	    o	o	o	x	    timer	    drying + maillard + develop
+    // 4 o	    o	o	o	o	    drop time	drying + maillard + develop
+    // 5 o	    o	x	x	o	    drop time	drying
+    // 6 o	    o	x	o	o	    drop time	drying + develop
+    // 7 o	    o	o	x	o	    drop time	drying + maillard
+    // 8 o	    o	x	o	x	    timer	    drying + develop
 
-    if (roastPhase() == RoastPhase.DRYING) {
-        let charge = eventArr().find(r => r.id == EventId.CHARGE);
-        if (charge == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no CHARGE event");
-            return;
-        };
+    let bt = channelArr()[appState().btIndex];
 
-        let temp_rise = 0;
+    let charge = eventArr().find(r => r.id == EventId.CHARGE);
+    if (charge == undefined) {
+        warn!("no CHARGE event");
+        return;
+    }
 
-        if (eventTP()) {
-            let tp = (eventArr().find(r => r.id == EventId.TP) as Event);
-            temp_rise = channelArr()[mIndex].currentDataSig[GET]() - tp.value;
-        }
-
+    let tp = eventArr().find(r => r.id == EventId.TP);
+    if (tp == undefined) {
         setDryingPhase(new Phase(
             timer() - charge.timestamp,
             100.0,
-            temp_rise
+            0.0
         ));
-    } else if (roastPhase() == RoastPhase.MAILLARD) {
-        let charge = eventArr().find(r => r.id == EventId.CHARGE);
-        if (charge == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no CHARGE event");
-            return;
-        };
+        return;
+    }
 
-        let tp = eventArr().find(r => r.id == EventId.TP);
-        if (tp == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no TP event");
-            return;
-        };
+    let de = eventArr().find(r => r.id == EventId.DRY_END);
+    let fc = eventArr().find(r => r.id == EventId.FC_START);
+    let drop = eventArr().find(r => r.id == EventId.DROP);
 
-        let de = eventArr().find(r => r.id == EventId.DRY_END);
-        if (de == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no DRY_END event");
-            return;
-        };
+    let t = timer();
+    let lastTemp = bt.currentDataSig[GET]();
+    if (drop != undefined) {
+        t = drop.timestamp;
+        lastTemp = drop.value;
+    }
+
+    if (de == undefined && fc == undefined) {
+        // condition 1, 5
+
+        setDryingPhase(new Phase(
+            t - charge.timestamp,
+            100.0,
+            lastTemp - tp.value
+        ));
+    } else if (de != undefined && fc == undefined) {
+        // condition 2, 7
 
         let drying_time = de.timestamp - charge.timestamp;
         let drying_temp_rise = de.value - tp.value;
 
-        let maillard_time = timer() - de.timestamp;
-        let maillard_temp_rise = channelArr()[mIndex].currentDataSig[GET]() - de.value;
+        let maillard_time = t - de.timestamp;
+        let maillard_temp_rise = lastTemp - de.value;
 
         setDryingPhase(new Phase(
             drying_time,
@@ -349,31 +361,8 @@ export function calculatePhases() {
             maillard_time / (drying_time + maillard_time) * 100,
             maillard_temp_rise
         ));
-
-    } else if (roastPhase() == RoastPhase.DEVELOP) {
-        let charge = eventArr().find(r => r.id == EventId.CHARGE);
-        if (charge == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no CHARGE event");
-            return;
-        };
-
-        let tp = eventArr().find(r => r.id == EventId.TP);
-        if (tp == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no TP event");
-            return;
-        };
-
-        let de = eventArr().find(r => r.id == EventId.DRY_END);
-        if (de == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no DRY_END event");
-            return;
-        };
-
-        let fc = eventArr().find(r => r.id == EventId.FC_START);
-        if (fc == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no FC_START event");
-            return;
-        };
+    } else if (de != undefined && fc != undefined) {
+        // condition 3, 4
 
         let drying_time = de.timestamp - charge.timestamp;
         let drying_temp_rise = de.value - tp.value;
@@ -381,8 +370,8 @@ export function calculatePhases() {
         let maillard_time = fc.timestamp - de.timestamp;
         let maillard_temp_rise = fc.value - de.value;
 
-        let develop_time = timer() - fc.timestamp;
-        let develop_temp_rise = channelArr()[mIndex].currentDataSig[GET]() - fc.value;
+        let develop_time = t - fc.timestamp;
+        let develop_temp_rise = lastTemp - fc.value;
 
         setDryingPhase(new Phase(
             drying_time,
@@ -401,65 +390,28 @@ export function calculatePhases() {
             develop_time / (drying_time + maillard_time + develop_time) * 100,
             develop_temp_rise
         ));
+    } else if (de == undefined && fc != undefined) {
+        // condition 6, 8
 
-    } else if (roastPhase() == RoastPhase.AFTER_DROP) {
-        let charge = eventArr().find(r => r.id == EventId.CHARGE);
-        if (charge == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no CHARGE event");
-            return;
-        };
+        let drying_time = fc.timestamp - charge.timestamp;
+        let drying_temp_rise = fc.value - tp.value;
 
-        let tp = eventArr().find(r => r.id == EventId.TP);
-        if (tp == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no TP event");
-            return;
-        };
-
-        let de = eventArr().find(r => r.id == EventId.DRY_END);
-        if (de == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no DRY_END event");
-            return;
-        };
-
-        let fc = eventArr().find(r => r.id == EventId.FC_START);
-        if (fc == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no FC_START event");
-            return;
-        };
-
-        let drop = eventArr().find(r => r.id == EventId.DROP);
-        if (drop == undefined) {
-            warn!("in RoastPhase.AFTER_DROP but no DROP event");
-            return;
-        };
-
-        let drying_time = de.timestamp - charge.timestamp;
-        let drying_temp_rise = de.value - tp.value;
-
-        let maillard_time = fc.timestamp - de.timestamp;
-        let maillard_temp_rise = fc.value - de.value;
-
-        let develop_time = drop.timestamp - fc.timestamp;
-        let develop_temp_rise = drop.value - fc.value;
+        let develop_time = t - fc.timestamp;
+        let develop_temp_rise = lastTemp - fc.value;
 
         setDryingPhase(new Phase(
             drying_time,
-            drying_time / (drying_time + maillard_time + develop_time) * 100,
+            drying_time / (drying_time + develop_time) * 100,
             drying_temp_rise
-        ));
-
-        setMaillardPhase(new Phase(
-            maillard_time,
-            maillard_time / (drying_time + maillard_time + develop_time) * 100,
-            maillard_temp_rise
         ));
 
         setDevelopPhase(new Phase(
             develop_time,
-            develop_time / (drying_time + maillard_time + develop_time) * 100,
+            develop_time / (drying_time + develop_time) * 100,
             develop_temp_rise
         ));
     }
+
 }
 
 function hann(i: number, N: number) {
