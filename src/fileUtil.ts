@@ -2,7 +2,7 @@
 
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, AppStatus, EventId, Point, appStateSig } from "./AppState";
+import { GET, SET, Point, appStateSig } from "./AppState";
 import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
@@ -27,9 +27,9 @@ export async function openFile() {
             }
         });
 
-        appState().eventsSig[SET](loadObject.events);
+        appState().roastEventsSig[SET](loadObject.roastEvents);
 
-        let chargeEvent = appState().eventsSig[GET]().CHARGE;
+        let chargeEvent = appState().roastEventsSig[GET]().CHARGE;
 
         if (chargeEvent != undefined) {
             appState().timeDeltaSig[SET](- chargeEvent.timestamp);
@@ -52,7 +52,7 @@ export async function saveFile() {
         let saveObject = {
             timer: appState().timerSig[GET](),
             channelArr: new Array<any>(),
-            events: appState().eventsSig[GET](),
+            roastEvents: appState().roastEventsSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((channel) => {

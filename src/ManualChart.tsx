@@ -6,10 +6,10 @@ import { GET, SET, Point, appStateSig } from "./AppState";
 
 export default function ManualChart() {
 
-    const [appState, setAppState] = appStateSig;
-    const [timer, setTimer] = appState().timerSig;
+    const [appState, _setAppState] = appStateSig;
+    const [timer, _setTimer] = appState().timerSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-    const [manualChannelArr, setManualChannelArr] = appState().manualChannelArrSig;
+    const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
     const width = 800;
     const height = 200;

@@ -64,11 +64,11 @@ export class Channel {
     }
 }
 
-export class Event {
-    id: EventId;
+export class RoastEvent {
+    id: RoastEventId;
     timestamp: number;  // time in seconds
     value: number;    // temperature or ror value
-    constructor(id: EventId, timestamp: number, value: number) {
+    constructor(id: RoastEventId, timestamp: number, value: number) {
         this.id = id;
         this.timestamp = timestamp;
         this.value = value;
@@ -86,7 +86,7 @@ export class Phase {
     }
 }
 
-export enum EventId {
+export enum RoastEventId {
     CHARGE = 'CHARGE',
     DRY_END = 'DRY_END',
     FC_START = 'FC_START',
@@ -98,16 +98,16 @@ export enum EventId {
     ROR_TP = 'ROR_TP'
 }
 
-interface Events {
-    CHARGE: Event | undefined,
-    DRY_END: Event | undefined,
-    FC_START: Event | undefined,
-    FC_END: Event | undefined,
-    SC_START: Event | undefined,
-    SC_END: Event | undefined,
-    DROP: Event | undefined,
-    TP: Event | undefined,
-    ROR_TP: Event | undefined,
+interface RoastEvents {
+    CHARGE: RoastEvent | undefined,
+    DRY_END: RoastEvent | undefined,
+    FC_START: RoastEvent | undefined,
+    FC_END: RoastEvent | undefined,
+    SC_START: RoastEvent | undefined,
+    SC_END: RoastEvent | undefined,
+    DROP: RoastEvent | undefined,
+    TP: RoastEvent | undefined,
+    ROR_TP: RoastEvent | undefined,
 }
 
 export enum AppStatus {
@@ -194,7 +194,7 @@ async function init_appStateSig() {
         channelArrSig: createSignal(channelArr),
         manualChannelArrSig: createSignal(manualChannelArr),
         logArrSig: createSignal(new Array<string>()),
-        eventsSig: createSignal({
+        roastEventsSig: createSignal({
             CHARGE: undefined,
             DRY_END: undefined,
             FC_START: undefined,
@@ -204,7 +204,7 @@ async function init_appStateSig() {
             DROP: undefined,
             TP: undefined,
             ROR_TP: undefined,
-        } as Events),
+        } as RoastEvents),
         rorLinearStartSig: createSignal(new Point(0, 0)),
         rorLinearEndSig: createSignal(new Point(0, 0)),
         rorLinearSlopeSig: createSignal(0),
@@ -221,8 +221,8 @@ async function init_appStateSig() {
 export const appStateSig = createSignal(await init_appStateSig());
 
 export function reset() {
-    const [appState, setAppState] = appStateSig;
-    const [channelArr, setChannelArr] = appState().channelArrSig;
+    const [appState, _setAppState] = appStateSig;
+    const [channelArr, _setChannelArr] = appState().channelArrSig;
 
     appState().timerSig[SET](0);
     appState().timeDeltaSig[SET](0);
@@ -244,7 +244,7 @@ export function reset() {
     // not reset logs
     // appState().logArrSig[SET](new Array<string>());   
 
-    appState().eventsSig[SET]({
+    appState().roastEventsSig[SET]({
         CHARGE: undefined,
         DRY_END: undefined,
         FC_START: undefined,
@@ -254,7 +254,7 @@ export function reset() {
         DROP: undefined,
         TP: undefined,
         ROR_TP: undefined,
-    } as Events);
+    } as RoastEvents);
 
     appState().rorLinearStartSig[SET](new Point(0, 0));
     appState().rorLinearEndSig[SET](new Point(0, 0));

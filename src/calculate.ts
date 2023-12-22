@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, Event, EventId, Phase, appStateSig, AppStatus } from "./AppState";
+import { GET, SET, Point, RoastEvent, RoastEventId, Phase, appStateSig, AppStatus } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
@@ -8,7 +8,7 @@ import { info, warn } from "tauri-plugin-log-api";
 const [appState, _setAppState] = appStateSig;
 const [timer, _setTimer] = appState().timerSig;
 const [channelArr, _setChannelArr] = appState().channelArrSig;
-const [events, setEvents] = appState().eventsSig;
+const [roastEvents, setRoastEvents] = appState().roastEventsSig;
 const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
 const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
 const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
@@ -40,10 +40,10 @@ export function calculateRor() {
     }
 
     // remove ror data points after drop
-    let drop = events().DROP;
+    let drop = roastEvents().DROP;
     if (drop) {
         ror_array = ror_array.filter((p) =>
-            (p.timestamp <= (drop as Event).timestamp)
+            (p.timestamp <= (drop as RoastEvent).timestamp)
         );
     }
 
@@ -140,16 +140,16 @@ export function findRorOutlier() {
     channelArr()[mIndex].rorConvolveArrSig[SET](ror_convolve);
 
     // find ROR TP
-    if (events().TP != undefined && events().ROR_TP == undefined) {
+    if (roastEvents().TP != undefined && roastEvents().ROR_TP == undefined) {
         let window_size = 9
         let window = ror_filtered.slice(-window_size).map((r) => ([r.timestamp, r.value]));
         if (linearRegression(window).m < 0) {
             let target_index = window.length - 5;
 
-            setEvents({
-                ...events(),
-                ROR_TP: new Event(
-                    EventId.ROR_TP,
+            setRoastEvents({
+                ...roastEvents(),
+                ROR_TP: new RoastEvent(
+                    RoastEventId.ROR_TP,
                     window[target_index][0],
                     window[target_index][1]
                 )
@@ -158,8 +158,8 @@ export function findRorOutlier() {
     }
 
     // ROR linear regression all
-    if (events().ROR_TP != undefined && events().DROP == undefined) {
-        let ROR_TP_timestamp = (events().ROR_TP as Event).timestamp;
+    if (roastEvents().ROR_TP != undefined && roastEvents().DROP == undefined) {
+        let ROR_TP_timestamp = (roastEvents().ROR_TP as RoastEvent).timestamp;
         let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
         let mb = linearRegression(window); // m: slope, b: intersect
         let l = linearRegressionLine(mb);
@@ -204,26 +204,26 @@ export function autoDetectChargeDrop() {
             && Math.abs(dpost) > Math.abs(dpre) * 2) {
             let target_index = ror.length - 3;
 
-            if (events().CHARGE == undefined) {
+            if (roastEvents().CHARGE == undefined) {
                 info("auto detected charge at ror index: " + (target_index));
 
                 appState().timeDeltaSig[SET](- data[target_index].timestamp);
 
-                setEvents({
-                    ...events(),
-                    CHARGE: new Event(
-                        EventId.CHARGE,
+                setRoastEvents({
+                    ...roastEvents(),
+                    CHARGE: new RoastEvent(
+                        RoastEventId.CHARGE,
                         data[target_index].timestamp,
                         data[target_index].value)
                 });
 
-            } else if (events().CHARGE != undefined && events().TP != undefined && events().DROP == undefined) {
+            } else if (roastEvents().CHARGE != undefined && roastEvents().TP != undefined && roastEvents().DROP == undefined) {
                 info("auto detected drop at ror index: " + (target_index));
 
-                setEvents({
-                    ...events(),
-                    DROP: new Event(
-                        EventId.DROP,
+                setRoastEvents({
+                    ...roastEvents(),
+                    DROP: new RoastEvent(
+                        RoastEventId.DROP,
                         data[target_index].timestamp,
                         data[target_index].value
                     )
@@ -238,7 +238,7 @@ export function autoDetectChargeDrop() {
 export function findTurningPoint() {
 
     // only detect turning point after charge
-    if (events().CHARGE == undefined || events().TP != undefined) {
+    if (roastEvents().CHARGE == undefined || roastEvents().TP != undefined) {
         return
     }
 
@@ -268,10 +268,10 @@ export function findTurningPoint() {
 
     if (tp_found) {
 
-        setEvents({
-            ...events(),
-            TP: new Event(
-                EventId.TP,
+        setRoastEvents({
+            ...roastEvents(),
+            TP: new RoastEvent(
+                RoastEventId.TP,
                 data[target_index].timestamp,
                 data[target_index].value
             )
@@ -283,7 +283,7 @@ export function findTurningPoint() {
 export function findDryEnd() {
 
     // only detect dry end after turning point
-    if (events().TP == undefined || events().DRY_END != undefined) {
+    if (roastEvents().TP == undefined || roastEvents().DRY_END != undefined) {
         return
     }
 
@@ -295,10 +295,10 @@ export function findDryEnd() {
     if (data[data.length - 1].value > dry_end && data[data.length - 2].value > dry_end) {
         let target_index = data.length - 2;
 
-        setEvents({
-            ...events(),
-            DRY_END: new Event(
-                EventId.DRY_END,
+        setRoastEvents({
+            ...roastEvents(),
+            DRY_END: new RoastEvent(
+                RoastEventId.DRY_END,
                 data[target_index].timestamp,
                 data[target_index].value
             )
@@ -322,13 +322,13 @@ export function calculatePhases() {
 
     let bt = channelArr()[appState().btIndex];
 
-    let charge = events().CHARGE;
+    let charge = roastEvents().CHARGE;
     if (charge == undefined) {
         warn!("no CHARGE event");
         return;
     }
 
-    let tp = events().TP;
+    let tp = roastEvents().TP;
     if (tp == undefined) {
         setDryingPhase(new Phase(
             timer() - charge.timestamp,
@@ -338,9 +338,9 @@ export function calculatePhases() {
         return;
     }
 
-    let de = events().DRY_END;
-    let fc = events().FC_START;
-    let drop = events().DROP;
+    let de = roastEvents().DRY_END;
+    let fc = roastEvents().FC_START;
+    let drop = roastEvents().DROP;
 
     let t = timer();
     let lastTemp = bt.currentDataSig[GET]();

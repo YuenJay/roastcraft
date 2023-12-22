@@ -2,18 +2,18 @@
 
 import { onMount, Show, For, } from "solid-js";
 import * as d3 from "d3";
-import { GET, EventId, appStateSig, BT } from "./AppState";
+import { GET, RoastEventId, appStateSig, BT } from "./AppState";
 import Annotation from "./Annotation";
 import ToolTip, { ToolTipDirection } from "./ToolTip";
 
 
 export default function MainChart() {
 
-    const [appState, setAppState] = appStateSig;
-    const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
-    const [channelArr, setChannelArr] = appState().channelArrSig;
+    const [appState, _setAppState] = appStateSig;
+    const [timeDelta, _setTimeDelta] = appState().timeDeltaSig;
+    const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-    const [events, setEvents] = appState().eventsSig;
+    const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
     const bt = channelArr()[appState().btIndex];
 
     const width = 800;
@@ -87,7 +87,7 @@ export default function MainChart() {
             </defs>
 
             {/* ROR linear regression */}
-            <Show when={appState().eventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>
+            <Show when={appState().roastEventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>
                 <line stroke="#00DD00"
                     stroke-width="2"
                     clip-path="url(#clip-path)"
@@ -202,11 +202,11 @@ export default function MainChart() {
                     </For>
                 </g>
             </Show>
-            <For each={Object.values(events()).filter((e) => e != undefined)}>
+            <For each={Object.values(roastEvents()).filter((e) => e != undefined)}>
                 {(item) => (
                     <Annotation
                         x={xScale(item.timestamp + timeDelta())}
-                        y={item.id == EventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
+                        y={item.id == RoastEventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
                         text={item.id}
                         timestamp={item.timestamp + timeDelta()}
                         value={item.value.toFixed(1)}

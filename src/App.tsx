@@ -2,13 +2,13 @@
 
 import { onMount, onCleanup, Show, For, Index } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
-import { trace, attachConsole, info } from "tauri-plugin-log-api";
+import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import ManualChart from "./ManualChart";
-import { GET, SET, AppStatus, EventId, Point, appStateSig, reset, Event } from "./AppState";
+import { GET, SET, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -17,15 +17,15 @@ import { openFile, saveFile } from "./fileUtil";
 
 function App() {
 
-    const [appState, setAppState] = appStateSig;
+    const [appState, _setAppState] = appStateSig;
     const [status, setStatus] = appState().statusSig;
     const [timer, setTimer] = appState().timerSig;
-    const [channelArr, setChannelArr] = appState().channelArrSig;
+    const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [logArr, setLogArr] = appState().logArrSig;
-    const [events, setEvents] = appState().eventsSig;
-    const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
-    const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
-    const [developPhase, setDevelopPhase] = appState().developPhaseSig;
+    const [roastEvents, setRoastEvents] = appState().roastEventsSig;
+    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
+    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
+    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
     const channelIdList = channelArr().map(m => m.id);
 
     let detach: UnlistenFn;
@@ -192,32 +192,32 @@ function App() {
     }
 
     async function handleCharge() {
-        setEvents({ ...events(), CHARGE: new Event(EventId.CHARGE, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), CHARGE: new RoastEvent(RoastEventId.CHARGE, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
         appState().timeDeltaSig[SET](- timer());
     }
 
     async function handleDryEnd() {
-        setEvents({ ...events(), DRY_END: new Event(EventId.DRY_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), DRY_END: new RoastEvent(RoastEventId.DRY_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleFCStart() {
-        setEvents({ ...events(), FC_START: new Event(EventId.FC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), FC_START: new RoastEvent(RoastEventId.FC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleFCEnd() {
-        setEvents({ ...events(), FC_END: new Event(EventId.FC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), FC_END: new RoastEvent(RoastEventId.FC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleSCStart() {
-        setEvents({ ...events(), SC_START: new Event(EventId.SC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), SC_START: new RoastEvent(RoastEventId.SC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleSCEnd() {
-        setEvents({ ...events(), SC_END: new Event(EventId.SC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), SC_END: new RoastEvent(RoastEventId.SC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleDrop() {
-        setEvents({ ...events(), DROP: new Event(EventId.DROP, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), DROP: new RoastEvent(RoastEventId.DROP, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     return (
@@ -248,7 +248,7 @@ function App() {
 
                 <Index each={channelIdList}>
                     {
-                        (item, index) => (
+                        (_item, index) => (
                             <Show when={index != appState().btIndex}>
                                 <div class="bg-base-300 rounded text-right w-20 p-1">
                                     <p>{channelArr()[index].id}</p>
@@ -344,52 +344,52 @@ function App() {
                 <div class="m-2 mb-4 flex justify-evenly">
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().CHARGE != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().CHARGE != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleCharge}>
-                            {events().CHARGE != undefined ? "✓ " : ""}CHARGE
+                            {roastEvents().CHARGE != undefined ? "✓ " : ""}CHARGE
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().DRY_END != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().DRY_END != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleDryEnd}>
-                            {events().DRY_END != undefined ? "✓ " : ""}DRY END
+                            {roastEvents().DRY_END != undefined ? "✓ " : ""}DRY END
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().FC_START != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().FC_START != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleFCStart}>
-                            {events().FC_START != undefined ? "✓ " : ""}FC START
+                            {roastEvents().FC_START != undefined ? "✓ " : ""}FC START
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().FC_END != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().FC_END != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleFCEnd}>
-                            {events().FC_END != undefined ? "✓ " : ""}FC END
+                            {roastEvents().FC_END != undefined ? "✓ " : ""}FC END
                         </button>
                     </div>
 
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().SC_START != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().SC_START != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleSCStart}>
-                            {events().SC_START != undefined ? "✓ " : ""}SC START
+                            {roastEvents().SC_START != undefined ? "✓ " : ""}SC START
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().SC_END != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().SC_END != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleSCEnd}>
-                            {events().SC_END != undefined ? "✓ " : ""}SC END
+                            {roastEvents().SC_END != undefined ? "✓ " : ""}SC END
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${events().DROP != undefined ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().DROP != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleDrop}>
-                            {events().DROP != undefined ? "✓ " : ""}DROP
+                            {roastEvents().DROP != undefined ? "✓ " : ""}DROP
                         </button>
                     </div>
                 </div>

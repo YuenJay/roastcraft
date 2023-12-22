@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { For, onMount, Show } from "solid-js";
+import { For, onMount } from "solid-js";
 import * as d3 from "d3";
 import { timestamp_format } from "./calculate";
 
