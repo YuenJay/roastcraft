@@ -14,6 +14,8 @@ export async function openFile() {
 
         let loadObject = JSON.parse(content);
 
+        console.log(loadObject);
+
         appState().timerSig[SET](loadObject.timer);
 
         loadObject.channelArr.forEach((c: any) => {
@@ -25,11 +27,11 @@ export async function openFile() {
             }
         });
 
-        appState().eventArrSig[SET](loadObject.eventArr);
+        appState().eventsSig[SET](loadObject.events);
 
-        let chargeEvent = appState().eventArrSig[GET]().find((event) => event.id == EventId.CHARGE);
+        let chargeEvent = appState().eventsSig[GET]().CHARGE;
 
-        if (chargeEvent) {
+        if (chargeEvent != undefined) {
             appState().timeDeltaSig[SET](- chargeEvent.timestamp);
         }
 
@@ -50,7 +52,7 @@ export async function saveFile() {
         let saveObject = {
             timer: appState().timerSig[GET](),
             channelArr: new Array<any>(),
-            eventArr: appState().eventArrSig[GET](),
+            events: appState().eventsSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((channel) => {

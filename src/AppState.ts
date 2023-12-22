@@ -98,6 +98,18 @@ export enum EventId {
     ROR_TP = 'ROR_TP'
 }
 
+interface Events {
+    CHARGE: Event | undefined,
+    DRY_END: Event | undefined,
+    FC_START: Event | undefined,
+    FC_END: Event | undefined,
+    SC_START: Event | undefined,
+    SC_END: Event | undefined,
+    DROP: Event | undefined,
+    TP: Event | undefined,
+    ROR_TP: Event | undefined,
+}
+
 export enum AppStatus {
     OFF = 'OFF',
     ON = 'ON',
@@ -182,16 +194,17 @@ async function init_appStateSig() {
         channelArrSig: createSignal(channelArr),
         manualChannelArrSig: createSignal(manualChannelArr),
         logArrSig: createSignal(new Array<string>()),
-        eventArrSig: createSignal(new Array<Event>()),
-        eventCHARGESig: createSignal(false),
-        eventDRY_ENDSig: createSignal(false),
-        eventFC_STARTSig: createSignal(false),
-        eventFC_ENDSig: createSignal(false),
-        eventSC_STARTSig: createSignal(false),
-        eventSC_ENDSig: createSignal(false),
-        eventDROPSig: createSignal(false),
-        eventTPSig: createSignal(false),
-        eventROR_TPSig: createSignal(false),
+        eventsSig: createSignal({
+            CHARGE: undefined,
+            DRY_END: undefined,
+            FC_START: undefined,
+            FC_END: undefined,
+            SC_START: undefined,
+            SC_END: undefined,
+            DROP: undefined,
+            TP: undefined,
+            ROR_TP: undefined,
+        } as Events),
         rorLinearStartSig: createSignal(new Point(0, 0)),
         rorLinearEndSig: createSignal(new Point(0, 0)),
         rorLinearSlopeSig: createSignal(0),
@@ -229,19 +242,19 @@ export function reset() {
     // todo: reset manualChannelArr
 
     // not reset logs
-    // appState().logArrSig[SET](new Array<string>());
+    // appState().logArrSig[SET](new Array<string>());   
 
-    appState().eventArrSig[SET](new Array<Event>());
-
-    appState().eventCHARGESig[SET](false);
-    appState().eventDRY_ENDSig[SET](false);
-    appState().eventFC_STARTSig[SET](false);
-    appState().eventFC_ENDSig[SET](false);
-    appState().eventSC_STARTSig[SET](false);
-    appState().eventSC_ENDSig[SET](false);
-    appState().eventDROPSig[SET](false);
-    appState().eventTPSig[SET](false);
-    appState().eventROR_TPSig[SET](false);
+    appState().eventsSig[SET]({
+        CHARGE: undefined,
+        DRY_END: undefined,
+        FC_START: undefined,
+        FC_END: undefined,
+        SC_START: undefined,
+        SC_END: undefined,
+        DROP: undefined,
+        TP: undefined,
+        ROR_TP: undefined,
+    } as Events);
 
     appState().rorLinearStartSig[SET](new Point(0, 0));
     appState().rorLinearEndSig[SET](new Point(0, 0));

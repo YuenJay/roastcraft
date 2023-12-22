@@ -13,7 +13,7 @@ export default function MainChart() {
     const [timeDelta, setTimeDelta] = appState().timeDeltaSig;
     const [channelArr, setChannelArr] = appState().channelArrSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-
+    const [events, setEvents] = appState().eventsSig;
     const bt = channelArr()[appState().btIndex];
 
     const width = 800;
@@ -87,7 +87,7 @@ export default function MainChart() {
             </defs>
 
             {/* ROR linear regression */}
-            <Show when={appState().eventROR_TPSig[GET]() && appState().toggleShowRorRegressionSig[GET]()}>
+            <Show when={appState().eventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>
                 <line stroke="#00DD00"
                     stroke-width="2"
                     clip-path="url(#clip-path)"
@@ -202,7 +202,7 @@ export default function MainChart() {
                     </For>
                 </g>
             </Show>
-            <For each={appState().eventArrSig[GET]()}>
+            <For each={Object.values(events()).filter((e) => e != undefined)}>
                 {(item) => (
                     <Annotation
                         x={xScale(item.timestamp + timeDelta())}

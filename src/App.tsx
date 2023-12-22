@@ -8,7 +8,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
 import ManualChart from "./ManualChart";
-import { GET, SET, AppStatus, EventId, Point, appStateSig, reset } from "./AppState";
+import { GET, SET, AppStatus, EventId, Point, appStateSig, reset, Event } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -22,7 +22,7 @@ function App() {
     const [timer, setTimer] = appState().timerSig;
     const [channelArr, setChannelArr] = appState().channelArrSig;
     const [logArr, setLogArr] = appState().logArrSig;
-    const [eventArr, setEventArr] = appState().eventArrSig;
+    const [events, setEvents] = appState().eventsSig;
     const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
     const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
     const [developPhase, setDevelopPhase] = appState().developPhaseSig;
@@ -192,40 +192,32 @@ function App() {
     }
 
     async function handleCharge() {
-        setEventArr([...eventArr(), { id: EventId.CHARGE, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-
-        appState().eventCHARGESig[SET](true);
+        setEvents({ ...events(), CHARGE: new Event(EventId.CHARGE, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
         appState().timeDeltaSig[SET](- timer());
     }
 
     async function handleDryEnd() {
-        setEventArr([...eventArr(), { id: EventId.DRY_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-        appState().eventDRY_ENDSig[SET](true);
+        setEvents({ ...events(), DRY_END: new Event(EventId.DRY_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleFCStart() {
-        setEventArr([...eventArr(), { id: EventId.FC_START, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-        appState().eventFC_STARTSig[SET](true);
+        setEvents({ ...events(), FC_START: new Event(EventId.FC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleFCEnd() {
-        setEventArr([...eventArr(), { id: EventId.FC_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-        appState().eventFC_ENDSig[SET](true);
+        setEvents({ ...events(), FC_END: new Event(EventId.FC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleSCStart() {
-        setEventArr([...eventArr(), { id: EventId.SC_START, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-        appState().eventSC_STARTSig[SET](true);
+        setEvents({ ...events(), SC_START: new Event(EventId.SC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleSCEnd() {
-        setEventArr([...eventArr(), { id: EventId.SC_END, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-        appState().eventSC_ENDSig[SET](true);
+        setEvents({ ...events(), SC_END: new Event(EventId.SC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     async function handleDrop() {
-        setEventArr([...eventArr(), { id: EventId.DROP, timestamp: timer(), value: channelArr()[appState().btIndex].currentDataSig[GET]() }]);
-        appState().eventDROPSig[SET](true);
+        setEvents({ ...events(), DROP: new Event(EventId.DROP, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
     }
 
     return (
@@ -352,52 +344,52 @@ function App() {
                 <div class="m-2 mb-4 flex justify-evenly">
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventCHARGESig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().CHARGE != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleCharge}>
-                            {appState().eventCHARGESig[GET]() ? "✓ " : ""}CHARGE
+                            {events().CHARGE != undefined ? "✓ " : ""}CHARGE
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventDRY_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().DRY_END != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleDryEnd}>
-                            {appState().eventDRY_ENDSig[GET]() ? "✓ " : ""}DRY END
+                            {events().DRY_END != undefined ? "✓ " : ""}DRY END
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventFC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().FC_START != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleFCStart}>
-                            {appState().eventFC_STARTSig[GET]() ? "✓ " : ""}FC START
+                            {events().FC_START != undefined ? "✓ " : ""}FC START
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventFC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().FC_END != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleFCEnd}>
-                            {appState().eventFC_ENDSig[GET]() ? "✓ " : ""}FC END
+                            {events().FC_END != undefined ? "✓ " : ""}FC END
                         </button>
                     </div>
 
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventSC_STARTSig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().SC_START != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleSCStart}>
-                            {appState().eventSC_STARTSig[GET]() ? "✓ " : ""}SC START
+                            {events().SC_START != undefined ? "✓ " : ""}SC START
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventSC_ENDSig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().SC_END != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleSCEnd}>
-                            {appState().eventSC_ENDSig[GET]() ? "✓ " : ""}SC END
+                            {events().SC_END != undefined ? "✓ " : ""}SC END
                         </button>
                     </div>
                     <div class="indicator">
                         <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${appState().eventDROPSig[GET]() ? "btn-active btn-disabled" : ""}`}
+                        <button class={`btn btn-sm btn-outline btn-primary ${events().DROP != undefined ? "btn-active btn-disabled" : ""}`}
                             onClick={handleDrop}>
-                            {appState().eventDROPSig[GET]() ? "✓ " : ""}DROP
+                            {events().DROP != undefined ? "✓ " : ""}DROP
                         </button>
                     </div>
                 </div>
