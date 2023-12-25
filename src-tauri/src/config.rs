@@ -9,6 +9,7 @@ pub struct Config {
     pub model: String,
     pub serial: Option<Serial>,
     pub tcp: Option<Tcp>,
+    pub manual: Option<Manual>,
 }
 
 impl Config {
@@ -19,6 +20,7 @@ impl Config {
             model: String::new(),
             serial: None,
             tcp: None,
+            manual: None,
         }
     }
 }
@@ -42,6 +44,12 @@ pub struct Tcp {
     pub port: u16,
     pub modbus: Option<Modbus>,
     pub http: Option<Http>,
+}
+
+// LEVEL 1
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Manual {
+    pub manualChannel: Vec<ManualChannel>,
 }
 
 // LEVEL 2
@@ -86,4 +94,17 @@ pub struct Slave {
     pub registry: u16,
     pub divisor: u16,
     pub decode_type: String,
+}
+
+// LEVEL 2
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ManualChannel {
+    pub channel_id: String, // Channel
+    pub label: String,      // Channel
+    pub unit: String,       // Channel
+    pub color: String,      // Channel
+    pub min: u16,
+    pub max: u16,
+    pub step: u16,
+    pub default: u16,
 }

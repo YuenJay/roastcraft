@@ -133,7 +133,9 @@ async function init_appStateSig() {
     let config: any;
     await invoke("get_config").then(c => config = c);
 
+    console.log("config");
     console.log(config);
+
     let channelArr: Channel[];
     if (config.serial != null) {
         channelArr = config.serial.modbus.slave.map((s: any) =>

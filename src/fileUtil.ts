@@ -14,8 +14,6 @@ export async function openFile() {
 
         let loadObject = JSON.parse(content);
 
-        console.log(loadObject);
-
         appState().timerSig[SET](loadObject.timer);
 
         loadObject.channelArr.forEach((c: any) => {

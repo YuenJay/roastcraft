@@ -29,6 +29,7 @@ export default function ManualChart() {
     }
     pips.push(max);
 
+    console.log("manual chart pips");
     console.log(pips);
 
     const xScale = d3.scaleLinear(

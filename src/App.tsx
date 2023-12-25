@@ -35,8 +35,6 @@ function App() {
 
     onMount(async () => {
 
-        console.log(appState());
-
         // tauri-plugin-log-api
         // with LogTarget::Webview enabled this function will print logArr to the browser console
         detach = await attachConsole();
@@ -91,14 +89,19 @@ function App() {
             findDryEnd();
             calculatePhases();
 
+            // dump bt data to console
+            let bt = channelArr()[appState().btIndex]
+            console.log(bt.dataArr());
+            console.log(bt.rorArrSig[GET]());
+            console.log(bt.rorFilteredArrSig[GET]());
+            console.log(bt.rorConvolveArrSig[GET]());
+
         });
 
         // event listener
-        unlisten_menu_event_listener = await listen("menu_event", (event: any) => {
-
+        unlisten_menu_event_listener = await listen("menu_event", (event) => {
             switch (event.payload) {
                 case "OPEN":
-                    console.log(event);
                     openFile();
                     break;
 
@@ -445,6 +448,11 @@ function App() {
                             appState().toggleShowRorRegressionSig[SET](Boolean(e.currentTarget.checked));
                         }} />
                     </label>
+                    {/* <label class="label">
+                        <span class="label-text ml-auto mr-2">ROR zscore</span>
+                        <input type="number" id="zscore" name="zscore" min="2" max="4" step="0.1" value="3" class="input input-bordered input-sm" />
+                    </label> */}
+
                 </div>
                 <Show when={logArr().length > 0}>
 
