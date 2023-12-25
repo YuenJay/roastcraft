@@ -23,7 +23,6 @@ impl ModbusDevice {
     pub fn new(config: Config) -> ModbusDevice {
         let serial = config.serial.as_ref().unwrap();
 
-        // let mut builder = tokio_serial::new(serial.port.clone(), serial.baud_rate as u32);
         let timeout = Duration::from_secs(1);
 
         let mut data_bits = DataBits::Eight;
@@ -48,7 +47,7 @@ impl ModbusDevice {
             stop_bits = StopBits::Two;
         }
 
-        let mut stream = serialport::new(serial.port.clone(), serial.baud_rate as u32)
+        let mut stream = serialport::new(&serial.port, serial.baud_rate as u32)
             .data_bits(data_bits)
             .parity(parity)
             .stop_bits(stop_bits)
@@ -83,13 +82,15 @@ impl Device for ModbusDevice {
                     .unwrap();
 
                 self.stream.write(&request).unwrap();
-                let mut buf = [0u8; 6];
+
+                let mut buf = [0u8; 7];
                 self.stream.read_exact(&mut buf).unwrap();
                 let mut response = Vec::new();
                 response.extend_from_slice(&buf);
                 let len = guess_response_frame_len(&buf, ModbusProto::Rtu).unwrap();
-                if len > 6 {
-                    let mut rest = vec![0u8; (len - 6) as usize];
+
+                if len > 7 {
+                    let mut rest = vec![0u8; (len - 7) as usize];
                     self.stream.read_exact(&mut rest).unwrap();
                     response.extend(rest);
                 }
@@ -98,13 +99,13 @@ impl Device for ModbusDevice {
 
                 // check if frame has no Modbus error inside and parse response bools into data vec
                 mreq.parse_u16(&response, &mut data).unwrap();
-                for i in 0..data.len() {
-                    println!("{} {}", i, data[i]);
-                }
+                // for i in 0..data.len() {
+                //     println!("{} {}", i, data[i]);
+                // }
 
                 let rounded_number = (data[0] as f64 * 10.0).round() / 100.0;
 
-                trace!("{} : {}", slave.channel_id, rounded_number);
+                // println!("{} : {}", slave.channel_id, rounded_number);
 
                 map.insert(
                     slave.channel_id.clone(),
@@ -123,7 +124,7 @@ impl Device for ModbusDevice {
                 ));
             }
         }
-        trace!("result map : {:?} ", map);
+        // println!("result map : {:?} ", map);
         Ok(Value::Object(map))
     }
 }
