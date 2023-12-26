@@ -7,7 +7,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
 import BarChart from "./BarChart";
-import ManualChart from "./ManualChart";
+import RangeInput from "./RangeInput";
 import { GET, SET, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
@@ -239,11 +239,9 @@ function App() {
             {/* side bar start*/}
             <div class="col-span-3 ">
                 <div class="flex flex-col gap-1">
-                    <div class="flex flex-row gap-1">
-                        <div class="bg-black rounded py-1 px-2 basis-2/5">
-                            <p class="text-4xl font-extrabold text-white text-center">
-                                {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
-                            </p>
+                    <div class="flex flex-wrap gap-1">
+                        <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold basis-2/5 ">
+                            <p>{timestamp_format(timer() + appState().timeDeltaSig[GET]())}</p>
                         </div>
                         <Show when={status() == AppStatus.OFF}>
                             <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonResetClicked}>RESET
@@ -270,18 +268,18 @@ function App() {
                         </Show>
                     </div>
 
-                    <div class="flex flex-row gap-1">
+                    <div class="flex flex-wrap gap-1">
                         {/* BT */}
-                        <div class="bg-base-300 rounded text-right basis-1/5 p-1 ">
+                        <div class="bg-base-300 rounded text-right basis-1/5 px-1 ">
                             <p>{channelArr()[appState().btIndex].id}</p>
-                            <p class="text-2xl font-medium text-red-600">
+                            <p class="text-2xl leading-tight text-red-600">
                                 {channelArr()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
                             </p>
                         </div>
 
-                        <div class="bg-base-300 rounded text-right basis-1/5 p-1">
-                            <p>Δ BT</p>
-                            <p class="text-2xl font-medium text-blue-600">
+                        <div class="bg-base-300 rounded text-right basis-1/5 px-1">
+                            <p >Δ BT</p>
+                            <p class="text-2xl leading-tight text-blue-600">
                                 {channelArr()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
                             </p>
                         </div>
@@ -290,9 +288,9 @@ function App() {
                             {
                                 (_item, index) => (
                                     <Show when={index != appState().btIndex}>
-                                        <div class="bg-base-300 rounded text-right basis-1/5 p-1">
+                                        <div class="bg-base-300 rounded text-right basis-1/5 px-1">
                                             <p>{channelArr()[index].id}</p>
-                                            <p class="text-2xl font-medium text-red-600">
+                                            <p class="text-2xl leading-tight text-red-600">
                                                 {channelArr()[index].currentDataSig[GET]().toFixed(1)}
                                             </p>
                                         </div>
@@ -302,7 +300,7 @@ function App() {
                         </Index>
                     </div>
                     <div class="flex flex-row gap-1">
-                        <div class="bg-base-300 rounded w-24 p-1">
+                        <div class="bg-base-300 rounded basis-1/3 px-1">
                             <p class="text-right">Drying</p>
                             <div class="grid grid-cols-2" >
                                 <p class="text-sm font-medium text-blue-600">
@@ -316,7 +314,7 @@ function App() {
                                 </p>
                             </div>
                         </div>
-                        <div class="bg-base-300 rounded w-24 p-1">
+                        <div class="bg-base-300 rounded basis-1/3 px-1">
                             <p class="text-right">Maillard</p>
                             <div class="grid grid-cols-2" >
                                 <p class="text-sm font-medium text-blue-600">
@@ -330,7 +328,7 @@ function App() {
                                 </p>
                             </div>
                         </div>
-                        <div class="bg-base-300 rounded w-24 p-1">
+                        <div class="bg-base-300 rounded basis-1/3 px-1">
                             <p class="text-right">Develop</p>
                             <div class="grid grid-cols-2" >
                                 <p class="text-sm font-medium text-blue-600">
@@ -342,7 +340,6 @@ function App() {
                                 <p class="text-sm font-medium text-blue-600">
                                     {developPhase().percent.toFixed(1)}%
                                 </p>
-
                             </div>
                         </div>
                     </div>
@@ -413,25 +410,25 @@ function App() {
 
                 </div>
 
-                <ManualChart></ManualChart>
-                <ManualChart></ManualChart>
+                <RangeInput id="Gas"></RangeInput>
+                <RangeInput id="Airflow"></RangeInput>
 
                 <div class="flex flex-wrap">
                     <label class="label cursor-pointer basis-1/3">
                         <span class="label-text mr-1">ROR filtered</span>
-                        <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
+                        <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
                             appState().toggleShowRorFilteredSig[SET](Boolean(e.currentTarget.checked));
                         }} />
                     </label>
                     <label class="label cursor-pointer basis-1/3">
                         <span class="label-text mr-1">ROR outlier</span>
-                        <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
+                        <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
                             appState().toggleShowRorOutlierSig[SET](Boolean(e.currentTarget.checked));
                         }} />
                     </label>
                     <label class="label cursor-pointer basis-1/3">
                         <span class="label-text mr-1">ROR regression</span>
-                        <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
+                        <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
                             appState().toggleShowRorRegressionSig[SET](Boolean(e.currentTarget.checked));
                         }} />
                     </label>

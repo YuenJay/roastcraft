@@ -3,7 +3,7 @@
 import { For, } from "solid-js";
 import { GET, SET, Point, appStateSig } from "./AppState";
 
-export default function ManualChart() {
+export default function RangeInput(props: any) {
 
     const [appState, _setAppState] = appStateSig;
     const [timer, _setTimer] = appState().timerSig;
@@ -11,7 +11,7 @@ export default function ManualChart() {
 
     let min = 0;
     let max = 100;
-    let step = 5;
+    let step = 10;
     let defaultValue = 20;
 
     let pips: number[] = [];
@@ -37,7 +37,9 @@ export default function ManualChart() {
 
     return (
         <>
-            <p>Airflow</p>
+            <p class="text-right">
+                {props.id}
+            </p>
             <input
                 type="range"
                 class="range range-primary range-xs"
