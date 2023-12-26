@@ -225,185 +225,135 @@ function App() {
 
     return (
         // responsive design breakpoint : lg
-        <div class="grid grid-cols-8 lg:grid-cols-12">
-            {/* header start*/}
-            <div class="col-span-8 flex top-0 m-1 gap-1">
-                <div class="bg-black rounded flex items-center px-1">
-                    <p class="text-4xl font-extrabold text-white ">
-                        {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
-                    </p>
-                </div>
-
-                {/* BT */}
-                <div class="bg-base-300 rounded text-right w-20 p-1 ">
-                    <p>{channelArr()[appState().btIndex].id}</p>
-                    <p class="text-2xl font-medium text-red-600">
-                        {channelArr()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
-                    </p>
-                </div>
-
-                <div class="bg-base-300 rounded text-right w-20 p-1">
-                    <p>Δ BT</p>
-                    <p class="text-2xl font-medium text-blue-600">
-                        {channelArr()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
-                    </p>
-                </div>
-
-                <Index each={channelIdList}>
-                    {
-                        (_item, index) => (
-                            <Show when={index != appState().btIndex}>
-                                <div class="bg-base-300 rounded text-right w-20 p-1">
-                                    <p>{channelArr()[index].id}</p>
-                                    <p class="text-2xl font-medium text-red-600">
-                                        {channelArr()[index].currentDataSig[GET]().toFixed(1)}
-                                    </p>
-                                </div>
-                            </Show>
-                        )
-                    }
-                </Index>
-
-                <div class="bg-base-300 rounded w-24 p-1">
-                    <p class="text-right">Drying</p>
-                    <div class="grid grid-cols-2" >
-                        <p class="text-sm font-medium text-blue-600">
-                            {timestamp_format(dryingPhase().time)}
-                        </p>
-                        <p class="text-right text-sm font-medium text-orange-600">
-                            {dryingPhase().temp_rise.toFixed(1)}°
-                        </p>
-                        <p class="text-sm font-medium text-blue-600">
-                            {dryingPhase().percent.toFixed(1)}%
-                        </p>
-                    </div>
-                </div>
-                <div class="bg-base-300 rounded w-24 p-1">
-                    <p class="text-right">Maillard</p>
-                    <div class="grid grid-cols-2" >
-                        <p class="text-sm font-medium text-blue-600">
-                            {timestamp_format(maillardPhase().time)}
-                        </p>
-                        <p class="text-right text-sm font-medium text-orange-600">
-                            {maillardPhase().temp_rise.toFixed(1)}°
-                        </p>
-                        <p class="text-sm font-medium text-blue-600">
-                            {maillardPhase().percent.toFixed(1)}%
-                        </p>
-                    </div>
-                </div>
-                <div class="bg-base-300 rounded w-24 p-1">
-                    <p class="text-right">Develop</p>
-                    <div class="grid grid-cols-2" >
-                        <p class="text-sm font-medium text-blue-600">
-                            {timestamp_format(developPhase().time)}
-                        </p>
-                        <p class="text-right text-sm font-medium text-orange-600">
-                            {developPhase().temp_rise.toFixed(1)}°
-                        </p>
-                        <p class="text-sm font-medium text-blue-600">
-                            {developPhase().percent.toFixed(1)}%
-                        </p>
-
-                    </div>
-                </div>
-
-                <div class="ml-auto self-center flex gap-3 mr-3">
-                    <Show when={status() == AppStatus.OFF}>
-                        <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
-                            <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>
-                        </div>
-                        <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-                            <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
-                        </div>
-                    </Show>
-                    <Show when={status() == AppStatus.ON}>
-                        <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-                            <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
-                        </div>
-                        <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
-                            <button class="btn btn-accent " onClick={buttonStartClicked}>START</button>
-                        </div>
-                    </Show>
-                    <Show when={status() == AppStatus.RECORDING}>
-                        <div class="indicator">
-                            <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-                            <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
-                        </div>
-                    </Show>
-
-                </div>
-            </div>
-            {/* header end*/}
+        <div class="grid grid-cols-9 lg:grid-cols-12">
 
             {/* main start*/}
-            <div class="col-span-8 m-1">
+            <div class="col-span-9 m-1">
 
                 <MainChart />
-                <div class="m-2 mb-4 flex justify-evenly">
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().CHARGE != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleCharge}>
-                            {roastEvents().CHARGE != undefined ? "✓ " : ""}CHARGE
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().DRY_END != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleDryEnd}>
-                            {roastEvents().DRY_END != undefined ? "✓ " : ""}DRY END
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().FC_START != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleFCStart}>
-                            {roastEvents().FC_START != undefined ? "✓ " : ""}FC START
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().FC_END != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleFCEnd}>
-                            {roastEvents().FC_END != undefined ? "✓ " : ""}FC END
-                        </button>
-                    </div>
 
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().SC_START != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleSCStart}>
-                            {roastEvents().SC_START != undefined ? "✓ " : ""}SC START
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().SC_END != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleSCEnd}>
-                            {roastEvents().SC_END != undefined ? "✓ " : ""}SC END
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-                        <button class={`btn btn-sm btn-outline btn-primary ${roastEvents().DROP != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleDrop}>
-                            {roastEvents().DROP != undefined ? "✓ " : ""}DROP
-                        </button>
-                    </div>
-                </div>
-
+                <SecondaryChart />
 
             </div>
             {/* main end*/}
 
             {/* side bar start*/}
-            <div class="col-span-8 lg:col-span-4 m-1">
+            <div class="col-span-9 lg:col-span-3 m-1 ">
+                <div class="col-span-3 flex flex-col gap-1">
 
+                    <div class="flex flex-row gap-3 mb-2 mr-2">
+                        <div class="bg-black rounded py-1 px-2">
+                            <p class="text-4xl font-extrabold text-white text-center">
+                                {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
+                            </p>
+                        </div>
+                        <Show when={status() == AppStatus.OFF}>
+                            <div class="ml-auto indicator">
+                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
+                                <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>
+                            </div>
+                            <div class="indicator">
+                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
+                                <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
+                            </div>
+                        </Show>
+                        <Show when={status() == AppStatus.ON}>
+                            <div class="ml-auto indicator">
+                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
+                                <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
+                            </div>
+                            <div class="indicator">
+                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
+                                <button class="btn btn-accent " onClick={buttonStartClicked}>START</button>
+                            </div>
+                        </Show>
+                        <Show when={status() == AppStatus.RECORDING}>
+                            <div class="ml-auto indicator">
+                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
+                                <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
+                            </div>
+                        </Show>
+
+
+                    </div>
+
+                    <div class="flex flex-row gap-1">
+                        {/* BT */}
+                        <div class="bg-base-300 rounded text-right basis-1/5 p-1 ">
+                            <p>{channelArr()[appState().btIndex].id}</p>
+                            <p class="text-2xl font-medium text-red-600">
+                                {channelArr()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
+                            </p>
+                        </div>
+
+                        <div class="bg-base-300 rounded text-right basis-1/5 p-1">
+                            <p>Δ BT</p>
+                            <p class="text-2xl font-medium text-blue-600">
+                                {channelArr()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
+                            </p>
+                        </div>
+
+                        <Index each={channelIdList}>
+                            {
+                                (_item, index) => (
+                                    <Show when={index != appState().btIndex}>
+                                        <div class="bg-base-300 rounded text-right basis-1/5 p-1">
+                                            <p>{channelArr()[index].id}</p>
+                                            <p class="text-2xl font-medium text-red-600">
+                                                {channelArr()[index].currentDataSig[GET]().toFixed(1)}
+                                            </p>
+                                        </div>
+                                    </Show>
+                                )
+                            }
+                        </Index>
+                    </div>
+                    <div class="flex flex-row gap-1">
+                        <div class="bg-base-300 rounded w-24 p-1">
+                            <p class="text-right">Drying</p>
+                            <div class="grid grid-cols-2" >
+                                <p class="text-sm font-medium text-blue-600">
+                                    {timestamp_format(dryingPhase().time)}
+                                </p>
+                                <p class="text-right text-sm font-medium text-orange-600">
+                                    {dryingPhase().temp_rise.toFixed(1)}°
+                                </p>
+                                <p class="text-sm font-medium text-blue-600">
+                                    {dryingPhase().percent.toFixed(1)}%
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-base-300 rounded w-24 p-1">
+                            <p class="text-right">Maillard</p>
+                            <div class="grid grid-cols-2" >
+                                <p class="text-sm font-medium text-blue-600">
+                                    {timestamp_format(maillardPhase().time)}
+                                </p>
+                                <p class="text-right text-sm font-medium text-orange-600">
+                                    {maillardPhase().temp_rise.toFixed(1)}°
+                                </p>
+                                <p class="text-sm font-medium text-blue-600">
+                                    {maillardPhase().percent.toFixed(1)}%
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-base-300 rounded w-24 p-1">
+                            <p class="text-right">Develop</p>
+                            <div class="grid grid-cols-2" >
+                                <p class="text-sm font-medium text-blue-600">
+                                    {timestamp_format(developPhase().time)}
+                                </p>
+                                <p class="text-right text-sm font-medium text-orange-600">
+                                    {developPhase().temp_rise.toFixed(1)}°
+                                </p>
+                                <p class="text-sm font-medium text-blue-600">
+                                    {developPhase().percent.toFixed(1)}%
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="grid grid-cols-3" >
                     <BarChart
                         title="Drying"
@@ -424,10 +374,61 @@ function App() {
                             { id: "#", opacity: 1, phase: developPhase },
                         ]} />
                 </div>
+                <div class="flex flex-wrap gap-3 mb-3">
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().CHARGE != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleCharge}>
+                            {roastEvents().CHARGE != undefined ? "✓ " : ""}CHARGE
+                        </button>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().DRY_END != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleDryEnd}>
+                            {roastEvents().DRY_END != undefined ? "✓ " : ""}DRY END
+                        </button>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().FC_START != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleFCStart}>
+                            {roastEvents().FC_START != undefined ? "✓ " : ""}FC START
+                        </button>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().FC_END != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleFCEnd}>
+                            {roastEvents().FC_END != undefined ? "✓ " : ""}FC END
+                        </button>
+                    </div>
 
-                <SecondaryChart />
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().SC_START != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleSCStart}>
+                            {roastEvents().SC_START != undefined ? "✓ " : ""}SC START
+                        </button>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().SC_END != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleSCEnd}>
+                            {roastEvents().SC_END != undefined ? "✓ " : ""}SC END
+                        </button>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
+                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().DROP != undefined ? "btn-active btn-disabled" : ""}`}
+                            onClick={handleDrop}>
+                            {roastEvents().DROP != undefined ? "✓ " : ""}DROP
+                        </button>
+                    </div>
+                </div>
+                <ManualChart></ManualChart>
+                <ManualChart></ManualChart>
 
-                <ManualChart />
 
                 <div class="grid grid-cols-3">
                     <label class="label cursor-pointer">

@@ -17,7 +17,7 @@ export default function MainChart() {
     const bt = channelArr()[appState().btIndex];
 
     const width = 800;
-    const height = 500;
+    const height = 400;
     const marginTop = 10;
     const marginRight = 30;
     const marginBottom = 20;

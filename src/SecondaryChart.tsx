@@ -12,7 +12,7 @@ export default function SecondaryChart() {
     const [manualChannelArr, setManualChannelArr] = appState().manualChannelArrSig;
 
     const width = 800;
-    const height = 200;
+    const height = 140;
     const marginTop = 10;
     const marginRight = 30;
     const marginBottom = 20;
@@ -56,8 +56,8 @@ export default function SecondaryChart() {
 
     return (
         <>
-            <div>FAN</div>
-            <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 200" >
+
+            <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 140" >
                 <defs>
                     {/* Defines clipping area, rect is inside axis*/}
                     <clipPath
