@@ -224,11 +224,10 @@ function App() {
     }
 
     return (
-        // responsive design breakpoint : lg
-        <div class="grid grid-cols-9 lg:grid-cols-12">
+        <div class="grid grid-cols-12 m-1">
 
             {/* main start*/}
-            <div class="col-span-9 m-1">
+            <div class="col-span-9 ">
 
                 <MainChart />
 
@@ -238,43 +237,37 @@ function App() {
             {/* main end*/}
 
             {/* side bar start*/}
-            <div class="col-span-9 lg:col-span-3 m-1 ">
-                <div class="col-span-3 flex flex-col gap-1">
-
-                    <div class="flex flex-row gap-3 mb-2 mr-2">
-                        <div class="bg-black rounded py-1 px-2">
+            <div class="col-span-3 ">
+                <div class="flex flex-col gap-1">
+                    <div class="flex flex-row gap-1">
+                        <div class="bg-black rounded py-1 px-2 basis-2/5">
                             <p class="text-4xl font-extrabold text-white text-center">
                                 {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
                             </p>
                         </div>
                         <Show when={status() == AppStatus.OFF}>
-                            <div class="ml-auto indicator">
-                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">R</span>
-                                <button class="btn btn-accent" onClick={buttonResetClicked}>RESET</button>
-                            </div>
-                            <div class="indicator">
-                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-                                <button class="btn btn-accent " onClick={buttonOnClicked}>ON</button>
-                            </div>
+                            <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonResetClicked}>RESET
+                                <span class="absolute bottom-0 right-0 mr-1 underline text-xs">R</span>
+                            </button>
+
+                            <button class="btn btn-accent rounded relative basis-1/5" onClick={buttonOnClicked}>ON
+                                <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
+                            </button>
                         </Show>
                         <Show when={status() == AppStatus.ON}>
-                            <div class="ml-auto indicator">
-                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-                                <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
-                            </div>
-                            <div class="indicator">
-                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">W</span>
-                                <button class="btn btn-accent " onClick={buttonStartClicked}>START</button>
-                            </div>
+                            <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonOffClicked}>OFF
+                                <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
+                            </button>
+
+                            <button class="btn btn-accent rounded relative basis-1/5" onClick={buttonStartClicked}>START
+                                <span class="absolute bottom-0 right-0 mr-1 underline text-xs1">W</span>
+                            </button>
                         </Show>
                         <Show when={status() == AppStatus.RECORDING}>
-                            <div class="ml-auto indicator">
-                                <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Q</span>
-                                <button class="btn btn-accent " onClick={buttonOffClicked}>OFF</button>
-                            </div>
+                            <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonOffClicked}>OFF
+                                <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
+                            </button>
                         </Show>
-
-
                     </div>
 
                     <div class="flex flex-row gap-1">
@@ -374,77 +367,70 @@ function App() {
                             { id: "#", opacity: 1, phase: developPhase },
                         ]} />
                 </div>
-                <div class="flex flex-wrap gap-3 mb-3">
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">Z</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().CHARGE != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleCharge}>
-                            {roastEvents().CHARGE != undefined ? "✓ " : ""}CHARGE
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">X</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().DRY_END != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleDryEnd}>
-                            {roastEvents().DRY_END != undefined ? "✓ " : ""}DRY END
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">C</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().FC_START != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleFCStart}>
-                            {roastEvents().FC_START != undefined ? "✓ " : ""}FC START
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">V</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().FC_END != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleFCEnd}>
-                            {roastEvents().FC_END != undefined ? "✓ " : ""}FC END
-                        </button>
-                    </div>
+                <div class="flex flex-wrap gap-1 ">
 
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">B</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().SC_START != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleSCStart}>
-                            {roastEvents().SC_START != undefined ? "✓ " : ""}SC START
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">N</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().SC_END != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleSCEnd}>
-                            {roastEvents().SC_END != undefined ? "✓ " : ""}SC END
-                        </button>
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-item indicator-bottom indicator-end badge rounded border-current px-1">M</span>
-                        <button class={`btn btn-sm btn-outline btn-primary p-2 ${roastEvents().DROP != undefined ? "btn-active btn-disabled" : ""}`}
-                            onClick={handleDrop}>
-                            {roastEvents().DROP != undefined ? "✓ " : ""}DROP
-                        </button>
-                    </div>
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleCharge}>
+                        CHARGE
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Z</span>
+                    </button>
+
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleDryEnd}>
+                        DRY END
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">X</span>
+                    </button>
+
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleFCStart}>
+                        FC START
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">C</span>
+                    </button>
+
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleFCEnd}>
+                        FC END
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">V</span>
+                    </button>
+
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleSCStart}>
+                        SC START
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">B</span>
+                    </button>
+
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleSCEnd}>
+                        SC END
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">N</span>
+                    </button>
+
+                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().DROP != undefined ? "btn-disabled" : ""}`}
+                        onClick={handleDrop}>
+                        DROP
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">M</span>
+                    </button>
+
                 </div>
+
                 <ManualChart></ManualChart>
                 <ManualChart></ManualChart>
 
-
-                <div class="grid grid-cols-3">
-                    <label class="label cursor-pointer">
-                        <span class="label-text ml-auto mr-2">ROR filtered</span>
+                <div class="flex flex-wrap">
+                    <label class="label cursor-pointer basis-1/3">
+                        <span class="label-text mr-1">ROR filtered</span>
                         <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
                             appState().toggleShowRorFilteredSig[SET](Boolean(e.currentTarget.checked));
                         }} />
                     </label>
-                    <label class="label cursor-pointer">
-                        <span class="label-text ml-auto mr-2">ROR outlier</span>
+                    <label class="label cursor-pointer basis-1/3">
+                        <span class="label-text mr-1">ROR outlier</span>
                         <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
                             appState().toggleShowRorOutlierSig[SET](Boolean(e.currentTarget.checked));
                         }} />
                     </label>
-                    <label class="label cursor-pointer">
-                        <span class="label-text ml-auto mr-2">ROR regression</span>
+                    <label class="label cursor-pointer basis-1/3">
+                        <span class="label-text mr-1">ROR regression</span>
                         <input type="checkbox" class="toggle toggle-sm" onChange={(e) => {
                             appState().toggleShowRorRegressionSig[SET](Boolean(e.currentTarget.checked));
                         }} />
