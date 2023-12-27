@@ -14,6 +14,7 @@ import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, saveFile } from "./fileUtil";
+import PhaseChart from "./PhaseChart";
 
 function App() {
 
@@ -344,25 +345,11 @@ function App() {
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-3" >
-                    <BarChart
-                        title="Drying"
-                        data={[
-                            // { id: "Ref", opacity: 0.5, percent: 40.2, temp_rise: 57.2 },
-                            { id: "#", opacity: 1, phase: dryingPhase },
-                        ]} />
-                    <BarChart
-                        title="Maillard"
-                        data={[
-                            // { id: "Ref", opacity: 0.5, percent: 40.3, temp_rise: 44.8 },
-                            { id: "#", opacity: 1, phase: maillardPhase },
-                        ]} />
-                    <BarChart
-                        title="Develop"
-                        data={[
-                            // { id: "Ref", opacity: 0.5, percent: 19.5, temp_rise: 13.0 },
-                            { id: "#", opacity: 1, phase: developPhase },
-                        ]} />
+                <div class="m-1">
+                    <PhaseChart></PhaseChart>
+                </div>
+                <div class="m-1">
+                    <PhaseChart></PhaseChart>
                 </div>
                 <div class="flex flex-wrap gap-1 ">
 

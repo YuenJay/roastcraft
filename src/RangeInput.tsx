@@ -49,7 +49,7 @@ export default function RangeInput(props: any) {
                 step={step}
                 onInput={handleInput}
             />
-            <div class="w-full flex justify-between text-xs px-2 pb-4">
+            <div class="w-full flex justify-between text-xs px-2 pb-4 relative">
                 <For each={pips}>
                     {(pip) => (
                         <span class="h-2 w-px bg-black">
