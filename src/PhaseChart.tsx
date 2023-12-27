@@ -2,13 +2,19 @@
 
 import { For, onMount } from "solid-js";
 import * as d3 from "d3";
+import { appStateSig } from "./AppState";
 
 export default function PhaseChart(props: any) {
 
+    const [appState, _setAppState] = appStateSig;
+    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
+    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
+    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
+
     let data = [
-        { id: "Dry", value: 30.123 },
-        { id: "Mai", value: 46.167 },
-        { id: "Dev", value: 51.367 },
+        { id: "Dry", phase: dryingPhase },
+        { id: "Mai", phase: maillardPhase },
+        { id: "Dev", phase: developPhase },
     ];
 
     // Specify the chart’s dimensions, based on a bar’s height.
@@ -62,19 +68,18 @@ export default function PhaseChart(props: any) {
                         fill="steelblue"
                         x={x(0)}
                         y={y(d.id)}
-                        width={x(d.value) - x(0)}
+                        width={x(d.phase().percent) - x(0)}
                         height={y.bandwidth()}
                     />
                     <g
-                        fill="white"
-                        text-anchor="end">
+                        text-anchor="start">
                         <text
-                            x={x(d.value)}
+                            x={x(d.phase().percent)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="0.35em"
-                            dx="-4"
+                            dx="2"
                             font-size="0.8em">
-                            {d.value.toFixed(1) + " %"}
+                            {d.phase().percent.toFixed(1) + "%"}
                         </text>
 
                     </g>

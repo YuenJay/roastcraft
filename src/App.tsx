@@ -348,9 +348,7 @@ function App() {
                 <div class="m-1">
                     <PhaseChart></PhaseChart>
                 </div>
-                <div class="m-1">
-                    <PhaseChart></PhaseChart>
-                </div>
+
                 <div class="flex flex-wrap gap-1 ">
 
                     <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
