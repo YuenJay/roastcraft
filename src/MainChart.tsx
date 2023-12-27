@@ -6,6 +6,9 @@ import { GET, RoastEventId, appStateSig, BT } from "./AppState";
 import Annotation from "./Annotation";
 import ToolTip, { ToolTipDirection } from "./ToolTip";
 
+function timestamp_format(timestamp: number) {
+    return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
+}
 
 export default function MainChart() {
 
@@ -48,20 +51,22 @@ export default function MainChart() {
 
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions
     let svgRef!: SVGSVGElement;
-    let axisBottomRef!: SVGSVGElement;
-    let axisLeftRef!: SVGSVGElement;
-    let axisRightRef!: SVGSVGElement;
 
     onMount(() => {
         const svg = d3.select(svgRef);
 
-        d3.select(axisBottomRef)
-            .call(d3.axisBottom(xScale));
+        svg.append("g")
+            .attr("transform", `translate(0, ${height - marginBottom} )`)
+            .call(d3.axisBottom(xScale)
+                .tickValues(d3.range(0, 720, 60))
+                .tickFormat((d) => timestamp_format(d as number)));
 
-        d3.select(axisLeftRef)
+        svg.append("g")
+            .attr("transform", `translate(${marginLeft}, 0)`)
             .call(d3.axisLeft(yScale));
 
-        d3.select(axisRightRef)
+        svg.append("g")
+            .attr("transform", `translate(${width - marginRight}, 0)`)
             .call(d3.axisRight(yScaleROR));
 
         svg.on("mousemove", (event) => {
@@ -73,9 +78,6 @@ export default function MainChart() {
     return (
 
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`} >
-            <g ref={axisBottomRef} transform={`translate(0, ${height - marginBottom} )`}></g>
-            <g ref={axisLeftRef} transform={`translate(${marginLeft}, 0)`}></g>
-            <g ref={axisRightRef} transform={`translate(${width - marginRight}, 0)`}></g>
 
             <defs>
                 {/* Defines clipping area, rect is inside axis*/}

@@ -24,9 +24,6 @@ function App() {
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [logArr, setLogArr] = appState().logArrSig;
     const [roastEvents, setRoastEvents] = appState().roastEventsSig;
-    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
-    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
-    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
     const channelIdList = channelArr().map(m => m.id);
 
     let detach: UnlistenFn;

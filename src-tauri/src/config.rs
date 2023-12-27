@@ -49,7 +49,7 @@ pub struct Tcp {
 // LEVEL 1
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Manual {
-    pub manualChannel: Vec<ManualChannel>,
+    pub range_input: Vec<RangeInput>,
 }
 
 // LEVEL 2
@@ -98,13 +98,10 @@ pub struct Slave {
 
 // LEVEL 2
 #[derive(Serialize, Deserialize, Clone)]
-pub struct ManualChannel {
-    pub channel_id: String, // Channel
-    pub label: String,      // Channel
-    pub unit: String,       // Channel
-    pub color: String,      // Channel
+pub struct RangeInput {
     pub min: u16,
     pub max: u16,
     pub step: u16,
     pub default: u16,
+    pub channel: Channel,
 }
