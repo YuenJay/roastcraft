@@ -6,7 +6,6 @@ import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
-import BarChart from "./BarChart";
 import RangeInput from "./RangeInput";
 import { GET, SET, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
@@ -15,6 +14,7 @@ import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRo
 import SecondaryChart from "./SecondaryChart";
 import { openFile, saveFile } from "./fileUtil";
 import PhaseChart from "./PhaseChart";
+import PhaseTempChart from "./PhaseTempChart";
 
 function App() {
 
@@ -300,53 +300,11 @@ function App() {
                             }
                         </Index>
                     </div>
-                    <div class="flex flex-row gap-1">
-                        <div class="bg-base-300 rounded basis-1/3 px-1">
-                            <p class="text-right">Drying</p>
-                            <div class="grid grid-cols-2" >
-                                <p class="text-sm font-medium text-blue-600">
-                                    {timestamp_format(dryingPhase().time)}
-                                </p>
-                                <p class="text-right text-sm font-medium text-orange-600">
-                                    {dryingPhase().temp_rise.toFixed(1)}°
-                                </p>
-                                <p class="text-sm font-medium text-blue-600">
-                                    {dryingPhase().percent.toFixed(1)}%
-                                </p>
-                            </div>
-                        </div>
-                        <div class="bg-base-300 rounded basis-1/3 px-1">
-                            <p class="text-right">Maillard</p>
-                            <div class="grid grid-cols-2" >
-                                <p class="text-sm font-medium text-blue-600">
-                                    {timestamp_format(maillardPhase().time)}
-                                </p>
-                                <p class="text-right text-sm font-medium text-orange-600">
-                                    {maillardPhase().temp_rise.toFixed(1)}°
-                                </p>
-                                <p class="text-sm font-medium text-blue-600">
-                                    {maillardPhase().percent.toFixed(1)}%
-                                </p>
-                            </div>
-                        </div>
-                        <div class="bg-base-300 rounded basis-1/3 px-1">
-                            <p class="text-right">Develop</p>
-                            <div class="grid grid-cols-2" >
-                                <p class="text-sm font-medium text-blue-600">
-                                    {timestamp_format(developPhase().time)}
-                                </p>
-                                <p class="text-right text-sm font-medium text-orange-600">
-                                    {developPhase().temp_rise.toFixed(1)}°
-                                </p>
-                                <p class="text-sm font-medium text-blue-600">
-                                    {developPhase().percent.toFixed(1)}%
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
                 <div class="m-1">
                     <PhaseChart></PhaseChart>
+                    <PhaseTempChart></PhaseTempChart>
                 </div>
 
                 <div class="flex flex-wrap gap-1 ">

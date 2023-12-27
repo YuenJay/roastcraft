@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { For, Show, onMount } from "solid-js";
+import { For, onMount } from "solid-js";
 import * as d3 from "d3";
 import { appStateSig } from "./AppState";
 
@@ -8,7 +8,7 @@ function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
-export default function PhaseChart(props: any) {
+export default function PhaseTempChart(props: any) {
 
     const [appState, _setAppState] = appStateSig;
     const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
@@ -32,7 +32,7 @@ export default function PhaseChart(props: any) {
 
     // Create the scales.
     const x = d3.scaleLinear()
-        .domain([0, 100])
+        .domain([0, 60])
         .range([marginLeft, width - marginRight]);
 
     const y = d3.scaleBand()
@@ -50,7 +50,7 @@ export default function PhaseChart(props: any) {
             // Create the axes.
             svg.append("g")
                 .attr("transform", `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(10).tickFormat((d) => (d + "%")))
+                .call(d3.axisBottom(x).ticks(10).tickFormat((d) => (d + "°")))
                 .call(g => g.select(".domain").remove());
 
             svg.append("g")
@@ -61,57 +61,26 @@ export default function PhaseChart(props: any) {
     });
 
     return (
-
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`}>
-
             {/* Add a rect for each bar. */}
             <For each={data}>{
                 (d) => (<>
-
                     <rect
-                        fill="steelblue"
+                        fill="darkorange"
                         x={x(0)}
                         y={y(d.id)}
-                        width={x(d.phase().percent) - x(0)}
+                        width={x(d.phase().temp_rise) - x(0)}
                         height={y.bandwidth()}
                     />
-
-                    <Show when={d.phase().percent < 80}
-                        fallback={
-                            <g
-                                fill="white"
-                                text-anchor="end">
-                                <text
-                                    x={x(d.phase().percent)}
-                                    y={y(d.id) as number + y.bandwidth() / 2}
-                                    dy="0.35em"
-                                    dx="-4"
-                                    font-size="0.8em">
-                                    {d.phase().percent.toFixed(1) + "%"}
-                                </text>
-                            </g>
-                        }>
-                        <g
-                            text-anchor="start">
-                            <text
-                                x={x(d.phase().percent)}
-                                y={y(d.id) as number + y.bandwidth() / 2}
-                                dy="0.35em"
-                                dx="4"
-                                font-size="0.8em">
-                                {d.phase().percent.toFixed(1) + "%"}
-                            </text>
-                        </g>
-                    </Show>
                     <g
                         text-anchor="start">
                         <text
-                            x={x(100)}
+                            x={x(d.phase().temp_rise)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="0.35em"
                             dx="4"
                             font-size="0.8em">
-                            {timestamp_format(d.phase().time)}
+                            {d.phase().temp_rise.toFixed(1) + "°"}
                         </text>
                     </g>
                 </>)
