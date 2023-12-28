@@ -270,7 +270,8 @@ function App() {
 
                 <MainChart />
 
-                <SecondaryChart channelA_id={manualChannelArr()[0].id} channelB_id={manualChannelArr()[1].id} />
+                <SecondaryChart channel_id={manualChannelArr()[0].id} />
+                <SecondaryChart channel_id={manualChannelArr()[1].id} />
 
             </div>
             {/* main end*/}

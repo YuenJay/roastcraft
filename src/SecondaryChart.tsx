@@ -5,21 +5,20 @@ import * as d3 from "d3";
 import { GET, SET, Point, appStateSig, ManualChannel } from "./AppState";
 import { timestamp_format } from "./MainChart";
 
-export default function SecondaryChart(props: { channelA_id: string, channelB_id?: string }) {
+export default function SecondaryChart(props: { channel_id: string }) {
 
     const [appState, _setAppState] = appStateSig;
     const [timer, _setTimer] = appState().timerSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
-    let mcA = manualChannelArr().find(mc => mc.id == props.channelA_id) as ManualChannel;
-    let mcB = manualChannelArr().find(mc => mc.id == props.channelB_id) as ManualChannel;
+    let mc = manualChannelArr().find(mc => mc.id == props.channel_id) as ManualChannel;
 
     const width = 800;
-    const height = 160;
-    const marginTop = 20;
+    const height = 100;
+    const marginTop = 14;
     const marginRight = 30;
-    const marginBottom = 20;
+    const marginBottom = 14;
     const marginLeft = 30;
 
     const xScale = d3.scaleLinear(
@@ -27,24 +26,14 @@ export default function SecondaryChart(props: { channelA_id: string, channelB_id
         [marginLeft, width - marginRight]
     );
 
-    const yScaleA = d3.scaleLinear([mcA.min, mcA.max], [
+    const yScale = d3.scaleLinear([mc.min, mc.max], [
         height - marginBottom,
         marginTop,
     ]);
 
-    const yScaleB = d3.scaleLinear([mcB.min, mcB.max], [
-        height - marginBottom,
-        marginTop,
-    ]);
-
-    const lineA = d3.line()
+    const line = d3.line()
         .x((d: any) => xScale(d.timestamp + appState().timeDeltaSig[GET]()))
-        .y((d: any) => yScaleA(d.value))
-        .curve(d3.curveStepAfter);
-
-    const lineB = d3.line()
-        .x((d: any) => xScale(d.timestamp + appState().timeDeltaSig[GET]()))
-        .y((d: any) => yScaleB(d.value))
+        .y((d: any) => yScale(d.value))
         .curve(d3.curveStepAfter);
 
     let svgRef: SVGSVGElement | undefined;
@@ -53,32 +42,25 @@ export default function SecondaryChart(props: { channelA_id: string, channelB_id
         if (svgRef) {
 
             const svg = d3.select(svgRef);
+
             svg.append("g")
                 .attr("transform", `translate(0, ${height - marginBottom} )`)
                 .call(d3.axisBottom(xScale)
                     .tickValues(d3.range(0, 720, 60))
-                    .tickFormat((d) => timestamp_format(d as number)));
+                )
+                .selectAll("text").remove();
 
             svg.append("g")
+                .style("font-size", "0.5em")
                 .attr("transform", `translate(${marginLeft}, 0)`)
-                .call(d3.axisLeft(yScaleA))
-                .call(g => g.append("text")
+                .call(d3.axisLeft(yScale)
+                    .tickValues([...d3.range(mc.min, mc.max, mc.step), mc.max])
+                ).call(g => g.append("text")
                     .attr("x", 0)
-                    .attr("y", marginTop - 10)
+                    .attr("y", marginTop - 8)
                     .attr("fill", "currentColor")
                     .attr("text-anchor", "end")
-                    .text(`${mcA.id}`));
-
-
-            svg.append("g")
-                .attr("transform", `translate(${width - marginRight}, 0)`)
-                .call(d3.axisRight(yScaleB))
-                .call(g => g.append("text")
-                    .attr("x", 0)
-                    .attr("y", marginTop - 10)
-                    .attr("fill", "currentColor")
-                    .attr("text-anchor", "start")
-                    .text(`${mcB.id}`));
+                    .text(`${mc.id}`));
 
 
             svg.on("mousemove", (event) => {
@@ -103,18 +85,11 @@ export default function SecondaryChart(props: { channelA_id: string, channelB_id
                     fill="none"
                     stroke="blue"
                     stroke-width="1.5"
-                    d={lineA(
-                        [...mcA.dataArr(), { timestamp: timer(), value: mcA.currentDataSig[GET]() }] as any
+                    d={line(
+                        [...mc.dataArr(), { timestamp: timer(), value: mc.currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
-                <path
-                    fill="none"
-                    stroke="red"
-                    stroke-width="1.5"
-                    d={lineB(
-                        [...mcB.dataArr(), { timestamp: timer(), value: mcB.currentDataSig[GET]() }] as any
-                    ) as string | undefined}
-                />
+
                 <line stroke="#00FF00"
                     stroke-width="1"
                     clip-path="url(#clip-path-input-0)"

@@ -17,7 +17,7 @@ export default function RangeInput(props: { channel_id: string }) {
     let defaultValue = mc.defaultValue;
 
     let pips: number[] = [];
-    for (let i = 0; i < max / step; i++) {
+    for (let i = 0; i < (max - min) / step; i++) {
         pips.push(min + i * step);
     }
     pips.push(max);
