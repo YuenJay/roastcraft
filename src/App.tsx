@@ -262,7 +262,7 @@ function App() {
     }
 
     return (
-        <div class="flex select-none m-1 ">
+        <div class="w-full h-screen flex select-none p-1">
 
             {/* main start*/}
             <div class="grow">
@@ -275,33 +275,33 @@ function App() {
             {/* main end*/}
 
             {/* side bar start*/}
-            <div class="sidebar relative pl-2.5">
-                <div class="resizer w-1.5 top-0 left-0 bg-gray-200 h-screen absolute cursor-col-resize "> </div>
-                <div class="flex flex-col gap-1">
+            <div class="sidebar h-full relative pl-2.5">
+                <div class="resizer w-1.5 top-0 left-0 bg-gray-200 absolute cursor-col-resize h-full"> </div>
+                <div class="flex flex-col gap-1 ">
                     <div class="flex flex-wrap gap-1">
-                        <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold basis-2/5 ">
+                        <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold w-28 ">
                             <p>{timestamp_format(timer() + appState().timeDeltaSig[GET]())}</p>
                         </div>
                         <Show when={status() == AppStatus.OFF}>
-                            <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonResetClicked}>RESET
+                            <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonResetClicked}>RESET
                                 <span class="absolute bottom-0 right-0 mr-1 underline text-xs">R</span>
                             </button>
 
-                            <button class="btn btn-accent rounded relative basis-1/5" onClick={buttonOnClicked}>ON
+                            <button class="btn btn-accent rounded relative w-20" onClick={buttonOnClicked}>ON
                                 <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
                             </button>
                         </Show>
                         <Show when={status() == AppStatus.ON}>
-                            <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonOffClicked}>OFF
+                            <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonOffClicked}>OFF
                                 <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
                             </button>
 
-                            <button class="btn btn-accent rounded relative basis-1/5" onClick={buttonStartClicked}>START
+                            <button class="btn btn-accent rounded relative w-20" onClick={buttonStartClicked}>START
                                 <span class="absolute bottom-0 right-0 mr-1 underline text-xs1">W</span>
                             </button>
                         </Show>
                         <Show when={status() == AppStatus.RECORDING}>
-                            <button class="ml-auto btn btn-accent rounded relative basis-1/5" onClick={buttonOffClicked}>OFF
+                            <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonOffClicked}>OFF
                                 <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
                             </button>
                         </Show>
@@ -309,14 +309,14 @@ function App() {
 
                     <div class="flex flex-wrap gap-1">
                         {/* BT */}
-                        <div class="bg-base-300 rounded text-right basis-1/5 px-1 ">
+                        <div class="bg-base-300 rounded text-right w-20 px-1 ">
                             <p>{channelArr()[appState().btIndex].id}</p>
                             <p class="text-2xl leading-tight text-red-600">
                                 {channelArr()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
                             </p>
                         </div>
 
-                        <div class="bg-base-300 rounded text-right basis-1/5 px-1">
+                        <div class="bg-base-300 rounded text-right w-20 px-1">
                             <p >Δ BT</p>
                             <p class="text-2xl leading-tight text-blue-600">
                                 {channelArr()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
@@ -327,7 +327,7 @@ function App() {
                             {
                                 (_item, index) => (
                                     <Show when={index != appState().btIndex}>
-                                        <div class="bg-base-300 rounded text-right basis-1/5 px-1">
+                                        <div class="bg-base-300 rounded text-right w-20 px-1">
                                             <p>{channelArr()[index].id}</p>
                                             <p class="text-2xl leading-tight text-red-600">
                                                 {channelArr()[index].currentDataSig[GET]().toFixed(1)}
@@ -347,43 +347,43 @@ function App() {
 
                 <div class="flex flex-wrap gap-1 ">
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
                         onClick={handleCharge}>
                         CHARGE
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Z</span>
                     </button>
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}`}
                         onClick={handleDryEnd}>
                         DRY END
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">X</span>
                     </button>
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}`}
                         onClick={handleFCStart}>
                         FC START
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">C</span>
                     </button>
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}`}
                         onClick={handleFCEnd}>
                         FC END
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">V</span>
                     </button>
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}`}
                         onClick={handleSCStart}>
                         SC START
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">B</span>
                     </button>
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}`}
                         onClick={handleSCEnd}>
                         SC END
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">N</span>
                     </button>
 
-                    <button class={`relative btn btn-primary rounded basis-auto ${roastEvents().DROP != undefined ? "btn-disabled" : ""}`}
+                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DROP != undefined ? "btn-disabled" : ""}`}
                         onClick={handleDrop}>
                         DROP
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">M</span>

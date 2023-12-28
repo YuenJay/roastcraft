@@ -14,7 +14,7 @@ export default function Annotation(props: any) {
 
     let upward = true;
 
-    if (props.text == "TP" || props.text == "DRY_END" || props.text == "FC_END" || props.text == "SC_END") {
+    if (props.text == "TP" || props.text == "DRY_END" || props.text == "FC_START" || props.text == "SC_START") {
         upward = false;
     }
 
