@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { For, } from "solid-js";
-import { GET, SET, Point, appStateSig } from "./AppState";
+import { GET, SET, Point, appStateSig, ManualChannel } from "./AppState";
 
 export default function RangeInput(props: any) {
 
@@ -9,10 +9,12 @@ export default function RangeInput(props: any) {
     const [timer, _setTimer] = appState().timerSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
-    let min = 0;
-    let max = 100;
-    let step = 10;
-    let defaultValue = 20;
+    let mc = manualChannelArr().find(mc => mc.id == props.id) as ManualChannel;
+
+    let min = mc.min;
+    let max = mc.max;
+    let step = mc.step;
+    let defaultValue = mc.defaultValue;
 
     let pips: number[] = [];
     for (let i = 0; i < max / step; i++) {
@@ -20,17 +22,13 @@ export default function RangeInput(props: any) {
     }
     pips.push(max);
 
-    console.log("manual chart pips");
-    console.log(pips);
-
     async function handleInput(event: InputEvent) {
 
         let value = (event.target as HTMLInputElement).value;
-        console.log(value);
 
-        manualChannelArr()[0].currentDataSig[SET](Number(value));
-        manualChannelArr()[0].dataSig[SET](
-            [...manualChannelArr()[0].dataSig[GET](), new Point(timer(), Number(value))]
+        mc.currentDataSig[SET](Number(value));
+        mc.setDataArr(
+            [...mc.dataArr(), new Point(timer(), Number(value))]
         );
 
     }

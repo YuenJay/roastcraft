@@ -6,7 +6,7 @@ import { GET, RoastEventId, appStateSig, BT } from "./AppState";
 import Annotation from "./Annotation";
 import ToolTip, { ToolTipDirection } from "./ToolTip";
 
-function timestamp_format(timestamp: number) {
+export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 

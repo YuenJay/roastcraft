@@ -118,13 +118,30 @@ export enum AppStatus {
 
 export class ManualChannel {
     id: string;
+    min: number;
+    max: number;
+    step: number;
+    defaultValue: number;
     currentDataSig: Signal<number>;
-    dataSig: Signal<Point[]>;
+    dataArr: Accessor<Point[]>;           // history records
+    setDataArr: Setter<Point[]>;          // history records
 
-    constructor(id: string, currentDataSig: Signal<number>, dataSig: Signal<Point[]>) {
+    constructor(
+        id: string,
+        min: number,
+        max: number,
+        step: number,
+        defaultValue: number,
+        currentDataSig: Signal<number>,
+        dataArrSig: Signal<Point[]>) {
         this.id = id;
+        this.min = min;
+        this.max = max;
+        this.step = step;
+        this.defaultValue = defaultValue;
         this.currentDataSig = currentDataSig;
-        this.dataSig = dataSig;
+        this.dataArr = dataArrSig[GET];
+        this.setDataArr = dataArrSig[SET];
     }
 }
 
@@ -175,18 +192,26 @@ async function init_appStateSig() {
         );
     }
 
-
     let btIndex = channelArr.findIndex(m => m.id == BT);
 
     let manualChannelArr: Array<ManualChannel> = new Array<ManualChannel>();
 
-    manualChannelArr.push(
-        new ManualChannel(
-            "gas",
-            createSignal(20),
-            createSignal([new Point(0, 20)])
-        )
-    );
+    if (config.manual_channel != null) {
+        manualChannelArr = config.manual_channel.map((c: any) =>
+            new ManualChannel(
+                c.channel_id,
+                c.min,
+                c.max,
+                c.step,
+                c.default_value,
+                createSignal(c.default_value),
+                createSignal([new Point(0, c.default_value)])
+            )
+        );
+    }
+
+    console.log("manualChannelArr");
+    console.log(manualChannelArr);
 
     return {
         btIndex: btIndex,

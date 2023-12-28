@@ -3,13 +3,14 @@
 import { For, onMount, } from "solid-js";
 import * as d3 from "d3";
 import { GET, SET, Point, appStateSig } from "./AppState";
+import { timestamp_format } from "./MainChart";
 
 export default function SecondaryChart() {
 
-    const [appState, setAppState] = appStateSig;
-    const [timer, setTimer] = appState().timerSig;
+    const [appState, _setAppState] = appStateSig;
+    const [timer, _setTimer] = appState().timerSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
-    const [manualChannelArr, setManualChannelArr] = appState().manualChannelArrSig;
+    const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
     const width = 800;
     const height = 140;
@@ -23,7 +24,7 @@ export default function SecondaryChart() {
         [marginLeft, width - marginRight]
     );
 
-    const yScale = d3.scaleLinear([20, 50], [
+    const yScale = d3.scaleLinear([0, 100], [
         height - marginBottom,
         marginTop,
     ]);
@@ -40,8 +41,10 @@ export default function SecondaryChart() {
 
             const svg = d3.select(svgRef);
             svg.append("g")
-                .attr("transform", `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(xScale));
+                .attr("transform", `translate(0, ${height - marginBottom} )`)
+                .call(d3.axisBottom(xScale)
+                    .tickValues(d3.range(0, 720, 60))
+                    .tickFormat((d) => timestamp_format(d as number)));
 
             svg.append("g")
                 .attr("transform", `translate(${marginLeft}, 0)`)
@@ -56,8 +59,7 @@ export default function SecondaryChart() {
 
     return (
         <>
-
-            <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox="0 0 800 140" >
+            <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`} >
                 <defs>
                     {/* Defines clipping area, rect is inside axis*/}
                     <clipPath
@@ -71,7 +73,7 @@ export default function SecondaryChart() {
                     stroke="currentColor"
                     stroke-width="1.5"
                     d={line(
-                        [...manualChannelArr()[0].dataSig[GET](), { timestamp: timer(), value: manualChannelArr()[0].currentDataSig[GET]() }] as any
+                        [...manualChannelArr()[0].dataArr(), { timestamp: timer(), value: manualChannelArr()[0].currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
                 <line stroke="#00FF00"

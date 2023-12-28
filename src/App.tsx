@@ -24,6 +24,7 @@ function App() {
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [logArr, setLogArr] = appState().logArrSig;
     const [roastEvents, setRoastEvents] = appState().roastEventsSig;
+    const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
     const channelIdList = channelArr().map(m => m.id);
 
     let detach: UnlistenFn;
@@ -391,8 +392,11 @@ function App() {
 
                 </div>
 
-                <RangeInput id="Gas"></RangeInput>
-                <RangeInput id="Airflow"></RangeInput>
+                <For each={manualChannelArr()}>
+                    {(mc) => (
+                        <RangeInput id={mc.id}></RangeInput>
+                    )}
+                </For>
 
                 <div class="flex flex-wrap">
                     <label class="label cursor-pointer basis-1/3">

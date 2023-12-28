@@ -27,28 +27,24 @@ model   = "http"
             unit        = "celcius"
             color       = "#007f00"
 
-[manual]
+[[manual_channel]]
+    channel_id  = "gas"
+    label       = "Gas"
+    unit        = "mmHg"
+    color       = "#007f00"
+    min         = 0
+    max         = 100
+    step        = 10        # 0 means no steps
+    default_value     = 20
 
-    [[manual.range_input]]
-        min         = 0
-        max         = 100
-        step        = 10        # 0 means no steps
-        default     = 20
+[[manual_channel]]
+    channel_id  = "airflow"
+    label       = "Airflow"
+    unit        = "Pa"
+    color       = "#007f00"
+    min         = 0
+    max         = 50
+    step        = 5         # 0 means no steps
+    default_value     = 30
 
-        [manual.range_input.channel]
-            channel_id  = "gas"
-            label       = "GAS"
-            unit        = "mmHg"
-            color       = "#007f00"
 
-    [[manual.range_input]]
-        min         = 0
-        max         = 50
-        step        = 5         # 0 means no steps
-        default     = 30
-
-        [manual.range_input.channel]
-            channel_id  = "fan"
-            label       = "FAN"
-            unit        = "Pa"
-            color       = "#007f00"
