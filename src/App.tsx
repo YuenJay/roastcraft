@@ -117,6 +117,46 @@ function App() {
         // alternative: https://tauri.app/v1/api/js/globalshortcut/
         // but I think this is ok
         document.addEventListener("keydown", handleKeyDownEvent);
+
+        let resizer = document.querySelector(".resizer");
+        let sidebar = document.querySelector(".sidebar");
+
+        function initResizerFn(resizer: any, sidebar: any) {
+
+            // track current mouse position in x var
+            let x: number, w: number;
+
+            function rs_mousedownHandler(e: any) {
+
+                x = e.clientX;
+
+                var sbWidth = window.getComputedStyle(sidebar as Element).width;
+                w = parseInt(sbWidth, 10);
+
+                document.addEventListener("mousemove", rs_mousemoveHandler);
+                document.addEventListener("mouseup", rs_mouseupHandler);
+            }
+
+            function rs_mousemoveHandler(e: any) {
+                var dx = e.clientX - x;
+
+                var cw = w - dx; // complete width
+
+                if (cw < 800) {
+                    sidebar.style.width = `${cw}px`;
+                }
+            }
+
+            function rs_mouseupHandler() {
+                // remove event mousemove && mouseup
+                document.removeEventListener("mouseup", rs_mouseupHandler);
+                document.removeEventListener("mousemove", rs_mousemoveHandler);
+            }
+
+            resizer.addEventListener("mousedown", rs_mousedownHandler);
+        }
+
+        initResizerFn(resizer, sidebar);
     });
 
     onCleanup(() => {
@@ -222,10 +262,10 @@ function App() {
     }
 
     return (
-        <div class="grid grid-cols-12 m-1">
+        <div class="flex select-none m-1 ">
 
             {/* main start*/}
-            <div class="col-span-9 ">
+            <div class="grow">
 
                 <MainChart />
 
@@ -235,7 +275,8 @@ function App() {
             {/* main end*/}
 
             {/* side bar start*/}
-            <div class="col-span-3 ">
+            <div class="sidebar relative pl-2.5">
+                <div class="resizer w-1.5 top-0 left-0 bg-gray-200 h-screen absolute cursor-col-resize "> </div>
                 <div class="flex flex-col gap-1">
                     <div class="flex flex-wrap gap-1">
                         <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold basis-2/5 ">

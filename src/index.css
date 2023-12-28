@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.sidebar {
+  width: 380px;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 8px;
@@ -23,11 +28,10 @@
   background: #666;
 }
 
-.collapse:not(.collapse-close)
-  > :where(input[type="checkbox"]:checked ~ .collapse-content) {
+.collapse:not(.collapse-close)> :where(input[type="checkbox"]:checked ~ .collapse-content) {
   padding-bottom: 0;
 }
 
-.collapse-arrow > .collapse-title:after {
+.collapse-arrow>.collapse-title:after {
   left: 0.5rem;
 }
