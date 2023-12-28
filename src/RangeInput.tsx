@@ -3,13 +3,13 @@
 import { For, } from "solid-js";
 import { GET, SET, Point, appStateSig, ManualChannel } from "./AppState";
 
-export default function RangeInput(props: any) {
+export default function RangeInput(props: { channel_id: string }) {
 
     const [appState, _setAppState] = appStateSig;
     const [timer, _setTimer] = appState().timerSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
-    let mc = manualChannelArr().find(mc => mc.id == props.id) as ManualChannel;
+    let mc = manualChannelArr().find(mc => mc.id == props.channel_id) as ManualChannel;
 
     let min = mc.min;
     let max = mc.max;
@@ -36,7 +36,7 @@ export default function RangeInput(props: any) {
     return (
         <>
             <p class="text-right">
-                {props.id}
+                {mc.id}
             </p>
             <input
                 type="range"

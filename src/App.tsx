@@ -270,7 +270,7 @@ function App() {
 
                 <MainChart />
 
-                <SecondaryChart />
+                <SecondaryChart channelA_id={manualChannelArr()[0].id} channelB_id={manualChannelArr()[1].id} />
 
             </div>
             {/* main end*/}
@@ -394,7 +394,7 @@ function App() {
 
                 <For each={manualChannelArr()}>
                     {(mc) => (
-                        <RangeInput id={mc.id}></RangeInput>
+                        <RangeInput channel_id={mc.id}></RangeInput>
                     )}
                 </For>
 
