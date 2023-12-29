@@ -266,7 +266,7 @@ function App() {
         <div class="w-full h-screen flex select-none pt-1 overflow-y-hidden">
 
             {/* main start*/}
-            <div class="grow overflow-y-auto">
+            <div class="grow overflow-y-auto pr-1">
 
                 <MainChart />
 
@@ -280,12 +280,16 @@ function App() {
             {/* main end*/}
 
             {/* side bar start*/}
-            <div class="sidebar h-full relative pl-2.5 pr-1 overflow-y-auto">
-                <div class="resizer w-1.5 top-0 left-0 bg-gray-200 absolute cursor-col-resize h-full"> </div>
-                <div class="flex flex-col gap-1 ">
+            <div class="sidebar h-full relative pl-2.5">
+                {/* resizer */}
+                <div class="resizer h-full absolute cursor-col-resize w-1.5 top-0 left-0 bg-gray-200"></div>
+
+                {/* scrollable start*/}
+                <div class="h-full overflow-y-auto pr-1 flex flex-col gap-y-1">
+                    {/* timer and on/off buttons */}
                     <div class="flex flex-wrap gap-1">
                         <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold w-28 ">
-                            <p>{timestamp_format(timer() + appState().timeDeltaSig[GET]())}</p>
+                            {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
                         </div>
                         <Show when={status() == AppStatus.OFF}>
                             <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonResetClicked}>RESET
@@ -310,8 +314,9 @@ function App() {
                                 <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
                             </button>
                         </Show>
-                    </div>
 
+                    </div>
+                    {/* channels */}
                     <div class="flex flex-wrap gap-1">
                         {/* BT */}
                         <div class="bg-base-300 rounded text-right w-20 px-1 ">
@@ -343,101 +348,100 @@ function App() {
                             }
                         </Index>
                     </div>
-                </div>
 
-                <div class="m-1">
                     <PhaseChart></PhaseChart>
                     <PhaseTempChart></PhaseTempChart>
-                </div>
 
-                <div class="flex flex-wrap gap-1 ">
+                    {/* event buttons */}
+                    <div class="flex flex-wrap gap-1 ">
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleCharge}>
-                        CHARGE
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Z</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleCharge}>
+                            CHARGE
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Z</span>
+                        </button>
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleDryEnd}>
-                        DRY END
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">X</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleDryEnd}>
+                            DRY END
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">X</span>
+                        </button>
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleFCStart}>
-                        FC START
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">C</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleFCStart}>
+                            FC START
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">C</span>
+                        </button>
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleFCEnd}>
-                        FC END
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">V</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleFCEnd}>
+                            FC END
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">V</span>
+                        </button>
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleSCStart}>
-                        SC START
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">B</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleSCStart}>
+                            SC START
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">B</span>
+                        </button>
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleSCEnd}>
-                        SC END
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">N</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleSCEnd}>
+                            SC END
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">N</span>
+                        </button>
 
-                    <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DROP != undefined ? "btn-disabled" : ""}`}
-                        onClick={handleDrop}>
-                        DROP
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">M</span>
-                    </button>
+                        <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DROP != undefined ? "btn-disabled" : ""}`}
+                            onClick={handleDrop}>
+                            DROP
+                            <span class="absolute bottom-0 right-0 mr-1 underline text-xs">M</span>
+                        </button>
 
-                </div>
+                    </div>
 
-                <For each={manualChannelArr()}>
-                    {(mc) => (
-                        <RangeInput channel_id={mc.id}></RangeInput>
-                    )}
-                </For>
+                    <For each={manualChannelArr()}>
+                        {(mc) => (
+                            <RangeInput channel_id={mc.id}></RangeInput>
+                        )}
+                    </For>
 
-                <div class="flex flex-wrap">
-                    <label class="label cursor-pointer basis-1/3">
-                        <span class="label-text mr-1">ROR filtered</span>
-                        <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
-                            appState().toggleShowRorFilteredSig[SET](Boolean(e.currentTarget.checked));
-                        }} />
-                    </label>
-                    <label class="label cursor-pointer basis-1/3">
-                        <span class="label-text mr-1">ROR outlier</span>
-                        <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
-                            appState().toggleShowRorOutlierSig[SET](Boolean(e.currentTarget.checked));
-                        }} />
-                    </label>
-                    <label class="label cursor-pointer basis-1/3">
-                        <span class="label-text mr-1">ROR regression</span>
-                        <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
-                            appState().toggleShowRorRegressionSig[SET](Boolean(e.currentTarget.checked));
-                        }} />
-                    </label>
-                    {/* <label class="label">
+                    <div class="flex flex-wrap">
+                        <label class="label cursor-pointer basis-1/3">
+                            <span class="label-text mr-1">ROR filtered</span>
+                            <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
+                                appState().toggleShowRorFilteredSig[SET](Boolean(e.currentTarget.checked));
+                            }} />
+                        </label>
+                        <label class="label cursor-pointer basis-1/3">
+                            <span class="label-text mr-1">ROR outlier</span>
+                            <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
+                                appState().toggleShowRorOutlierSig[SET](Boolean(e.currentTarget.checked));
+                            }} />
+                        </label>
+                        <label class="label cursor-pointer basis-1/3">
+                            <span class="label-text mr-1">ROR regression</span>
+                            <input type="checkbox" class="toggle toggle-sm toggle-primary" onChange={(e) => {
+                                appState().toggleShowRorRegressionSig[SET](Boolean(e.currentTarget.checked));
+                            }} />
+                        </label>
+                        {/* <label class="label">
                         <span class="label-text ml-auto mr-2">ROR zscore</span>
                         <input type="number" id="zscore" name="zscore" min="2" max="4" step="0.1" value="3" class="input input-bordered input-sm" />
                     </label> */}
 
-                </div>
-                <Show when={logArr().length > 0}>
-
-                    <div class="text-sm">
-                        {/* show 5 lines of logArr, newest on top */}
-                        <For each={logArr().slice(-5).reverse()}>
-                            {(item) => <p class="px-1 border-b first:bg-base-200">{item.toString()}</p>}
-                        </For>
-
                     </div>
-                </Show>
+                    <Show when={logArr().length > 0}>
 
+                        <div class="text-sm">
+                            {/* show 5 lines of logArr, newest on top */}
+                            <For each={logArr().slice(-5).reverse()}>
+                                {(item) => <p class="px-1 border-b first:bg-base-200">{item.toString()}</p>}
+                            </For>
+
+                        </div>
+                    </Show>
+                </div>
+                {/* scrollable end*/}
             </div>
             {/* side bar end*/}
         </div>
