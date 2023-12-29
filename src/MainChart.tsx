@@ -100,15 +100,12 @@ export default function MainChart() {
                     x2={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
                     y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
                 ></line>
-                <foreignObject clip-path="url(#clip-path)" width="100%" height="100%" pointer-events="none"
-                    x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta()) - 60}
-                    y={yScaleROR(appState().rorLinearEndSig[GET]().value) - 10}
-                >
-                    <div class="absolute shadow-[1px_1px_0px_0px] shadow-gray-500 bg-white border rounded-sm text-xs px-0.5"
-                        style={`color: #00BB00;`}>
-                        {(appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
-                    </div>
-                </foreignObject>
+                <ToolTip
+                    x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
+                    y={yScaleROR(appState().rorLinearEndSig[GET]().value)}
+                    text={"m : " + (appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
+                    color="#00BB00"
+                />
             </Show>
 
             <For each={channelArr().filter(c => c.id != BT)}>

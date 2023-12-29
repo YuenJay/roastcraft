@@ -250,6 +250,7 @@ export const appStateSig = createSignal(await init_appStateSig());
 export function reset() {
     const [appState, _setAppState] = appStateSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
+    const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
     appState().timerSig[SET](0);
     appState().timeDeltaSig[SET](0);
@@ -266,7 +267,9 @@ export function reset() {
         channel.rorConvolveArrSig[SET](new Array<Point>());
     })
 
-    // todo: reset manualChannelArr
+    manualChannelArr().forEach((mc) => {
+        mc.setDataArr([new Point(0, mc.currentDataSig[GET]())]);
+    });
 
     // not reset logs
     // appState().logArrSig[SET](new Array<string>());   
