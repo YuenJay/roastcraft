@@ -191,35 +191,35 @@ export default function MainChart() {
             </For>
 
             {/* realtime tooltip */}
-            {/* <Show when={status() == AppStatus.RECORDING}> */}
-            <For each={channelArr().filter(c => c.id != BT)}>
-                {(c) => (
-                    <g clip-path="url(#clip-path)" >
-                        <ToolTip
-                            x={xScale(timer() + timeDelta())}
-                            y={yScale(c.currentDataSig[GET]())}
-                            text={c.currentDataSig[GET]().toFixed(1)}
-                            color={c.color}
-                        />
-                    </g>
-                )}
-            </For>
+            <Show when={status() == AppStatus.RECORDING}>
+                <For each={channelArr().filter(c => c.id != BT)}>
+                    {(c) => (
+                        <g clip-path="url(#clip-path)" >
+                            <ToolTip
+                                x={xScale(timer() + timeDelta())}
+                                y={yScale(c.currentDataSig[GET]())}
+                                text={c.currentDataSig[GET]().toFixed(1)}
+                                color={c.color}
+                            />
+                        </g>
+                    )}
+                </For>
 
-            <g clip-path="url(#clip-path)" >
-                <ToolTip
-                    x={xScale(timer() + timeDelta())}
-                    y={yScaleROR(bt.currentRorSig[GET]())}
-                    text={bt.currentRorSig[GET]().toFixed(1)}
-                    color={bt.color}
-                />
-                <ToolTip
-                    x={xScale(timer() + timeDelta())}
-                    y={yScale(bt.currentDataSig[GET]())}
-                    text={bt.currentDataSig[GET]().toFixed(1)}
-                    color={bt.color}
-                />
-            </g>
-            {/* </Show> */}
+                <g clip-path="url(#clip-path)" >
+                    <ToolTip
+                        x={xScale(timer() + timeDelta())}
+                        y={yScaleROR(bt.currentRorSig[GET]())}
+                        text={bt.currentRorSig[GET]().toFixed(1)}
+                        color={bt.color}
+                    />
+                    <ToolTip
+                        x={xScale(timer() + timeDelta())}
+                        y={yScale(bt.currentDataSig[GET]())}
+                        text={bt.currentDataSig[GET]().toFixed(1)}
+                        color={bt.color}
+                    />
+                </g>
+            </Show>
 
             <line stroke="#00FF00"
                 stroke-width="1"
