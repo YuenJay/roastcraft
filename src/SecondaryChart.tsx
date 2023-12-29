@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { For, onMount, } from "solid-js";
+import { Show, onMount, } from "solid-js";
 import * as d3 from "d3";
-import { GET, SET, Point, appStateSig, ManualChannel } from "./AppState";
+import { GET, appStateSig, ManualChannel, AppStatus } from "./AppState";
+import ToolTip from "./ToolTip";
 
 export default function SecondaryChart(props: { channel_id: string }) {
 
     const [appState, _setAppState] = appStateSig;
+    const [status, _setStatus] = appState().statusSig;
     const [timer, _setTimer] = appState().timerSig;
+    const [timeDelta, _setTimeDelta] = appState().timeDeltaSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
@@ -81,6 +84,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
                     </clipPath>
                 </defs>
                 <path
+                    clip-path="url(#clip-path-input-0)"
                     fill="none"
                     stroke="blue"
                     stroke-width="1.5"
@@ -89,6 +93,17 @@ export default function SecondaryChart(props: { channel_id: string }) {
                     ) as string | undefined}
                 />
 
+                {/* realtime tooltip */}
+                <Show when={status() == AppStatus.RECORDING}>
+                    <g clip-path="url(#clip-path-input-0)" >
+                        <ToolTip
+                            x={xScale(timer() + timeDelta())}
+                            y={yScale(mc.currentDataSig[GET]())}
+                            text={mc.currentDataSig[GET]()}
+                            color="blue"
+                        />
+                    </g>
+                </Show>
                 <line stroke="#00FF00"
                     stroke-width="1"
                     clip-path="url(#clip-path-input-0)"

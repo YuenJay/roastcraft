@@ -353,7 +353,7 @@ function App() {
                     <PhaseTempChart></PhaseTempChart>
 
                     {/* event buttons */}
-                    <div class="flex flex-wrap gap-1 ">
+                    <div class="flex flex-wrap gap-1">
 
                         <button class={`relative btn btn-primary rounded w-20 ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
                             onClick={handleCharge}>

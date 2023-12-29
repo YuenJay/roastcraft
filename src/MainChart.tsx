@@ -2,9 +2,9 @@
 
 import { onMount, Show, For, } from "solid-js";
 import * as d3 from "d3";
-import { GET, RoastEventId, appStateSig, BT } from "./AppState";
+import { GET, RoastEventId, appStateSig, BT, AppStatus } from "./AppState";
 import Annotation from "./Annotation";
-import ToolTip, { ToolTipDirection } from "./ToolTip";
+import ToolTip from "./ToolTip";
 
 export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
@@ -13,6 +13,8 @@ export function timestamp_format(timestamp: number) {
 export default function MainChart() {
 
     const [appState, _setAppState] = appStateSig;
+    const [status, _setStatus] = appState().statusSig;
+    const [timer, _setTimer] = appState().timerSig;
     const [timeDelta, _setTimeDelta] = appState().timeDeltaSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
@@ -120,15 +122,6 @@ export default function MainChart() {
                             d={line(c.dataArr() as any) as string | undefined}
 
                         />
-                        <Show when={c.dataArr().length > 0}>
-                            <ToolTip
-                                direction={ToolTipDirection.RIGHT}
-                                x={xScale(c.dataArr()[c.dataArr().length - 1].timestamp + timeDelta())}
-                                y={yScale(c.dataArr()[c.dataArr().length - 1].value)}
-                                text={c.dataArr()[c.dataArr().length - 1].value.toFixed(1)}
-                                color={c.color}
-                            />
-                        </Show>
                     </g>
                 )}
             </For>
@@ -142,19 +135,9 @@ export default function MainChart() {
                     stroke-width="1.5"
                     d={line(bt.dataArr() as any) as string | undefined}
                 />
-                <Show when={bt.dataArr().length > 0}>
-                    <ToolTip
-                        direction={ToolTipDirection.RIGHT}
-                        x={xScale(bt.dataArr()[bt.dataArr().length - 1].timestamp + timeDelta())}
-                        y={yScale(bt.dataArr()[bt.dataArr().length - 1].value)}
-                        text={bt.dataArr()[bt.dataArr().length - 1].value.toFixed(1)}
-                        color={bt.color}
-                    />
-                </Show>
             </g>
 
             {/* rate of rise filtered*/}
-
             <g
                 clip-path="url(#clip-path)">
                 <Show when={appState().toggleShowRorFilteredSig[GET]()}>
@@ -164,15 +147,6 @@ export default function MainChart() {
                         stroke-opacity="30%"
                         stroke-width="1.5"
                         d={lineROR(bt.rorFilteredArrSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
-                    />
-                </Show>
-                <Show when={bt.rorFilteredArrSig[GET]().length > 0}>
-                    <ToolTip
-                        direction={ToolTipDirection.RIGHT}
-                        x={xScale(bt.rorFilteredArrSig[GET]()[bt.rorFilteredArrSig[GET]().length - 1].timestamp + timeDelta())}
-                        y={yScaleROR(bt.rorFilteredArrSig[GET]()[bt.rorFilteredArrSig[GET]().length - 1].value)}
-                        text={bt.rorFilteredArrSig[GET]()[bt.rorFilteredArrSig[GET]().length - 1].value.toFixed(1)}
-                        color={bt.color}
                     />
                 </Show>
             </g>
@@ -215,6 +189,38 @@ export default function MainChart() {
                     />
                 )}
             </For>
+
+            {/* realtime tooltip */}
+            {/* <Show when={status() == AppStatus.RECORDING}> */}
+            <For each={channelArr().filter(c => c.id != BT)}>
+                {(c) => (
+                    <g clip-path="url(#clip-path)" >
+                        <ToolTip
+                            x={xScale(timer() + timeDelta())}
+                            y={yScale(c.currentDataSig[GET]())}
+                            text={c.currentDataSig[GET]().toFixed(1)}
+                            color={c.color}
+                        />
+                    </g>
+                )}
+            </For>
+
+            <g clip-path="url(#clip-path)" >
+                <ToolTip
+                    x={xScale(timer() + timeDelta())}
+                    y={yScaleROR(bt.currentRorSig[GET]())}
+                    text={bt.currentRorSig[GET]().toFixed(1)}
+                    color={bt.color}
+                />
+                <ToolTip
+                    x={xScale(timer() + timeDelta())}
+                    y={yScale(bt.currentDataSig[GET]())}
+                    text={bt.currentDataSig[GET]().toFixed(1)}
+                    color={bt.color}
+                />
+            </g>
+            {/* </Show> */}
+
             <line stroke="#00FF00"
                 stroke-width="1"
                 clip-path="url(#clip-path)"
