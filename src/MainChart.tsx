@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, Show, For, } from "solid-js";
+import { onMount, Show, For, createSignal, } from "solid-js";
 import * as d3 from "d3";
 import { GET, RoastEventId, appStateSig, BT, AppStatus } from "./AppState";
 import Annotation from "./Annotation";
@@ -20,6 +20,8 @@ export default function MainChart() {
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
     const bt = channelArr()[appState().btIndex];
+
+    const [cursorIndex, setCursorIndex] = createSignal(0);
 
     const width = 800;
     const height = 400;
@@ -74,6 +76,12 @@ export default function MainChart() {
         svg.on("mousemove", (event) => {
             setCursorLineX(d3.pointer(event)[0]);
             // console.log(xScale.invert(d3.pointer(event)[0]));
+            // if (bt.dataArr().length > 0) {
+            setCursorIndex(d3.bisect(bt.dataArr().map((p) => p.timestamp + timeDelta()), xScale.invert(d3.pointer(event)[0])));
+            console.log("bisect")
+            console.log(cursorIndex());
+            // }
+
         });
     });
 
@@ -226,7 +234,12 @@ export default function MainChart() {
                 x2={cursorLineX()}
                 y2={height - marginBottom}
             ></line>
-
+            <ToolTip
+                x={(bt.dataArr()[cursorIndex()] != undefined) ? xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta()) : -100}
+                y={(bt.dataArr()[cursorIndex()] != undefined) ? yScale(bt.dataArr()[cursorIndex()].value) : -100}
+                text={(bt.dataArr()[cursorIndex()] != undefined) ? bt.dataArr()[cursorIndex()].value : 0}
+                color={bt.color}
+            />
         </svg >
     );
 }
