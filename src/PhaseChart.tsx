@@ -8,7 +8,7 @@ function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
-export default function PhaseChart(props: any) {
+export default function PhaseChart() {
 
     const [appState, _setAppState] = appStateSig;
     const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
@@ -26,7 +26,7 @@ export default function PhaseChart(props: any) {
     const marginTop = 0;
     const marginRight = 30;
     const marginBottom = 20;
-    const marginLeft = 26;
+    const marginLeft = 30;
     const width = 400;
     const height = Math.ceil((data.length + 0.1) * barHeight) + marginTop + marginBottom;
 
@@ -38,7 +38,7 @@ export default function PhaseChart(props: any) {
     const y = d3.scaleBand()
         .domain(data.map((d: { id: any; }) => d.id))
         .rangeRound([marginTop, height - marginBottom])
-        .padding(0.1);
+        .padding(0.15);
 
     let svgRef: SVGSVGElement | undefined;
 
@@ -50,13 +50,12 @@ export default function PhaseChart(props: any) {
             // Create the axes.
             svg.append("g")
                 .attr("transform", `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(10).tickFormat((d) => (d + "%")))
-                .call(g => g.select(".domain").remove());
+                .call(d3.axisBottom(x).ticks(10).tickFormat((d) => (d + "%")));
 
             svg.append("g")
                 .attr("transform", `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).tickSizeOuter(0))
-                .call(g => g.select(".domain").remove());
+                .call(d3.axisLeft(y))
+                .select(".domain").remove();
         }
     });
 

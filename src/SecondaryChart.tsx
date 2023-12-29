@@ -3,7 +3,6 @@
 import { For, onMount, } from "solid-js";
 import * as d3 from "d3";
 import { GET, SET, Point, appStateSig, ManualChannel } from "./AppState";
-import { timestamp_format } from "./MainChart";
 
 export default function SecondaryChart(props: { channel_id: string }) {
 

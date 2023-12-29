@@ -263,21 +263,24 @@ function App() {
     }
 
     return (
-        <div class="w-full h-screen flex select-none p-1">
+        <div class="w-full h-screen flex select-none pt-1 overflow-y-hidden">
 
             {/* main start*/}
-            <div class="grow">
+            <div class="grow overflow-y-auto">
 
                 <MainChart />
 
-                <SecondaryChart channel_id={manualChannelArr()[0].id} />
-                <SecondaryChart channel_id={manualChannelArr()[1].id} />
+                <For each={manualChannelArr()}>
+                    {(mc) => (
+                        <SecondaryChart channel_id={mc.id} />
+                    )}
+                </For>
 
             </div>
             {/* main end*/}
 
             {/* side bar start*/}
-            <div class="sidebar h-full relative pl-2.5">
+            <div class="sidebar h-full relative pl-2.5 pr-1 overflow-y-auto">
                 <div class="resizer w-1.5 top-0 left-0 bg-gray-200 absolute cursor-col-resize h-full"> </div>
                 <div class="flex flex-col gap-1 ">
                     <div class="flex flex-wrap gap-1">
