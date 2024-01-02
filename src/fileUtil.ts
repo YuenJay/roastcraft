@@ -25,6 +25,17 @@ export async function openFile() {
             }
         });
 
+        loadObject.manualChannelArr.forEach((mc: any) => {
+            let channel = appState().manualChannelArrSig[GET]().find((channel) => channel.id == mc.id);
+            if (channel) {
+                channel?.setDataArr(new Array<Point>());
+                mc.dataArr.forEach((p: Point) => {
+                    channel?.setDataArr([...channel.dataArr(), p]);
+                });
+                channel?.currentDataSig[SET](mc.dataArr[mc.dataArr.length - 1].value);
+            }
+        });
+
         appState().roastEventsSig[SET](loadObject.roastEvents);
 
         let chargeEvent = appState().roastEventsSig[GET]().CHARGE;
@@ -50,19 +61,34 @@ export async function saveFile() {
         let saveObject = {
             timer: appState().timerSig[GET](),
             channelArr: new Array<any>(),
+            manualChannelArr: new Array<any>(),
             roastEvents: appState().roastEventsSig[GET](),
         };
 
-        appState().channelArrSig[GET]().forEach((channel) => {
+        appState().channelArrSig[GET]().forEach((c) => {
 
             let saveDataArr = new Array<Point>();
 
-            channel.dataArr().forEach((p) => {
+            c.dataArr().forEach((p) => {
                 saveDataArr.push(p)
             });
 
             saveObject.channelArr.push({
-                id: channel.id,
+                id: c.id,
+                dataArr: saveDataArr
+            });
+        });
+
+        appState().manualChannelArrSig[GET]().forEach((mc) => {
+
+            let saveDataArr = new Array<Point>();
+
+            mc.dataArr().forEach((p) => {
+                saveDataArr.push(p)
+            });
+
+            saveObject.manualChannelArr.push({
+                id: mc.id,
                 dataArr: saveDataArr
             });
         });

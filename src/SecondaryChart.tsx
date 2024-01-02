@@ -77,7 +77,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
 
     createEffect(() => {
 
-        if (cursorTimestamp() > mc.dataArr()[mc.dataArr().length - 1].timestamp + timeDelta()) {
+        if (mc.dataArr().length > 0 && cursorTimestamp() > mc.dataArr()[mc.dataArr().length - 1].timestamp + timeDelta()) {
             setCursorIndex(mc.dataArr().length - 1);
         } else {
             for (let i = 0; i < mc.dataArr().length; i++) {
