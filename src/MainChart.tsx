@@ -242,7 +242,7 @@ export default function MainChart() {
             ></line>
             <For each={channelArr().filter(c => c.id != BT)}>
                 {(c) => (
-                    <Show when={c.dataArr()[cursorIndex()] != undefined}>
+                    <Show when={c.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
                         <ToolTip
                             x={xScale(c.dataArr()[cursorIndex()].timestamp + timeDelta())}
                             y={yScale(c.dataArr()[cursorIndex()].value)}
@@ -252,7 +252,7 @@ export default function MainChart() {
                     </Show>
                 )}
             </For>
-            <Show when={bt.dataArr()[cursorIndex()] != undefined}>
+            <Show when={bt.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
                 <ToolTip
                     x={xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta())}
                     y={yScale(bt.dataArr()[cursorIndex()].value)}
