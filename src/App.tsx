@@ -143,7 +143,7 @@ function App() {
 
                 var cw = w - dx; // complete width
 
-                if (cw < 800) {
+                if (cw < 768) {
                     sidebar.style.width = `${cw}px`;
                 }
             }

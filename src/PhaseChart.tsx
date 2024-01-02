@@ -61,7 +61,7 @@ export default function PhaseChart() {
 
     return (
 
-        <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`}>
+        <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`} height={height}>
 
             {/* Add a rect for each bar. */}
             <For each={data}>{

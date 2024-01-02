@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, Show, For, createSignal, } from "solid-js";
+import { onMount, Show, For, createSignal, createEffect, } from "solid-js";
 import * as d3 from "d3";
 import { GET, RoastEventId, appStateSig, BT, AppStatus } from "./AppState";
 import Annotation from "./Annotation";
@@ -18,6 +18,7 @@ export default function MainChart() {
     const [timeDelta, _setTimeDelta] = appState().timeDeltaSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
+    const [cursorTimestamp, setCursorTimestamp] = appState().cursorTimestampSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
     const bt = channelArr()[appState().btIndex];
 
@@ -56,6 +57,8 @@ export default function MainChart() {
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions
     let svgRef!: SVGSVGElement;
 
+    let index = 0;
+
     onMount(() => {
         const svg = d3.select(svgRef);
 
@@ -75,14 +78,17 @@ export default function MainChart() {
 
         svg.on("mousemove", (event) => {
             setCursorLineX(d3.pointer(event)[0]);
-            // console.log(xScale.invert(d3.pointer(event)[0]));
-            // if (bt.dataArr().length > 0) {
-            setCursorIndex(d3.bisect(bt.dataArr().map((p) => p.timestamp + timeDelta()), xScale.invert(d3.pointer(event)[0])));
-            console.log("bisect")
-            console.log(cursorIndex());
-            // }
-
+            setCursorTimestamp(xScale.invert(d3.pointer(event)[0]));
         });
+    });
+
+    createEffect(() => {
+        setCursorIndex(
+            d3.bisectCenter(
+                bt.dataArr().map((p) => p.timestamp + timeDelta()),
+                cursorTimestamp()
+            )
+        );
     });
 
     return (
@@ -234,12 +240,26 @@ export default function MainChart() {
                 x2={cursorLineX()}
                 y2={height - marginBottom}
             ></line>
-            <ToolTip
-                x={(bt.dataArr()[cursorIndex()] != undefined) ? xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta()) : -100}
-                y={(bt.dataArr()[cursorIndex()] != undefined) ? yScale(bt.dataArr()[cursorIndex()].value) : -100}
-                text={(bt.dataArr()[cursorIndex()] != undefined) ? bt.dataArr()[cursorIndex()].value : 0}
-                color={bt.color}
-            />
+            <For each={channelArr().filter(c => c.id != BT)}>
+                {(c) => (
+                    <Show when={c.dataArr()[cursorIndex()] != undefined}>
+                        <ToolTip
+                            x={xScale(c.dataArr()[cursorIndex()].timestamp + timeDelta())}
+                            y={yScale(c.dataArr()[cursorIndex()].value)}
+                            text={c.dataArr()[cursorIndex()].value}
+                            color={c.color}
+                        />
+                    </Show>
+                )}
+            </For>
+            <Show when={bt.dataArr()[cursorIndex()] != undefined}>
+                <ToolTip
+                    x={xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta())}
+                    y={yScale(bt.dataArr()[cursorIndex()].value)}
+                    text={bt.dataArr()[cursorIndex()].value}
+                    color={bt.color}
+                />
+            </Show>
         </svg >
     );
 }

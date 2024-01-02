@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { Show, onMount, } from "solid-js";
+import { Show, createEffect, createSignal, onMount, } from "solid-js";
 import * as d3 from "d3";
 import { GET, appStateSig, ManualChannel, AppStatus } from "./AppState";
 import ToolTip from "./ToolTip";
@@ -12,7 +12,10 @@ export default function SecondaryChart(props: { channel_id: string }) {
     const [timer, _setTimer] = appState().timerSig;
     const [timeDelta, _setTimeDelta] = appState().timeDeltaSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
+    const [cursorTimestamp, setCursorTimestamp] = appState().cursorTimestampSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
+
+    const [cursorIndex, setCursorIndex] = createSignal(0);
 
     let mc = manualChannelArr().find(mc => mc.id == props.channel_id) as ManualChannel;
 
@@ -67,8 +70,22 @@ export default function SecondaryChart(props: { channel_id: string }) {
 
             svg.on("mousemove", (event) => {
                 setCursorLineX(d3.pointer(event)[0]);
-                // console.log(xScale.invert(d3.pointer(event)[0]));
+                setCursorTimestamp(xScale.invert(d3.pointer(event)[0]));
             });
+        }
+    });
+
+    createEffect(() => {
+
+        if (cursorTimestamp() > mc.dataArr()[mc.dataArr().length - 1].timestamp + timeDelta()) {
+            setCursorIndex(mc.dataArr().length - 1);
+        } else {
+            for (let i = 0; i < mc.dataArr().length; i++) {
+                if (mc.dataArr()[i].timestamp + timeDelta() > cursorTimestamp()) {
+                    setCursorIndex(i - 1);
+                    break;
+                }
+            }
         }
     });
 
@@ -112,6 +129,14 @@ export default function SecondaryChart(props: { channel_id: string }) {
                     x2={cursorLineX()}
                     y2={height - marginBottom}
                 ></line>
+                <Show when={mc.dataArr()[cursorIndex()] != undefined}>
+                    <ToolTip
+                        x={xScale(mc.dataArr()[cursorIndex()].timestamp + timeDelta())}
+                        y={yScale(mc.dataArr()[cursorIndex()].value)}
+                        text={mc.dataArr()[cursorIndex()].value}
+                        color="blue"
+                    />
+                </Show>
             </svg>
         </>
     );
