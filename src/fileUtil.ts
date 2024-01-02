@@ -2,7 +2,7 @@
 
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, Point, appStateSig } from "./AppState";
+import { GET, SET, Point, appStateSig, Channel } from "./AppState";
 import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
@@ -14,7 +14,11 @@ export async function openFile() {
 
         let loadObject = JSON.parse(content);
 
-        appState().timerSig[SET](loadObject.timer);
+        // use BT last Point as timer and currentData
+        let bt = loadObject.channelArr.find((c: any) => c.id == "BT");
+        let lastBTPoint = bt.dataArr[bt.dataArr.length - 1];
+        appState().timerSig[SET](lastBTPoint.timestamp);
+        appState().channelArrSig[GET]()[appState().btIndex].currentDataSig[SET](lastBTPoint.value);
 
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
@@ -59,7 +63,6 @@ export async function saveFile() {
         if (!filepath) return;
 
         let saveObject = {
-            timer: appState().timerSig[GET](),
             channelArr: new Array<any>(),
             manualChannelArr: new Array<any>(),
             roastEvents: appState().roastEventsSig[GET](),

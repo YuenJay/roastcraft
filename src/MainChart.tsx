@@ -58,8 +58,6 @@ export default function MainChart() {
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions
     let svgRef!: SVGSVGElement;
 
-    let index = 0;
-
     onMount(() => {
         const svg = d3.select(svgRef);
 
@@ -172,7 +170,7 @@ export default function MainChart() {
             {/* rate of rise convolve */}
             <path
                 fill="none"
-                stroke="#00DD00"
+                stroke={bt.rorColor}
                 stroke-width="1.5"
                 d={lineROR(bt.rorConvolveArrSig[GET]().filter((p) => (p.timestamp + timeDelta() > 0)) as any) as string | undefined}
                 clip-path="url(#clip-path)"
@@ -286,7 +284,7 @@ export default function MainChart() {
                     x={xScale(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].timestamp + timeDelta())}
                     y={yScaleROR(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value)}
                     text={bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value.toFixed(1)}
-                    color={bt.color}
+                    color={bt.rorColor}
                 />
             </Show>
         </svg >
