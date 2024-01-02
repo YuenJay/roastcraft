@@ -23,6 +23,7 @@ export default function MainChart() {
     const bt = channelArr()[appState().btIndex];
 
     const [cursorIndex, setCursorIndex] = createSignal(0);
+    const [cursorIndexROR, setCursorIndexROR] = createSignal(0);
 
     const width = 800;
     const height = 400;
@@ -78,7 +79,7 @@ export default function MainChart() {
 
         svg.on("mousemove", (event) => {
             setCursorLineX(d3.pointer(event)[0]);
-            setCursorTimestamp(xScale.invert(d3.pointer(event)[0]));
+            setCursorTimestamp(Math.trunc(xScale.invert(d3.pointer(event)[0])));
         });
     });
 
@@ -86,6 +87,12 @@ export default function MainChart() {
         setCursorIndex(
             d3.bisectCenter(
                 bt.dataArr().map((p) => p.timestamp + timeDelta()),
+                cursorTimestamp()
+            )
+        );
+        setCursorIndexROR(
+            d3.bisectCenter(
+                bt.rorConvolveArrSig[GET]().map((p) => p.timestamp + timeDelta()),
                 cursorTimestamp()
             )
         );
@@ -232,14 +239,28 @@ export default function MainChart() {
                 </g>
             </Show>
 
-            <line stroke="#00FF00"
-                stroke-width="1"
+            <line stroke="gray"
+                stroke-width="0.5"
                 clip-path="url(#clip-path)"
                 x1={cursorLineX()}
                 y1={marginTop}
                 x2={cursorLineX()}
                 y2={height - marginBottom}
             ></line>
+            <Show when={timeDelta() < cursorTimestamp()}>
+                <text
+                    font-size="0.6em"
+                    fill="gray"
+                    x={cursorLineX()}
+                    y={height - marginBottom}
+                    dy="-0.2em"
+                    dx="2"
+                    clip-path="url(#clip-path)">
+                    {cursorTimestamp() > 0
+                        ? Math.floor(cursorTimestamp() / 60).toString().padStart(2, '0') + ":" + (cursorTimestamp() % 60).toString().padStart(2, '0')
+                        : Math.ceil(cursorTimestamp() / 60).toString().padStart(2, '0') + ":" + (cursorTimestamp() % 60).toString().padStart(2, '0')}
+                </text>
+            </Show>
             <For each={channelArr().filter(c => c.id != BT)}>
                 {(c) => (
                     <Show when={c.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
@@ -257,6 +278,14 @@ export default function MainChart() {
                     x={xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta())}
                     y={yScale(bt.dataArr()[cursorIndex()].value)}
                     text={bt.dataArr()[cursorIndex()].value}
+                    color={bt.color}
+                />
+            </Show>
+            <Show when={bt.rorConvolveArrSig[GET]()[cursorIndexROR()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
+                <ToolTip
+                    x={xScale(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].timestamp + timeDelta())}
+                    y={yScaleROR(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value)}
+                    text={bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value.toFixed(1)}
                     color={bt.color}
                 />
             </Show>

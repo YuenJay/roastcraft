@@ -70,7 +70,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
 
             svg.on("mousemove", (event) => {
                 setCursorLineX(d3.pointer(event)[0]);
-                setCursorTimestamp(xScale.invert(d3.pointer(event)[0]));
+                setCursorTimestamp(Math.trunc(xScale.invert(d3.pointer(event)[0])));
             });
         }
     });
@@ -121,8 +121,8 @@ export default function SecondaryChart(props: { channel_id: string }) {
                         />
                     </g>
                 </Show>
-                <line stroke="#00FF00"
-                    stroke-width="1"
+                <line stroke="gray"
+                    stroke-width="0.5"
                     clip-path="url(#clip-path-input-0)"
                     x1={cursorLineX()}
                     y1={marginTop}
