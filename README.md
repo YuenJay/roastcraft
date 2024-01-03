@@ -11,25 +11,21 @@ Roastcraft is a cross-platform software to log and analyze coffee roasting, much
   - config with [TOML](https://toml.io/) 
 
 ## interactive roast chart
-  - mouse move to show data (Bean temp, ROR, etc.) in specific time
-  - drag to select range
-
-## provide data through HTTP endpoint
-
-
-## supported meter
-  - TASI TA612C thermometer
+  - move mouse cursor to show data (Bean temp, ROR, etc.) in specific time
 
 ## supported roaster
   - Kapok K501
 
-## supported microcontroller unit
+## supported meter (developing)
+  - TASI TA612C thermometer
+
+## supported microcontroller unit (developing)
   - Raspberry Pi Pico W with max6675
 
 ## cross-platform
   - Windows
-  - Linux
-  - MacOS
+  - Linux (developing)
+  - MacOS (developing)
 
 # Web stack
 - [Tauri](https://tauri.app/)

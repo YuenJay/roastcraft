@@ -2,6 +2,8 @@ version = "v1"
 brand   = "rc-http-sim"
 model   = "http"
 
+# pnpm tauri dev -- -- --config=../machines/kapok/501_inlet_rtu.toml
+
 [tcp]
     ip = "127.0.0.1"
     port = 502

@@ -143,7 +143,7 @@ fn main() {
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .with_colors(ColoredLevelConfig::default())
-                .level(LevelFilter::Trace)
+                .level(LevelFilter::Info)
                 .build(),
         )
         .manage(Mutex::new(RoastCraftState::new()))

@@ -28,8 +28,8 @@ model   = "modbus"
             channel_id  = "BT"
             label       = "bean temp"
             unit        = "celcius"
-            color       = "#00007f"
-            ror_color   = "#dd0000" # BT only
+            color       = "#191970"
+            ror_color   = "#4169E1" # BT only
             id          = 2
             function    = 3
             registry    = 18176     # = 4700h
@@ -40,9 +40,29 @@ model   = "modbus"
             channel_id  = "inlet"
             label       = "inlet temp"
             unit        = "celcius"
-            color       = "#007f00"
+            color       = "#2E8B57"
             id          = 3
             function    = 3
             registry    = 18176     # = 4700h
             divisor     = 10        # 1, 10, 100
             decode_type = "u16"     # u16, u32, i16, i32, f32
+
+[[manual_channel]]
+    channel_id  = "gas"
+    label       = "Gas"
+    unit        = "mmHg"
+    color       = "#007f00"
+    min         = 0
+    max         = 100
+    step        = 10        # 0 means no steps
+    default_value     = 20
+
+[[manual_channel]]
+    channel_id  = "airflow"
+    label       = "Airflow"
+    unit        = "Pa"
+    color       = "#007f00"
+    min         = 20
+    max         = 50
+    step        = 5         # 0 means no steps
+    default_value     = 30
