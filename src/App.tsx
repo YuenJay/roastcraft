@@ -115,6 +115,13 @@ function App() {
 
         setLogArr([...logArr(), "RoastCraft is ready"]);
 
+        window.speechSynthesis.onvoiceschanged = function () {
+            // window.speechSynthesis.speak(new SpeechSynthesisUtterance("歡迎使用roastcraft"));
+            if (window.speechSynthesis.getVoices().length > 0) {
+                setLogArr([...logArr(), "default voice : " + window.speechSynthesis.getVoices().find((v) => v.default == true)?.name]);
+            }
+        };
+
         // alternative: https://tauri.app/v1/api/js/globalshortcut/
         // but I think this is ok
         document.addEventListener("keydown", handleKeyDownEvent);

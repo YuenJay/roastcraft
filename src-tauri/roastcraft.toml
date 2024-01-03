@@ -49,4 +49,20 @@ model   = "http"
     step        = 5         # 0 means no steps
     default_value     = 30
 
+[[alarm]]
+    id              = 1
+    src_channel_id  = "BT"
+    from            = "TP"    # CHARGE, TP, DRY_END, FC_START, FC_END, SC_START, SC_END, DROP
+    condition       = "above" # above, below
+    value           = 170
+    [alarm.speech_synthesis]
+        utterance   = "170"
 
+[[alarm]]
+    id              = 1
+    src_channel_id  = "BT"
+    from            = "TP"    # CHARGE, TP, DRY_END, FC_START, FC_END, SC_START, SC_END, DROP
+    condition       = "above" # above, below
+    value           = 180
+    [alarm.speech_synthesis]
+        utterance   = "180"
