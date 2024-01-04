@@ -26,6 +26,7 @@ function App() {
     const [roastEvents, setRoastEvents] = appState().roastEventsSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
     const channelIdList = channelArr().map(m => m.id);
+    const bt = channelArr()[appState().btIndex];
 
     let detach: UnlistenFn;
     let unlisten_reader: UnlistenFn;
@@ -81,15 +82,15 @@ function App() {
             }
 
             // BT only for now
-            calculateRor();
-            findRorOutlier();
+            calculateRor(bt);
+            findRorOutlier(bt);
             autoDetectChargeDrop();
             findTurningPoint();
             findDryEnd();
             calculatePhases();
 
             // dump bt data to console
-            let bt = channelArr()[appState().btIndex]
+
             console.log(bt.dataArr());
             console.log(bt.rorArrSig[GET]());
             console.log(bt.rorFilteredArrSig[GET]());

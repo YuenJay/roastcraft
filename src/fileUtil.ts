@@ -7,6 +7,8 @@ import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
     const [appState, _setAppState] = appStateSig;
+    const [channelArr, _setChannelArr] = appState().channelArrSig;
+    const bt = channelArr()[appState().btIndex];
 
     try {
         let filepath = await open() as string;
@@ -15,8 +17,8 @@ export async function openFile() {
         let loadObject = JSON.parse(content);
 
         // use BT last Point as timer and currentData
-        let bt = loadObject.channelArr.find((c: any) => c.id == "BT");
-        let lastBTPoint = bt.dataArr[bt.dataArr.length - 1];
+        let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");
+        let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
         appState().timerSig[SET](lastBTPoint.timestamp);
         appState().channelArrSig[GET]()[appState().btIndex].currentDataSig[SET](lastBTPoint.value);
 
@@ -48,8 +50,8 @@ export async function openFile() {
             appState().timeDeltaSig[SET](- chargeEvent.timestamp);
         }
 
-        calculateRor();
-        findRorOutlier();
+        calculateRor(bt);
+        findRorOutlier(bt);
         calculatePhases();
     } catch (e) {
         console.log(e);

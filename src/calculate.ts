@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, RoastEvent, RoastEventId, Phase, appStateSig, AppStatus } from "./AppState";
+import { GET, SET, Point, RoastEvent, RoastEventId, Phase, appStateSig, AppStatus, Channel } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
@@ -17,10 +17,9 @@ export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
-export function calculateRor() {
+export function calculateRor(channel: Channel) {
 
-    let bt = channelArr()[appState().btIndex];
-    let data: Array<Point> = bt.dataArr();
+    let data: Array<Point> = channel.dataArr();
 
     let ror_array = Array<Point>();
 
@@ -47,18 +46,15 @@ export function calculateRor() {
         );
     }
 
-    bt.rorArrSig[SET](ror_array);
+    channel.rorArrSig[SET](ror_array);
 }
 
-export function findRorOutlier() {
+export function findRorOutlier(channel: Channel) {
 
-    let mIndex = appState().btIndex; // channel index for BT
-
-    let ror: Array<Point> = channelArr()[mIndex].rorArrSig[GET]();
+    let ror: Array<Point> = channel.rorArrSig[GET]();
 
     let ror_outlier = new Array<Point>();
     let ror_filtered = new Array<Point>();
-
 
     for (let i = 0; i < ror.length; i++) {
         if (i == 0) {
@@ -90,12 +86,12 @@ export function findRorOutlier() {
 
         if (zScore > 3) {
             ror_outlier.push(
-                channelArr()[mIndex].rorArrSig[GET]()[i]
+                channel.rorArrSig[GET]()[i]
             )
 
         } else {
             ror_filtered.push(
-                channelArr()[mIndex].rorArrSig[GET]()[i]
+                channel.rorArrSig[GET]()[i]
             )
         }
     }
@@ -134,10 +130,9 @@ export function findRorOutlier() {
         ));
     }
 
-
-    channelArr()[mIndex].rorOutlierArrSig[SET](ror_outlier);
-    channelArr()[mIndex].rorFilteredArrSig[SET](ror_filtered);
-    channelArr()[mIndex].rorConvolveArrSig[SET](ror_convolve);
+    channel.rorOutlierArrSig[SET](ror_outlier);
+    channel.rorFilteredArrSig[SET](ror_filtered);
+    channel.rorConvolveArrSig[SET](ror_convolve);
 
     // find ROR TP
     if (roastEvents().TP != undefined && roastEvents().ROR_TP == undefined) {
