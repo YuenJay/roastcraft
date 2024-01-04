@@ -111,15 +111,16 @@ export default function MainChart() {
                 </clipPath>
             </defs>
 
-            {/* ghost */}
+            {/* ghosts */}
             <For each={ghost().channelArr}>
                 {(c) => (
                     <g
                         clip-path="url(#clip-path)" >
                         <path
                             fill="none"
-                            stroke={bt.color}
+                            stroke={c.color}
                             stroke-width="1"
+                            opacity="0.3"
                             d={d3.line()
                                 .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
                                 .y((p: any) => yScale(p.value))(

@@ -162,20 +162,23 @@ export class Ghost {
 
 export class GhostChannel {
     id: string;
+    color: string;
     dataArr: Array<Point>;
 
     constructor(
         id: string,
+        color: string,
         dataArr: Array<Point>
     ) {
         this.id = id;
+        this.color = color;
         this.dataArr = dataArr;
     }
 }
 
 function init_ghostSig() {
     let timeDelta = 0;
-    let channelArr = [new GhostChannel("", [])]
+    let channelArr = [new GhostChannel("", "", [])]
     return new Ghost(timeDelta, channelArr);
 }
 

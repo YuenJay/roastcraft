@@ -76,7 +76,7 @@ export async function openFileAsGhost() {
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
-                channelArr.push(new GhostChannel(c.id, c.dataArr))
+                channelArr.push(new GhostChannel(channel.id, channel.color, c.dataArr))
             }
         });
 
