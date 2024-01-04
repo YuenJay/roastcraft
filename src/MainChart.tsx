@@ -112,19 +112,24 @@ export default function MainChart() {
             </defs>
 
             {/* ghost */}
-            <g
-                clip-path="url(#clip-path)" >
-                <path
-                    fill="none"
-                    stroke={bt.color}
-                    stroke-width="1"
-                    d={d3.line()
-                        .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
-                        .y((p: any) => yScale(p.value))(
-                            ghost().dataArr as any
-                        ) as string | undefined}
-                />
-            </g>
+            <For each={ghost().channelArr}>
+                {(c) => (
+                    <g
+                        clip-path="url(#clip-path)" >
+                        <path
+                            fill="none"
+                            stroke={bt.color}
+                            stroke-width="1"
+                            d={d3.line()
+                                .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
+                                .y((p: any) => yScale(p.value))(
+                                    c.dataArr as any
+                                ) as string | undefined}
+                        />
+                    </g>
+                )}
+            </For>
+
 
             {/* ROR linear regression */}
             <Show when={appState().roastEventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>

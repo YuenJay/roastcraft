@@ -2,7 +2,7 @@
 
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, Point, appStateSig, Channel, Ghost } from "./AppState";
+import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel } from "./AppState";
 import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
@@ -66,14 +66,21 @@ export async function openFileAsGhost() {
 
         let loadObject = JSON.parse(content);
 
-        let bt = loadObject.channelArr.find((c: any) => c.id == "BT");
-
         let timeDelta = 0;
         if (loadObject.roastEvents.CHARGE != undefined) {
             timeDelta = - loadObject.roastEvents.CHARGE.timestamp;
         }
 
-        setGhost(new Ghost(bt.id, timeDelta, bt.dataArr));
+        let channelArr = new Array<GhostChannel>;
+
+        loadObject.channelArr.forEach((c: any) => {
+            let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
+            if (channel) {
+                channelArr.push(new GhostChannel(c.id, c.dataArr))
+            }
+        });
+
+        setGhost(new Ghost(timeDelta, channelArr));
 
         console.log(ghost());
 
