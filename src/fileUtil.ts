@@ -2,7 +2,7 @@
 
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, Point, appStateSig, Channel } from "./AppState";
+import { GET, SET, Point, appStateSig, Channel, Ghost } from "./AppState";
 import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 
 export async function openFile() {
@@ -51,6 +51,25 @@ export async function openFile() {
         calculateRor();
         findRorOutlier();
         calculatePhases();
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export async function openFileAsGhost() {
+    const [appState, _setAppState] = appStateSig;
+    const [ghost, setGhost] = appState().ghostSig;
+
+    try {
+        let filepath = await open() as string;
+        let content = await readTextFile(filepath);
+
+        let loadObject = JSON.parse(content);
+
+        let bt = loadObject.channelArr.find((c: any) => c.id == "BT");
+
+        setGhost(new Ghost(bt.id as string, bt.dataArr as Array<Point>));
+
     } catch (e) {
         console.log(e);
     }

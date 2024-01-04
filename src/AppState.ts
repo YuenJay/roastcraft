@@ -145,6 +145,17 @@ export class ManualChannel {
     }
 }
 
+export class Ghost {
+    id: string;
+    dataArr: Array<Point>;           // history records
+    constructor(
+        id: string,
+        dataArr: Array<Point>) {
+        this.id = id;
+        this.dataArr = dataArr;
+    }
+}
+
 async function init_appStateSig() {
     // get config from backend
     let config: any;
@@ -210,9 +221,6 @@ async function init_appStateSig() {
         );
     }
 
-    console.log("manualChannelArr");
-    console.log(manualChannelArr);
-
     return {
         btIndex: btIndex,
         statusSig: createSignal(AppStatus.OFF),
@@ -244,6 +252,7 @@ async function init_appStateSig() {
         toggleShowRorFilteredSig: createSignal(false),
         toggleShowRorOutlierSig: createSignal(false),
         toggleShowRorRegressionSig: createSignal(false),
+        ghostSig: createSignal({ id: "", dataArr: [] } as Ghost),
     }
 }
 

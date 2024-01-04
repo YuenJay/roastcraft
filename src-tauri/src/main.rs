@@ -111,26 +111,34 @@ async fn get_config(app: tauri::AppHandle) -> Config {
 
 fn main() {
     let open = CustomMenuItem::new("open".to_string(), "Open");
+    let ghost = CustomMenuItem::new("ghost".to_string(), "Ghost");
     let save = CustomMenuItem::new("save".to_string(), "Save");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
 
     let submenu = Submenu::new(
         "File",
-        Menu::new().add_item(open).add_item(save).add_item(quit),
+        Menu::new()
+            .add_item(open)
+            .add_item(ghost)
+            .add_item(save)
+            .add_item(quit),
     );
     let menu = Menu::new().add_submenu(submenu);
 
     tauri::Builder::default()
         .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
-            "quit" => {
-                std::process::exit(0);
-            }
             "open" => {
                 event.window().emit("menu_event", "OPEN").unwrap();
             }
+            "ghost" => {
+                event.window().emit("menu_event", "GHOST").unwrap();
+            }
             "save" => {
                 event.window().emit("menu_event", "SAVE").unwrap();
+            }
+            "quit" => {
+                std::process::exit(0);
             }
             _ => {}
         })

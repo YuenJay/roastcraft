@@ -2,7 +2,7 @@
 
 import { onMount, Show, For, createSignal, createEffect, } from "solid-js";
 import * as d3 from "d3";
-import { GET, RoastEventId, appStateSig, BT, AppStatus } from "./AppState";
+import { GET, RoastEventId, appStateSig, BT, AppStatus, Point, Ghost } from "./AppState";
 import Annotation from "./Annotation";
 import ToolTip from "./ToolTip";
 
@@ -24,6 +24,8 @@ export default function MainChart() {
 
     const [cursorIndex, setCursorIndex] = createSignal(0);
     const [cursorIndexROR, setCursorIndexROR] = createSignal(0);
+
+    const [ghost, setGhost] = appState().ghostSig;
 
     const width = 800;
     const height = 400;
@@ -80,6 +82,14 @@ export default function MainChart() {
             setCursorTimestamp(Math.trunc(xScale.invert(d3.pointer(event)[0])));
         });
     });
+
+    function ghostLine(ghost: Ghost) {
+        let line = d3.line()
+            .x((p: any) => xScale(p.timestamp + 160))
+            .y((p: any) => yScale(p.value));
+
+        return line(ghost.dataArr as any)
+    }
 
     createEffect(() => {
         setCursorIndex(
@@ -237,6 +247,8 @@ export default function MainChart() {
                 </g>
             </Show>
 
+
+            {/* cursor line and tooltip */}
             <line stroke="gray"
                 stroke-width="0.5"
                 clip-path="url(#clip-path)"
@@ -287,6 +299,20 @@ export default function MainChart() {
                     color={bt.rorColor}
                 />
             </Show>
+
+            {/* ghost */}
+
+            <g
+                clip-path="url(#clip-path)" >
+                <path
+                    fill="none"
+                    stroke={bt.color}
+                    stroke-width="1"
+
+                    d={ghostLine(ghost()) as string | undefined}
+                />
+            </g>
+
         </svg >
     );
 }

@@ -12,7 +12,7 @@ import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
-import { openFile, saveFile } from "./fileUtil";
+import { openFile, openFileAsGhost, saveFile } from "./fileUtil";
 import PhaseChart from "./PhaseChart";
 import PhaseTempChart from "./PhaseTempChart";
 
@@ -102,6 +102,9 @@ function App() {
             switch (event.payload) {
                 case "OPEN":
                     openFile();
+                    break;
+                case "GHOST":
+                    openFileAsGhost();
                     break;
 
                 case "SAVE":
