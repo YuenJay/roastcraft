@@ -68,7 +68,14 @@ export async function openFileAsGhost() {
 
         let bt = loadObject.channelArr.find((c: any) => c.id == "BT");
 
-        setGhost(new Ghost(bt.id as string, bt.dataArr as Array<Point>));
+        let timeDelta = 0;
+        if (loadObject.roastEvents.CHARGE != undefined) {
+            timeDelta = - loadObject.roastEvents.CHARGE.timestamp;
+        }
+
+        setGhost(new Ghost(bt.id, timeDelta, bt.dataArr));
+
+        console.log(ghost());
 
     } catch (e) {
         console.log(e);

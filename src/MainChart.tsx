@@ -83,14 +83,6 @@ export default function MainChart() {
         });
     });
 
-    function ghostLine(ghost: Ghost) {
-        let line = d3.line()
-            .x((p: any) => xScale(p.timestamp + 160))
-            .y((p: any) => yScale(p.value));
-
-        return line(ghost.dataArr as any)
-    }
-
     createEffect(() => {
         setCursorIndex(
             d3.bisectCenter(
@@ -118,6 +110,21 @@ export default function MainChart() {
                     <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
                 </clipPath>
             </defs>
+
+            {/* ghost */}
+            <g
+                clip-path="url(#clip-path)" >
+                <path
+                    fill="none"
+                    stroke={bt.color}
+                    stroke-width="1"
+                    d={d3.line()
+                        .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
+                        .y((p: any) => yScale(p.value))(
+                            ghost().dataArr as any
+                        ) as string | undefined}
+                />
+            </g>
 
             {/* ROR linear regression */}
             <Show when={appState().roastEventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>
@@ -300,18 +307,7 @@ export default function MainChart() {
                 />
             </Show>
 
-            {/* ghost */}
 
-            <g
-                clip-path="url(#clip-path)" >
-                <path
-                    fill="none"
-                    stroke={bt.color}
-                    stroke-width="1"
-
-                    d={ghostLine(ghost()) as string | undefined}
-                />
-            </g>
 
         </svg >
     );

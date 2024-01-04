@@ -147,11 +147,14 @@ export class ManualChannel {
 
 export class Ghost {
     id: string;
-    dataArr: Array<Point>;           // history records
+    timeDelta: number;
+    dataArr: Array<Point>;
     constructor(
         id: string,
+        timeDelta: number,
         dataArr: Array<Point>) {
         this.id = id;
+        this.timeDelta = timeDelta;
         this.dataArr = dataArr;
     }
 }
@@ -252,7 +255,11 @@ async function init_appStateSig() {
         toggleShowRorFilteredSig: createSignal(false),
         toggleShowRorOutlierSig: createSignal(false),
         toggleShowRorRegressionSig: createSignal(false),
-        ghostSig: createSignal({ id: "", dataArr: [] } as Ghost),
+        ghostSig: createSignal({
+            id: "",
+            timeDelta: 0,
+            dataArr: []
+        } as Ghost),
     }
 }
 
