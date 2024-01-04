@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, RoastEvent, RoastEventId, Phase, appStateSig, AppStatus, Channel } from "./AppState";
+import { GET, SET, Point, RoastEvent, RoastEvents, RoastEventId, Phase, appStateSig, AppStatus, Channel } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
@@ -17,7 +17,7 @@ export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
-export function calculateRor(channel: Channel) {
+export function calculateRor(channel: Channel, roastEvents: RoastEvents) {
 
     let data: Array<Point> = channel.dataArr();
 
@@ -39,7 +39,7 @@ export function calculateRor(channel: Channel) {
     }
 
     // remove ror data points after drop
-    let drop = roastEvents().DROP;
+    let drop = roastEvents.DROP;
     if (drop) {
         ror_array = ror_array.filter((p) =>
             (p.timestamp <= (drop as RoastEvent).timestamp)
@@ -134,6 +134,12 @@ export function findRorOutlier(channel: Channel) {
     channel.rorFilteredArrSig[SET](ror_filtered);
     channel.rorConvolveArrSig[SET](ror_convolve);
 
+}
+
+export function findROR_TP(channel: Channel) {
+
+    let ror_filtered = channel.rorFilteredArrSig[GET]();
+
     // find ROR TP
     if (roastEvents().TP != undefined && roastEvents().ROR_TP == undefined) {
         let window_size = 9
@@ -169,7 +175,6 @@ export function findRorOutlier(channel: Channel) {
         ));
         appState().rorLinearSlopeSig[SET](mb.m);
     }
-
 }
 
 // reference: artisan/src/artisanlib/main.py  BTbreak()

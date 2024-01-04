@@ -125,11 +125,26 @@ export default function MainChart() {
                                 .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
                                 .y((p: any) => yScale(p.value))(
                                     c.dataArr as any
-                                ) as string | undefined}
+                                ) as string | undefined
+                            }
                         />
                     </g>
                 )}
             </For>
+            {/* rate of rise convolve */}
+            <path
+                fill="none"
+                stroke={ghost().channelArr[appState().btIndex].rorColor}
+                stroke-width="1"
+                opacity="0.3"
+                d={d3.line()
+                    .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
+                    .y((p: any) => yScaleROR(p.value))(
+                        ghost().channelArr[appState().btIndex].rorConvolveArr.filter((p) => (p.timestamp + ghost().timeDelta > 0)) as any
+                    ) as string | undefined
+                }
+                clip-path="url(#clip-path)"
+            />
 
 
             {/* ROR linear regression */}

@@ -3,11 +3,13 @@
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel } from "./AppState";
-import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
+import { calculatePhases, calculateRor, findROR_TP, findRorOutlier } from './calculate';
+import { createSignal } from 'solid-js';
 
 export async function openFile() {
     const [appState, _setAppState] = appStateSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
+    const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
     const bt = channelArr()[appState().btIndex];
 
     try {
@@ -50,8 +52,10 @@ export async function openFile() {
             appState().timeDeltaSig[SET](- chargeEvent.timestamp);
         }
 
-        calculateRor(bt);
+        calculateRor(bt, roastEvents());
         findRorOutlier(bt);
+        findROR_TP(bt);
+
         calculatePhases();
     } catch (e) {
         console.log(e);
@@ -69,20 +73,48 @@ export async function openFileAsGhost() {
         let loadObject = JSON.parse(content);
 
         let timeDelta = 0;
-        if (loadObject.roastEvents.CHARGE != undefined) {
-            timeDelta = - loadObject.roastEvents.CHARGE.timestamp;
-        }
-
         let channelArr = new Array<GhostChannel>;
+        let roastEvents = loadObject.roastEvents;
 
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
-                channelArr.push(new GhostChannel(channel.id, channel.color, c.dataArr))
+
+                let tempChannel = new Channel(
+                    channel.id,            // id
+                    channel.label,         // label 
+                    channel.unit,          // unit
+                    channel.color,         // color
+                    channel.rorColor,      // ror_color
+                    createSignal(0), //currentDataSig
+                    createSignal(0), //currentRorSig
+                    [], //data_window
+                    createSignal(new Array<Point>()), // dataSig
+                    createSignal(new Array<Point>()), // rorSig
+                    createSignal(new Array<Point>()), // rorOutlierSig
+                    createSignal(new Array<Point>()), // rorFilteredSig
+                    createSignal(new Array<Point>()), // rorConvolveSig
+                );
+                tempChannel.setDataArr(c.dataArr);
+                calculateRor(tempChannel, roastEvents);
+                findRorOutlier(tempChannel);
+
+                channelArr.push(new GhostChannel(
+                    channel.id,
+                    channel.color,
+                    channel.rorColor,
+                    c.dataArr,
+                    tempChannel.rorConvolveArrSig[GET]()));
             }
         });
 
-        setGhost(new Ghost(timeDelta, channelArr));
+        if (roastEvents != undefined && roastEvents.CHARGE != undefined) {
+            timeDelta = - roastEvents.CHARGE.timestamp;
+        }
+
+        let g = new Ghost(timeDelta, channelArr, roastEvents);
+
+        setGhost(g);
 
         console.log(ghost());
 

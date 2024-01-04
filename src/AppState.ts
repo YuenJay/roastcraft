@@ -98,7 +98,7 @@ export enum RoastEventId {
     ROR_TP = 'ROR_TP'
 }
 
-interface RoastEvents {
+export interface RoastEvents {
     CHARGE: RoastEvent | undefined,
     DRY_END: RoastEvent | undefined,
     FC_START: RoastEvent | undefined,
@@ -149,37 +149,45 @@ export class Ghost {
 
     timeDelta: number;
     channelArr: Array<GhostChannel>;
+    roastEvents: RoastEvents;
 
     constructor(
         timeDelta: number,
         channelArr: Array<GhostChannel>,
+        roastEvents: RoastEvents,
     ) {
-
         this.timeDelta = timeDelta;
         this.channelArr = channelArr;
+        this.roastEvents = roastEvents;
     }
 }
 
 export class GhostChannel {
     id: string;
     color: string;
+    rorColor: string;
     dataArr: Array<Point>;
+    rorConvolveArr: Array<Point>;
 
     constructor(
         id: string,
         color: string,
-        dataArr: Array<Point>
+        rorColor: string,
+        dataArr: Array<Point>,
+        rorConvolveArr: Array<Point>,
     ) {
         this.id = id;
         this.color = color;
+        this.rorColor = rorColor;
         this.dataArr = dataArr;
+        this.rorConvolveArr = rorConvolveArr;
     }
 }
 
 function init_ghostSig() {
     let timeDelta = 0;
-    let channelArr = [new GhostChannel("", "", [])]
-    return new Ghost(timeDelta, channelArr);
+    let channelArr = [new GhostChannel("", "", "", new Array<Point>, new Array<Point>)]
+    return new Ghost(timeDelta, channelArr, {} as RoastEvents);
 }
 
 async function init_appStateSig() {

@@ -10,7 +10,7 @@ import RangeInput from "./RangeInput";
 import { GET, SET, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
-import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
+import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, openFileAsGhost, saveFile } from "./fileUtil";
 import PhaseChart from "./PhaseChart";
@@ -82,8 +82,10 @@ function App() {
             }
 
             // BT only for now
-            calculateRor(bt);
+            calculateRor(bt, roastEvents());
             findRorOutlier(bt);
+            findROR_TP(bt);
+
             autoDetectChargeDrop();
             findTurningPoint();
             findDryEnd();
