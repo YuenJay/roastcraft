@@ -13,7 +13,12 @@ export async function openFile() {
     const bt = channelArr()[appState().btIndex];
 
     try {
-        let filepath = await open() as string;
+        let filepath = await open({
+            filters: [{
+                name: 'Profile',
+                extensions: ['json']
+            }]
+        }) as string;
         let content = await readTextFile(filepath);
 
         let loadObject = JSON.parse(content);
@@ -67,7 +72,12 @@ export async function openFileAsGhost() {
     const [ghost, setGhost] = appState().ghostSig;
 
     try {
-        let filepath = await open() as string;
+        let filepath = await open({
+            filters: [{
+                name: 'Profile',
+                extensions: ['json']
+            }]
+        }) as string;
         let content = await readTextFile(filepath);
 
         let loadObject = JSON.parse(content);
@@ -123,10 +133,30 @@ export async function openFileAsGhost() {
     }
 }
 
+function getCurrentFormattedTime() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+
+    const formattedTime = `${year}_${month}_${day}_${hours}${minutes}`;
+    return formattedTime;
+}
+
 export async function saveFile() {
     const [appState, _setAppState] = appStateSig;
     try {
-        let filepath = await save() as string;
+
+        let filepath = await save({
+            defaultPath: getCurrentFormattedTime() + ".json",
+            filters: [{
+                name: 'Profile',
+                extensions: ['json']
+            }]
+        }) as string;
         if (!filepath) return;
 
         let saveObject = {
