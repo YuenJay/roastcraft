@@ -184,6 +184,19 @@ export class GhostChannel {
     }
 }
 
+export class RoastProperty {
+    title: string = "";
+    weightGreen = 0;
+    weightRoasted = 0;
+    weightUnit = "g";
+    weightLossPercentage = 0;
+    colorWhole = 0;
+    colorGround = 0;
+    colorUnit = "Agtron";
+    roastingNotes = "";
+    cuppingNotes = "";
+}
+
 function init_ghostSig() {
     let timeDelta = 0;
     let channelArr = [new GhostChannel("", "", "", new Array<Point>, new Array<Point>)]

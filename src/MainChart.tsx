@@ -132,20 +132,21 @@ export default function MainChart() {
                 )}
             </For>
             {/* rate of rise convolve */}
-            <path
-                fill="none"
-                stroke={ghost().channelArr[appState().btIndex].rorColor}
-                stroke-width="1"
-                opacity="0.3"
-                d={d3.line()
-                    .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
-                    .y((p: any) => yScaleROR(p.value))(
-                        ghost().channelArr[appState().btIndex].rorConvolveArr.filter((p) => (p.timestamp + ghost().timeDelta > 0)) as any
-                    ) as string | undefined
-                }
-                clip-path="url(#clip-path)"
-            />
-
+            <Show when={ghost().channelArr[appState().btIndex] != undefined}>
+                <path
+                    fill="none"
+                    stroke={ghost().channelArr[appState().btIndex].rorColor}
+                    stroke-width="1"
+                    opacity="0.3"
+                    d={d3.line()
+                        .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
+                        .y((p: any) => yScaleROR(p.value))(
+                            ghost().channelArr[appState().btIndex].rorConvolveArr.filter((p) => (p.timestamp + ghost().timeDelta > 0)) as any
+                        ) as string | undefined
+                    }
+                    clip-path="url(#clip-path)"
+                />
+            </Show>
 
             {/* ROR linear regression */}
             <Show when={appState().roastEventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>

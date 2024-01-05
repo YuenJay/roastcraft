@@ -34,10 +34,10 @@ export default function RangeInput(props: { channel_id: string }) {
     }
 
     return (
-        <>
-            <p class="text-right">
-                {mc.id}
-            </p>
+        <div>
+            <div class="label p-0">
+                <span class="label-text">{mc.id}</span>
+            </div>
             <input
                 type="range"
                 class="range range-primary range-xs"
@@ -57,6 +57,6 @@ export default function RangeInput(props: { channel_id: string }) {
                 </For>
 
             </div>
-        </>
+        </div>
     );
 }

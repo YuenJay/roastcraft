@@ -23,7 +23,7 @@ export default function PhaseTempChart() {
     const marginRight = 30;
     const marginBottom = 20;
     const marginLeft = 30;
-    const width = 400;
+    const width = 360;
     const height = Math.ceil((data.length + 0.1) * barHeight) + marginTop + marginBottom;
 
     // Create the scales.

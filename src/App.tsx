@@ -292,7 +292,7 @@ function App() {
             </div>
             {/* main end*/}
 
-            {/* side bar start*/}
+            {/* side panel start*/}
             <div class="sidebar h-full relative pl-2.5">
                 {/* resizer */}
                 <div class="resizer h-full absolute cursor-col-resize w-1.5 top-0 left-0 bg-gray-200"></div>
@@ -362,9 +362,10 @@ function App() {
                         </Index>
                     </div>
 
-                    <PhaseChart></PhaseChart>
-                    <PhaseTempChart></PhaseTempChart>
-
+                    <div>
+                        <PhaseChart></PhaseChart>
+                        <PhaseTempChart></PhaseTempChart>
+                    </div>
                     {/* event buttons */}
                     <div class="flex flex-wrap gap-1">
 
@@ -443,6 +444,44 @@ function App() {
                     </label> */}
 
                     </div>
+                    <div>
+                        <label class="form-control w-full">
+                            <div class="label p-0">
+                                <span class="label-text">Title</span>
+                            </div>
+                            <input type="text" placeholder="Type here" class="input input-bordered input-sm w-full " />
+                        </label>
+                        <label class="form-control w-20">
+                            <div class="label p-0">
+                                <span class="label-text">Weight</span>
+                            </div>
+                            <input type="text" class="input input-bordered input-sm w-full " />
+                        </label>
+                        <label class="form-control w-20">
+                            <div class="label p-0">
+                                <span class="label-text">Weight</span>
+                            </div>
+                            <input type="text" class="input input-bordered input-sm w-full " />
+                        </label>
+                        <label class="form-control w-20">
+                            <div class="label p-0">
+                                <span class="label-text">Color</span>
+                            </div>
+                            <input type="text" class="input input-bordered input-sm w-full " />
+                        </label>
+                        <label class="form-control w-20">
+                            <div class="label p-0">
+                                <span class="label-text">Color</span>
+                            </div>
+                            <input type="text" class="input input-bordered input-sm w-full " />
+                        </label>
+                        <label class="form-control w-20">
+                            <div class="label p-0">
+                                <span class="label-text">Color</span>
+                            </div>
+                            <input type="text" class="input input-bordered input-sm w-full " />
+                        </label>
+                    </div>
                     <Show when={logArr().length > 0}>
 
                         <div class="text-sm">
@@ -456,7 +495,7 @@ function App() {
                 </div>
                 {/* scrollable end*/}
             </div>
-            {/* side bar end*/}
+            {/* side panel end*/}
         </div>
     );
 }
