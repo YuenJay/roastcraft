@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { GET, SET, Point, RoastEvent, RoastEvents, RoastEventId, Phase, appStateSig, AppStatus, Channel } from "./AppState";
+import { GET, SET, Point, RoastEvent, RoastEvents, RoastEventId, Phase, appStateSig, AppStatus, Channel, BT } from "./AppState";
 import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
@@ -182,10 +182,10 @@ export function findROR_TP(channel: Channel) {
 // . average delta before i-2 is not negative
 // . average delta after i-2 is negative and twice as high (absolute) as the one before
 export function autoDetectChargeDrop() {
-    let mIndex: number = appState().btIndex; // channel index for BT
+    const bt = channelArr().find(c => c.id == BT) as Channel;
 
-    let data: Array<Point> = channelArr()[mIndex].dataArr();
-    let ror: Array<Point> = channelArr()[mIndex].rorArrSig[GET]();
+    let data: Array<Point> = bt.dataArr();
+    let ror: Array<Point> = bt.rorArrSig[GET]();
 
     let window_size = 5
     if (ror.length >= window_size) {
@@ -236,6 +236,7 @@ export function autoDetectChargeDrop() {
 
 // find lowest point in BT
 export function findTurningPoint() {
+    const bt = channelArr().find(c => c.id == BT) as Channel;
 
     // only detect turning point after charge
     if (roastEvents().CHARGE == undefined || roastEvents().TP != undefined) {
@@ -246,7 +247,7 @@ export function findTurningPoint() {
     let high_temp = 0;
 
     // last 2 BT value greater than updated min tp
-    let data: Array<Point> = channelArr()[appState().btIndex].dataArr();
+    let data: Array<Point> = bt.dataArr();
 
     let target_index = 0;
     let tp_found = false;
@@ -281,13 +282,14 @@ export function findTurningPoint() {
 }
 
 export function findDryEnd() {
+    const bt = channelArr().find(c => c.id == BT) as Channel;
 
     // only detect dry end after turning point
     if (roastEvents().TP == undefined || roastEvents().DRY_END != undefined) {
         return
     }
 
-    let data: Array<Point> = channelArr()[appState().btIndex].dataArr();
+    let data: Array<Point> = bt.dataArr();
 
     let dry_end = 150;
 
@@ -320,7 +322,7 @@ export function calculatePhases() {
     // 7 o	    o	o	x	o	    drop time	drying + maillard
     // 8 o	    o	x	o	x	    timer	    drying + develop
 
-    let bt = channelArr()[appState().btIndex];
+    let bt = channelArr().find(c => c.id == BT) as Channel;
 
     let charge = roastEvents().CHARGE;
     if (charge == undefined) {

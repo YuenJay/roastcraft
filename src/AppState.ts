@@ -250,8 +250,6 @@ async function init_appStateSig() {
         );
     }
 
-    let btIndex = channelArr.findIndex(m => m.id == BT);
-
     let manualChannelArr: Array<ManualChannel> = new Array<ManualChannel>();
 
     if (config.manual_channel != null) {
@@ -269,7 +267,6 @@ async function init_appStateSig() {
     }
 
     return {
-        btIndex: btIndex,
         statusSig: createSignal(AppStatus.OFF),
         timerSig: createSignal(0),
         timeDeltaSig: createSignal(0),
@@ -326,7 +323,7 @@ export function reset() {
     })
 
     manualChannelArr().forEach((mc) => {
-        mc.setDataArr([new Point(0, mc.currentDataSig[GET]())]);
+        mc.setDataArr([new Point(0, mc.defaultValue)]);
     });
 
     // not reset logs

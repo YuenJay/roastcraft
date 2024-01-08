@@ -2,7 +2,7 @@
 
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel } from "./AppState";
+import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel, BT } from "./AppState";
 import { calculatePhases, calculateRor, findROR_TP, findRorOutlier } from './calculate';
 import { createSignal } from 'solid-js';
 
@@ -10,7 +10,7 @@ export async function openFile() {
     const [appState, _setAppState] = appStateSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
-    const bt = channelArr()[appState().btIndex];
+    const bt = channelArr().find(c => c.id == BT) as Channel;
 
     try {
         let filepath = await open({
@@ -27,7 +27,7 @@ export async function openFile() {
         let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");
         let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
         appState().timerSig[SET](lastBTPoint.timestamp);
-        appState().channelArrSig[GET]()[appState().btIndex].currentDataSig[SET](lastBTPoint.value);
+        bt.currentDataSig[SET](lastBTPoint.value);
 
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);

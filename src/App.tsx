@@ -7,7 +7,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
 import RangeInput from "./RangeInput";
-import { GET, SET, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent } from "./AppState";
+import { GET, SET, BT, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent, Channel } from "./AppState";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
@@ -26,7 +26,7 @@ function App() {
     const [roastEvents, setRoastEvents] = appState().roastEventsSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
     const channelIdList = channelArr().map(m => m.id);
-    const bt = channelArr()[appState().btIndex];
+    const bt = channelArr().find(c => c.id == BT) as Channel;
 
     let detach: UnlistenFn;
     let unlisten_reader: UnlistenFn;
@@ -247,32 +247,32 @@ function App() {
     }
 
     async function handleCharge() {
-        setRoastEvents({ ...roastEvents(), CHARGE: new RoastEvent(RoastEventId.CHARGE, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), CHARGE: new RoastEvent(RoastEventId.CHARGE, timer(), bt.currentDataSig[GET]()) });
         appState().timeDeltaSig[SET](- timer());
     }
 
     async function handleDryEnd() {
-        setRoastEvents({ ...roastEvents(), DRY_END: new RoastEvent(RoastEventId.DRY_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), DRY_END: new RoastEvent(RoastEventId.DRY_END, timer(), bt.currentDataSig[GET]()) });
     }
 
     async function handleFCStart() {
-        setRoastEvents({ ...roastEvents(), FC_START: new RoastEvent(RoastEventId.FC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), FC_START: new RoastEvent(RoastEventId.FC_START, timer(), bt.currentDataSig[GET]()) });
     }
 
     async function handleFCEnd() {
-        setRoastEvents({ ...roastEvents(), FC_END: new RoastEvent(RoastEventId.FC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), FC_END: new RoastEvent(RoastEventId.FC_END, timer(), bt.currentDataSig[GET]()) });
     }
 
     async function handleSCStart() {
-        setRoastEvents({ ...roastEvents(), SC_START: new RoastEvent(RoastEventId.SC_START, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), SC_START: new RoastEvent(RoastEventId.SC_START, timer(), bt.currentDataSig[GET]()) });
     }
 
     async function handleSCEnd() {
-        setRoastEvents({ ...roastEvents(), SC_END: new RoastEvent(RoastEventId.SC_END, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), SC_END: new RoastEvent(RoastEventId.SC_END, timer(), bt.currentDataSig[GET]()) });
     }
 
     async function handleDrop() {
-        setRoastEvents({ ...roastEvents(), DROP: new RoastEvent(RoastEventId.DROP, timer(), channelArr()[appState().btIndex].currentDataSig[GET]()) });
+        setRoastEvents({ ...roastEvents(), DROP: new RoastEvent(RoastEventId.DROP, timer(), bt.currentDataSig[GET]()) });
     }
 
     return (
@@ -299,6 +299,13 @@ function App() {
 
                 {/* scrollable start*/}
                 <div class="h-full overflow-y-auto pr-1 flex flex-col gap-y-1">
+
+                    <div role="tablist" class="tabs tabs-lifted">
+                        <a role="tab" class="tab tab-active">Main</a>
+                        <a role="tab" class="tab ">Properties</a>
+                        <a role="tab" class="tab">Other</a>
+                    </div>
+
                     {/* timer and on/off buttons */}
                     <div class="flex flex-wrap gap-1">
                         <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold w-28 ">
@@ -333,33 +340,30 @@ function App() {
                     <div class="flex flex-wrap gap-1">
                         {/* BT */}
                         <div class="bg-base-300 rounded text-right w-20 px-1 ">
-                            <p>{channelArr()[appState().btIndex].id}</p>
+                            <p>{bt.id}</p>
                             <p class="text-2xl leading-tight text-red-600">
-                                {channelArr()[appState().btIndex].currentDataSig[GET]().toFixed(1)}
+                                {bt.currentDataSig[GET]().toFixed(1)}
                             </p>
                         </div>
 
                         <div class="bg-base-300 rounded text-right w-20 px-1">
                             <p >Δ BT</p>
                             <p class="text-2xl leading-tight text-blue-600">
-                                {channelArr()[appState().btIndex].currentRorSig[GET]().toFixed(1)}
+                                {bt.currentRorSig[GET]().toFixed(1)}
                             </p>
                         </div>
 
-                        <Index each={channelIdList}>
-                            {
-                                (_item, index) => (
-                                    <Show when={index != appState().btIndex}>
-                                        <div class="bg-base-300 rounded text-right w-20 px-1">
-                                            <p>{channelArr()[index].id}</p>
-                                            <p class="text-2xl leading-tight text-red-600">
-                                                {channelArr()[index].currentDataSig[GET]().toFixed(1)}
-                                            </p>
-                                        </div>
-                                    </Show>
-                                )
-                            }
-                        </Index>
+                        <For each={channelArr().filter(c => c.id != BT)}>
+                            {(c) => (
+                                <div class="bg-base-300 rounded text-right w-20 px-1">
+                                    <p>{c.id}</p>
+                                    <p class="text-2xl leading-tight text-red-600">
+                                        {c.currentDataSig[GET]().toFixed(1)}
+                                    </p>
+                                </div>
+                            )}
+                        </For>
+
                     </div>
 
                     <div>

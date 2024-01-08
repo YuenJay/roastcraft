@@ -2,7 +2,7 @@
 
 import { onMount, Show, For, createSignal, createEffect, } from "solid-js";
 import * as d3 from "d3";
-import { GET, RoastEventId, appStateSig, BT, AppStatus, Point, Ghost } from "./AppState";
+import { GET, RoastEventId, appStateSig, BT, AppStatus, Point, Ghost, Channel } from "./AppState";
 import Annotation from "./Annotation";
 import ToolTip from "./ToolTip";
 
@@ -20,7 +20,7 @@ export default function MainChart() {
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
     const [cursorTimestamp, setCursorTimestamp] = appState().cursorTimestampSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
-    const bt = channelArr()[appState().btIndex];
+    const bt = channelArr().find(c => c.id == BT) as Channel;
 
     const [cursorIndex, setCursorIndex] = createSignal(0);
     const [cursorIndexROR, setCursorIndexROR] = createSignal(0);
@@ -132,16 +132,16 @@ export default function MainChart() {
                 )}
             </For>
             {/* rate of rise convolve */}
-            <Show when={ghost().channelArr[appState().btIndex] != undefined}>
+            <Show when={ghost().channelArr.find(c => c.id == BT) != undefined}>
                 <path
                     fill="none"
-                    stroke={ghost().channelArr[appState().btIndex].rorColor}
+                    stroke={ghost().channelArr.find(c => c.id == BT)?.rorColor}
                     stroke-width="1"
                     opacity="0.3"
                     d={d3.line()
                         .x((p: any) => xScale(p.timestamp + ghost().timeDelta))
                         .y((p: any) => yScaleROR(p.value))(
-                            ghost().channelArr[appState().btIndex].rorConvolveArr.filter((p) => (p.timestamp + ghost().timeDelta > 0)) as any
+                            ghost().channelArr.find(c => c.id == BT)?.rorConvolveArr.filter((p) => (p.timestamp + ghost().timeDelta > 0)) as any
                         ) as string | undefined
                     }
                     clip-path="url(#clip-path)"
