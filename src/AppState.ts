@@ -297,6 +297,7 @@ async function init_appStateSig() {
         toggleShowRorOutlierSig: createSignal(false),
         toggleShowRorRegressionSig: createSignal(false),
         ghostSig: createSignal(init_ghostSig()),
+        currentTabIdSig: createSignal(0),
     }
 }
 
