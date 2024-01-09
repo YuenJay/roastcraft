@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, onCleanup, Show, For, Index } from "solid-js";
+import { onMount, onCleanup, For } from "solid-js";
 import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
-import { GET, SET, BT, AppStatus, RoastEventId, Point, appStateSig, reset, RoastEvent, Channel } from "./AppState";
-import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint, timestamp_format } from "./calculate";
+import { GET, SET, BT, AppStatus, Point, appStateSig, Channel } from "./AppState";
+import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, openFileAsGhost, saveFile } from "./fileUtil";
 import DashboardPanel from "./DashboardPanel";
@@ -16,11 +16,11 @@ import SettingsPanel from "./SettingsPanel";
 function App() {
 
     const [appState, _setAppState] = appStateSig;
-    const [status, setStatus] = appState().statusSig;
-    const [timer, setTimer] = appState().timerSig;
+    const [status, _setStatus] = appState().statusSig;
+    const [timer, _setTimer] = appState().timerSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [logArr, setLogArr] = appState().logArrSig;
-    const [roastEvents, setRoastEvents] = appState().roastEventsSig;
+    const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
     const [currentTabId, setCurrentTabId] = appState().currentTabIdSig;
     const channelIdList = channelArr().map(m => m.id);
@@ -177,7 +177,7 @@ function App() {
     })
 
     function handleKeyDownEvent(event: KeyboardEvent) {
-        trace("key down event: " + event.code);
+        console.log("key down event: " + event.code);
         switch (event.code) {
             case 'KeyZ':
                 // handleCharge();
@@ -231,9 +231,22 @@ function App() {
                 <div class="h-full overflow-y-auto pr-1 flex flex-col gap-y-1">
 
                     <div role="tablist" class="tabs tabs-bordered">
-                        <a role="tab" class={`tab ${currentTabId() == 0 ? "tab-active" : ""}`} onClick={() => setCurrentTabId(0)}>Dashboard</a>
-                        <a role="tab" class={`tab ${currentTabId() == 1 ? "tab-active" : ""}`} onClick={() => setCurrentTabId(1)}>Notes</a>
-                        <a role="tab" class={`tab ${currentTabId() == 2 ? "tab-active" : ""}`} onClick={() => setCurrentTabId(2)}>Settings</a>
+                        <a role="tab" class={`tab ${currentTabId() == 0 ? "tab-active" : ""}`} onClick={() => {
+                            setCurrentTabId(0);
+                            document.addEventListener("keydown", handleKeyDownEvent);
+                        }}>Dashboard</a>
+                        <a role="tab" class={`tab ${currentTabId() == 1 ? "tab-active" : ""}`}
+                            onClick={() => {
+                                setCurrentTabId(1);
+                                // hoykey is disabled in Notes panel
+                                document.removeEventListener("keydown", handleKeyDownEvent);
+                            }}>
+                            Notes
+                        </a>
+                        <a role="tab" class={`tab ${currentTabId() == 2 ? "tab-active" : ""}`} onClick={() => {
+                            setCurrentTabId(2);
+                            document.addEventListener("keydown", handleKeyDownEvent);
+                        }}>Settings</a>
                     </div>
 
                     <div class={`flex flex-col gap-y-1 ${currentTabId() == 0 ? "" : "hidden"}`}>
