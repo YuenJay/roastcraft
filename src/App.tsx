@@ -170,9 +170,9 @@ function App() {
     });
 
     onCleanup(() => {
-        detach();
-        unlisten_reader();
-        unlisten_menu_event_listener();
+        // detach();
+        // unlisten_reader();
+        // unlisten_menu_event_listener();
     })
 
     function handleKeyDownEvent(event: KeyboardEvent) {

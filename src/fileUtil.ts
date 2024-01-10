@@ -82,6 +82,10 @@ export async function openFileAsGhost() {
 
         let loadObject = JSON.parse(content);
 
+        // use BT last Point as timer and currentData
+        let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");
+        let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
+
         let timeDelta = 0;
         let channelArr = new Array<GhostChannel>;
         let roastEvents = loadObject.roastEvents;
@@ -122,7 +126,12 @@ export async function openFileAsGhost() {
             timeDelta = - roastEvents.CHARGE.timestamp;
         }
 
-        let g = new Ghost(timeDelta, channelArr, roastEvents);
+        let manualChannelArr = loadObject.manualChannelArr;
+        manualChannelArr.forEach((mc: any) => {
+            mc.dataArr = [...mc.dataArr, { timestamp: lastBTPoint.timestamp, value: mc.dataArr[mc.dataArr.length - 1].value }]
+        });
+
+        let g = new Ghost(timeDelta, channelArr, manualChannelArr, roastEvents);
 
         setGhost(g);
 

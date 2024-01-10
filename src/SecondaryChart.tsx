@@ -2,7 +2,7 @@
 
 import { Show, createEffect, createSignal, onMount, } from "solid-js";
 import * as d3 from "d3";
-import { GET, appStateSig, ManualChannel, AppStatus } from "./AppState";
+import { GET, appStateSig, ManualChannel, AppStatus, GhostManualChannel } from "./AppState";
 import ToolTip from "./ToolTip";
 
 export default function SecondaryChart(props: { channel_id: string }) {
@@ -14,6 +14,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
     const [cursorTimestamp, setCursorTimestamp] = appState().cursorTimestampSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
+    const [ghost, _setGhost] = appState().ghostSig;
 
     const [cursorIndex, setCursorIndex] = createSignal(0);
 
@@ -87,6 +88,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
                 }
             }
         }
+
     });
 
     return (
@@ -109,6 +111,21 @@ export default function SecondaryChart(props: { channel_id: string }) {
                         [...mc.dataArr(), { timestamp: timer(), value: mc.currentDataSig[GET]() }] as any
                     ) as string | undefined}
                 />
+                <Show when={ghost().manualChannelArr.find(gmc => gmc.id == props.channel_id) != undefined}>
+                    <path
+                        opacity={0.5}
+                        clip-path="url(#clip-path-input-0)"
+                        fill="none"
+                        stroke="blue"
+                        stroke-width="1.5"
+                        d={d3.line()
+                            .x((d: any) => xScale(d.timestamp + ghost().timeDelta))
+                            .y((d: any) => yScale(d.value))
+                            .curve(d3.curveStepAfter)(
+                                ghost().manualChannelArr.find(gmc => gmc.id == props.channel_id)?.dataArr as any
+                            ) as string | undefined}
+                    />
+                </Show>
 
                 {/* realtime tooltip */}
                 <Show when={status() == AppStatus.RECORDING}>

@@ -149,15 +149,18 @@ export class Ghost {
 
     timeDelta: number;
     channelArr: Array<GhostChannel>;
+    manualChannelArr: Array<GhostManualChannel>;
     roastEvents: RoastEvents;
 
     constructor(
         timeDelta: number,
         channelArr: Array<GhostChannel>,
+        manualChannelArr: Array<GhostManualChannel>,
         roastEvents: RoastEvents,
     ) {
         this.timeDelta = timeDelta;
         this.channelArr = channelArr;
+        this.manualChannelArr = manualChannelArr;
         this.roastEvents = roastEvents;
     }
 }
@@ -184,6 +187,19 @@ export class GhostChannel {
     }
 }
 
+export class GhostManualChannel {
+    id: string;
+    dataArr: Array<Point>;
+
+    constructor(
+        id: string,
+        dataArr: Array<Point>,
+    ) {
+        this.id = id;
+        this.dataArr = dataArr;
+    }
+}
+
 export class RoastProperty {
     title: string = "";
     weightGreen = 0;
@@ -200,7 +216,8 @@ export class RoastProperty {
 function init_ghostSig() {
     let timeDelta = 0;
     let channelArr = [new GhostChannel("", "", "", new Array<Point>, new Array<Point>)]
-    return new Ghost(timeDelta, channelArr, {} as RoastEvents);
+    let manualChannelArr = new Array<GhostManualChannel>;
+    return new Ghost(timeDelta, channelArr, manualChannelArr, {} as RoastEvents);
 }
 
 async function init_appStateSig() {

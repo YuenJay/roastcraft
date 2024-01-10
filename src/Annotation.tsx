@@ -36,12 +36,12 @@ export default function Annotation(props: any) {
                 setYRect(props.y - props.length - hRect() - 2);
                 break;
             case "topRight":
-                setXLineStart(props.x + 2.5);
+                setXLineStart(props.x + 1);
                 setYLineStart(props.y - 2.5);
-                setXLineEnd(props.x + props.length / 1.4);
-                setYLineEnd(props.y - props.length / 1.4);
-                setXRect(props.x + props.length / 1.4);
-                setYRect(props.y - props.length / 1.4 - hRect());
+                setXLineEnd(props.x + props.length / 2);
+                setYLineEnd(props.y - props.length);
+                setXRect(props.x + props.length / 2);
+                setYRect(props.y - props.length - hRect());
                 break;
             case "right":
                 setXLineStart(props.x + 4);
@@ -52,12 +52,12 @@ export default function Annotation(props: any) {
                 setYRect(props.y - 0.5 * hRect());
                 break;
             case "bottomRight":
-                setXLineStart(props.x + 2.5);
+                setXLineStart(props.x + 1);
                 setYLineStart(props.y + 2.5);
-                setXLineEnd(props.x + props.length / 1.4);
-                setYLineEnd(props.y + props.length / 1.4);
-                setXRect(props.x + props.length / 1.4);
-                setYRect(props.y + props.length / 1.4);
+                setXLineEnd(props.x + props.length / 2);
+                setYLineEnd(props.y + props.length);
+                setXRect(props.x + props.length / 2);
+                setYRect(props.y + props.length);
                 break;
             case "bottom":
                 setXLineStart(props.x);
@@ -68,12 +68,12 @@ export default function Annotation(props: any) {
                 setYRect(props.y + props.length + 2);
                 break;
             case "bottomLeft":
-                setXLineStart(props.x - 2.5);
+                setXLineStart(props.x - 1);
                 setYLineStart(props.y + 2.5);
-                setXLineEnd(props.x - props.length / 1.4);
-                setYLineEnd(props.y + props.length / 1.4);
-                setXRect(props.x - props.length / 1.4 - wRect());
-                setYRect(props.y + props.length / 1.4);
+                setXLineEnd(props.x - props.length / 2);
+                setYLineEnd(props.y + props.length);
+                setXRect(props.x - props.length / 2 - wRect());
+                setYRect(props.y + props.length);
                 break;
             case "left":
                 setXLineStart(props.x - 4);
@@ -84,12 +84,12 @@ export default function Annotation(props: any) {
                 setYRect(props.y - 0.5 * hRect());
                 break;
             case "topLeft":
-                setXLineStart(props.x - 2.5);
+                setXLineStart(props.x - 1);
                 setYLineStart(props.y - 2.5);
-                setXLineEnd(props.x - props.length / 1.4);
-                setYLineEnd(props.y - props.length / 1.4);
-                setXRect(props.x - props.length / 1.4 - wRect());
-                setYRect(props.y - props.length / 1.4 - hRect());
+                setXLineEnd(props.x - props.length / 2);
+                setYLineEnd(props.y - props.length);
+                setXRect(props.x - props.length / 2 - wRect());
+                setYRect(props.y - props.length - hRect());
                 break;
 
             default:
