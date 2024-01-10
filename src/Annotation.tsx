@@ -19,31 +19,81 @@ export default function Annotation(props: any) {
     const [xLineEnd, setXLineEnd] = createSignal(0);
     const [yLineEnd, setYLineEnd] = createSignal(0);
 
-    let length = 20;
+    let x = props.x;
+    let y = props.y;
+    let length = props.length;
 
     createEffect(() => {
         line1();
         let g = d3.select(gRef).node() as SVGGraphicsElement;
         let box = g.getBBox();
         setWRect(box.width + 4);
-        setHRect(box.height);
+        setHRect(box.height + 2);
 
         switch (props.direction) {
             case "top":
-                setXLineStart(props.x);
-                setYLineStart(props.y - 4);
-                setXLineEnd(props.x);
-                setYLineEnd(props.y - length);
-                setXRect(props.x - 0.5 * wRect());
-                setYRect(props.y - length - hRect() - 2);
+                setXLineStart(x);
+                setYLineStart(y - 4);
+                setXLineEnd(x);
+                setYLineEnd(y - length);
+                setXRect(x - 0.5 * wRect());
+                setYRect(y - length - hRect() - 2);
+                break;
+            case "topRight":
+                setXLineStart(x + 2.5);
+                setYLineStart(y - 2.5);
+                setXLineEnd(x + length / 1.4);
+                setYLineEnd(y - length / 1.4);
+                setXRect(x + length / 1.4);
+                setYRect(y - length / 1.4 - hRect());
+                break;
+            case "right":
+                setXLineStart(x + 4);
+                setYLineStart(y);
+                setXLineEnd(x + length);
+                setYLineEnd(y);
+                setXRect(x + length + 2);
+                setYRect(y - 0.5 * hRect());
+                break;
+            case "bottomRight":
+                setXLineStart(x + 2.5);
+                setYLineStart(y + 2.5);
+                setXLineEnd(x + length / 1.4);
+                setYLineEnd(y + length / 1.4);
+                setXRect(x + length / 1.4);
+                setYRect(y + length / 1.4);
                 break;
             case "bottom":
-                setXLineStart(props.x);
-                setYLineStart(props.y + 4);
-                setXLineEnd(props.x);
-                setYLineEnd(props.y + length);
-                setXRect(props.x - 0.5 * wRect());
-                setYRect(props.y + length + 2);
+                setXLineStart(x);
+                setYLineStart(y + 4);
+                setXLineEnd(x);
+                setYLineEnd(y + length);
+                setXRect(x - 0.5 * wRect());
+                setYRect(y + length + 2);
+                break;
+            case "bottomLeft":
+                setXLineStart(x - 2.5);
+                setYLineStart(y + 2.5);
+                setXLineEnd(x - length / 1.4);
+                setYLineEnd(y + length / 1.4);
+                setXRect(x - length / 1.4 - wRect());
+                setYRect(y + length / 1.4);
+                break;
+            case "left":
+                setXLineStart(x - 4);
+                setYLineStart(y);
+                setXLineEnd(x - length);
+                setYLineEnd(y);
+                setXRect(x - length - wRect() - 2);
+                setYRect(y - 0.5 * hRect());
+                break;
+            case "topLeft":
+                setXLineStart(x - 2.5);
+                setYLineStart(y - 2.5);
+                setXLineEnd(x - length / 1.4);
+                setYLineEnd(y - length / 1.4);
+                setXRect(x - length / 1.4 - wRect());
+                setYRect(y - length / 1.4 - hRect());
                 break;
 
             default:
@@ -57,7 +107,7 @@ export default function Annotation(props: any) {
             <circle
                 fill="none"
                 stroke="#000000"
-                stroke-width="1"
+                stroke-width="0.5"
                 cx={props.x}
                 cy={props.y}
                 r="2" />
@@ -84,7 +134,7 @@ export default function Annotation(props: any) {
                     fill="black"
                     x={xRect()}
                     y={yRect()}
-                    dy="1em"
+                    dy="1.1em"
                     dx="2">
                     {line1()}
                 </text>
@@ -93,7 +143,7 @@ export default function Annotation(props: any) {
                     fill="black"
                     x={xRect()}
                     y={yRect()}
-                    dy="2em"
+                    dy="2.2em"
                     dx="2">
                     {props.line2}
                 </text>
@@ -102,7 +152,7 @@ export default function Annotation(props: any) {
                     fill="black"
                     x={xRect()}
                     y={yRect()}
-                    dy="3em"
+                    dy="3.3em"
                     dx="2">
                     {props.line3}
                 </text>

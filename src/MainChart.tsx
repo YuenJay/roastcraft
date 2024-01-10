@@ -238,7 +238,8 @@ export default function MainChart() {
                     <Annotation
                         x={xScale(item.timestamp + timeDelta())}
                         y={item.id == RoastEventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
-                        direction="top"
+                        length={20}
+                        direction="topRight"
                         line1={item.id}
                         line2={timestamp_format(item.timestamp + timeDelta())}
                         line3={item.value.toFixed(1)}
