@@ -19,10 +19,6 @@ export default function Annotation(props: any) {
     const [xLineEnd, setXLineEnd] = createSignal(0);
     const [yLineEnd, setYLineEnd] = createSignal(0);
 
-    let x = props.x;
-    let y = props.y;
-    let length = props.length;
-
     createEffect(() => {
         line1();
         let g = d3.select(gRef).node() as SVGGraphicsElement;
@@ -32,68 +28,68 @@ export default function Annotation(props: any) {
 
         switch (props.direction) {
             case "top":
-                setXLineStart(x);
-                setYLineStart(y - 4);
-                setXLineEnd(x);
-                setYLineEnd(y - length);
-                setXRect(x - 0.5 * wRect());
-                setYRect(y - length - hRect() - 2);
+                setXLineStart(props.x);
+                setYLineStart(props.y - 4);
+                setXLineEnd(props.x);
+                setYLineEnd(props.y - props.length);
+                setXRect(props.x - 0.5 * wRect());
+                setYRect(props.y - props.length - hRect() - 2);
                 break;
             case "topRight":
-                setXLineStart(x + 2.5);
-                setYLineStart(y - 2.5);
-                setXLineEnd(x + length / 1.4);
-                setYLineEnd(y - length / 1.4);
-                setXRect(x + length / 1.4);
-                setYRect(y - length / 1.4 - hRect());
+                setXLineStart(props.x + 2.5);
+                setYLineStart(props.y - 2.5);
+                setXLineEnd(props.x + props.length / 1.4);
+                setYLineEnd(props.y - props.length / 1.4);
+                setXRect(props.x + props.length / 1.4);
+                setYRect(props.y - props.length / 1.4 - hRect());
                 break;
             case "right":
-                setXLineStart(x + 4);
-                setYLineStart(y);
-                setXLineEnd(x + length);
-                setYLineEnd(y);
-                setXRect(x + length + 2);
-                setYRect(y - 0.5 * hRect());
+                setXLineStart(props.x + 4);
+                setYLineStart(props.y);
+                setXLineEnd(props.x + props.length);
+                setYLineEnd(props.y);
+                setXRect(props.x + props.length + 2);
+                setYRect(props.y - 0.5 * hRect());
                 break;
             case "bottomRight":
-                setXLineStart(x + 2.5);
-                setYLineStart(y + 2.5);
-                setXLineEnd(x + length / 1.4);
-                setYLineEnd(y + length / 1.4);
-                setXRect(x + length / 1.4);
-                setYRect(y + length / 1.4);
+                setXLineStart(props.x + 2.5);
+                setYLineStart(props.y + 2.5);
+                setXLineEnd(props.x + props.length / 1.4);
+                setYLineEnd(props.y + props.length / 1.4);
+                setXRect(props.x + props.length / 1.4);
+                setYRect(props.y + props.length / 1.4);
                 break;
             case "bottom":
-                setXLineStart(x);
-                setYLineStart(y + 4);
-                setXLineEnd(x);
-                setYLineEnd(y + length);
-                setXRect(x - 0.5 * wRect());
-                setYRect(y + length + 2);
+                setXLineStart(props.x);
+                setYLineStart(props.y + 4);
+                setXLineEnd(props.x);
+                setYLineEnd(props.y + props.length);
+                setXRect(props.x - 0.5 * wRect());
+                setYRect(props.y + props.length + 2);
                 break;
             case "bottomLeft":
-                setXLineStart(x - 2.5);
-                setYLineStart(y + 2.5);
-                setXLineEnd(x - length / 1.4);
-                setYLineEnd(y + length / 1.4);
-                setXRect(x - length / 1.4 - wRect());
-                setYRect(y + length / 1.4);
+                setXLineStart(props.x - 2.5);
+                setYLineStart(props.y + 2.5);
+                setXLineEnd(props.x - props.length / 1.4);
+                setYLineEnd(props.y + props.length / 1.4);
+                setXRect(props.x - props.length / 1.4 - wRect());
+                setYRect(props.y + props.length / 1.4);
                 break;
             case "left":
-                setXLineStart(x - 4);
-                setYLineStart(y);
-                setXLineEnd(x - length);
-                setYLineEnd(y);
-                setXRect(x - length - wRect() - 2);
-                setYRect(y - 0.5 * hRect());
+                setXLineStart(props.x - 4);
+                setYLineStart(props.y);
+                setXLineEnd(props.x - props.length);
+                setYLineEnd(props.y);
+                setXRect(props.x - props.length - wRect() - 2);
+                setYRect(props.y - 0.5 * hRect());
                 break;
             case "topLeft":
-                setXLineStart(x - 2.5);
-                setYLineStart(y - 2.5);
-                setXLineEnd(x - length / 1.4);
-                setYLineEnd(y - length / 1.4);
-                setXRect(x - length / 1.4 - wRect());
-                setYRect(y - length / 1.4 - hRect());
+                setXLineStart(props.x - 2.5);
+                setYLineStart(props.y - 2.5);
+                setXLineEnd(props.x - props.length / 1.4);
+                setYLineEnd(props.y - props.length / 1.4);
+                setXRect(props.x - props.length / 1.4 - wRect());
+                setYRect(props.y - props.length / 1.4 - hRect());
                 break;
 
             default:

@@ -26,16 +26,24 @@ export default function ToolTip(props: any) {
             <circle
                 fill={props.color}
                 stroke={props.color}
-                stroke-width="1"
+                stroke-width="0.5"
                 cx={props.x}
                 cy={props.y}
-                r="1.5" />
+                r="2" />
+
+            <line stroke="#777777"
+                stroke-width="1"
+                x1={props.x}
+                y1={props.y}
+                x2={props.x + 12}
+                y2={props.y - 6}
+            ></line>
 
             <rect
                 style="fill:#E6E6FA"
                 rx="2"
-                x={props.x + 3}
-                y={props.y - h() / 2}
+                x={props.x + 12 + 2}
+                y={props.y - h() - 6}
                 width={w()}
                 height={h()}
             />
@@ -43,8 +51,8 @@ export default function ToolTip(props: any) {
             <text ref={textRef}
                 font-size="0.8em"
                 fill={props.color}
-                x={props.x}
-                y={props.y}
+                x={props.x + 12}
+                y={props.y - h() / 2 - 6}
                 dy="0.4em"
                 dx="4">
                 {value()}
