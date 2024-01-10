@@ -147,6 +147,20 @@ export default function MainChart() {
                     clip-path="url(#clip-path)"
                 />
             </Show>
+            <For each={Object.values(ghost().roastEvents).filter((e) => e != undefined)}>
+                {(item) => (
+                    <Annotation
+                        opacity={0.5}
+                        x={xScale(item.timestamp + ghost().timeDelta)}
+                        y={item.id == RoastEventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
+                        length={60}
+                        direction="bottomRight"
+                        line1={item.id}
+                        line2={timestamp_format(item.timestamp + ghost().timeDelta)}
+                        line3={item.value.toFixed(1)}
+                    />
+                )}
+            </For>
 
             {/* ROR linear regression */}
             <Show when={appState().roastEventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>
@@ -236,10 +250,11 @@ export default function MainChart() {
             <For each={Object.values(roastEvents()).filter((e) => e != undefined)}>
                 {(item) => (
                     <Annotation
+                        opacity={1}
                         x={xScale(item.timestamp + timeDelta())}
                         y={item.id == RoastEventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
                         length={20}
-                        direction="topRight"
+                        direction="bottomRight"
                         line1={item.id}
                         line2={timestamp_format(item.timestamp + timeDelta())}
                         line3={item.value.toFixed(1)}

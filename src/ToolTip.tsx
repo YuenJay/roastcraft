@@ -31,10 +31,11 @@ export default function ToolTip(props: any) {
                 cy={props.y}
                 r="2" />
 
-            <line stroke="#777777"
-                stroke-width="1"
-                x1={props.x}
-                y1={props.y}
+            <line stroke="black"
+                opacity={0.5}
+                stroke-width="0.5"
+                x1={props.x + 3}
+                y1={props.y - 2}
                 x2={props.x + 12}
                 y2={props.y - 6}
             ></line>

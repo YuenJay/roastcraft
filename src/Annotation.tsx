@@ -99,7 +99,7 @@ export default function Annotation(props: any) {
     });
 
     return (
-        <>
+        <g opacity={props.opacity}>
             <circle
                 fill="none"
                 stroke="#000000"
@@ -153,7 +153,7 @@ export default function Annotation(props: any) {
                     {props.line3}
                 </text>
             </g>
-        </>
+        </g>
 
     )
 }

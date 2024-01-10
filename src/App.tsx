@@ -89,11 +89,10 @@ function App() {
             calculatePhases();
 
             // dump bt data to console
-
-            console.log(bt.dataArr());
-            console.log(bt.rorArrSig[GET]());
-            console.log(bt.rorFilteredArrSig[GET]());
-            console.log(bt.rorConvolveArrSig[GET]());
+            // console.log(bt.dataArr());
+            // console.log(bt.rorArrSig[GET]());
+            // console.log(bt.rorFilteredArrSig[GET]());
+            // console.log(bt.rorConvolveArrSig[GET]());
 
         });
 
