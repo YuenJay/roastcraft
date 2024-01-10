@@ -106,7 +106,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
                     clip-path="url(#clip-path-input-0)"
                     fill="none"
                     stroke="blue"
-                    stroke-width="1.5"
+                    stroke-width="1"
                     d={line(
                         [...mc.dataArr(), { timestamp: timer(), value: mc.currentDataSig[GET]() }] as any
                     ) as string | undefined}
@@ -117,10 +117,10 @@ export default function SecondaryChart(props: { channel_id: string }) {
                         clip-path="url(#clip-path-input-0)"
                         fill="none"
                         stroke="blue"
-                        stroke-width="1.5"
+                        stroke-width="1"
                         d={d3.line()
-                            .x((d: any) => xScale(d.timestamp + ghost().timeDelta))
-                            .y((d: any) => yScale(d.value))
+                            .x((d: any) => xScale(d.timestamp + ghost().timeDelta) - 1)
+                            .y((d: any) => yScale(d.value) + 1)
                             .curve(d3.curveStepAfter)(
                                 ghost().manualChannelArr.find(gmc => gmc.id == props.channel_id)?.dataArr as any
                             ) as string | undefined}
