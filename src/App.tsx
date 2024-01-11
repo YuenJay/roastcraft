@@ -86,7 +86,7 @@ function App() {
             autoDetectChargeDrop();
             findTurningPoint();
             findDryEnd();
-            calculatePhases();
+            calculatePhases(timer(), bt.currentDataSig[GET]());
 
             // dump bt data to console
             // console.log(bt.dataArr());
@@ -170,9 +170,9 @@ function App() {
     });
 
     onCleanup(() => {
-        // detach();
-        // unlisten_reader();
-        // unlisten_menu_event_listener();
+        detach();
+        unlisten_reader();
+        unlisten_menu_event_listener();
     })
 
     function handleKeyDownEvent(event: KeyboardEvent) {

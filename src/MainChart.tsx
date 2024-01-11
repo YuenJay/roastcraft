@@ -44,7 +44,7 @@ export default function MainChart() {
         marginTop,
     ]);
 
-    const yScaleROR = d3.scaleLinear([0, 35], [
+    const yScaleROR = d3.scaleLinear([0, 28], [
         height - marginBottom,
         marginTop,
     ]);

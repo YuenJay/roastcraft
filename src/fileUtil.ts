@@ -23,12 +23,6 @@ export async function openFile() {
 
         let loadObject = JSON.parse(content);
 
-        // use BT last Point as timer and currentData
-        let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");
-        let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
-        appState().timerSig[SET](lastBTPoint.timestamp);
-        bt.currentDataSig[SET](lastBTPoint.value);
-
         loadObject.channelArr.forEach((c: any) => {
             let channel = appState().channelArrSig[GET]().find((channel) => channel.id == c.id);
             if (channel) {
@@ -61,7 +55,12 @@ export async function openFile() {
         findRorOutlier(bt);
         findROR_TP(bt);
 
-        calculatePhases();
+        // use BT last Point as timer and currentData
+        let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");
+        let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
+        appState().timerSig[SET](lastBTPoint.timestamp);
+
+        calculatePhases(lastBTPoint.timestamp, lastBTPoint.value);
     } catch (e) {
         console.log(e);
     }

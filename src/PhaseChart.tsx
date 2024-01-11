@@ -68,7 +68,7 @@ export default function PhaseChart() {
                 (d) => (<>
 
                     <rect
-                        fill="steelblue"
+                        fill="#4682B4"
                         x={x(0)}
                         y={y(d.id)}
                         width={x(d.phase().percent) - x(0)}

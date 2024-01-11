@@ -2,7 +2,7 @@
 
 import { Show, createEffect, createSignal, onMount, } from "solid-js";
 import * as d3 from "d3";
-import { GET, appStateSig, ManualChannel, AppStatus, GhostManualChannel } from "./AppState";
+import { GET, appStateSig, ManualChannel, AppStatus } from "./AppState";
 import ToolTip from "./ToolTip";
 
 export default function SecondaryChart(props: { channel_id: string }) {
@@ -102,30 +102,30 @@ export default function SecondaryChart(props: { channel_id: string }) {
                         <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
                     </clipPath>
                 </defs>
-                <path
-                    clip-path="url(#clip-path-input-0)"
-                    fill="none"
-                    stroke="blue"
-                    stroke-width="1"
-                    d={line(
-                        [...mc.dataArr(), { timestamp: timer(), value: mc.currentDataSig[GET]() }] as any
-                    ) as string | undefined}
-                />
                 <Show when={ghost().manualChannelArr.find(gmc => gmc.id == props.channel_id) != undefined}>
                     <path
-                        opacity={0.5}
+                        opacity={0.8}
                         clip-path="url(#clip-path-input-0)"
                         fill="none"
-                        stroke="blue"
+                        stroke="#FF8C00"
                         stroke-width="1"
                         d={d3.line()
-                            .x((d: any) => xScale(d.timestamp + ghost().timeDelta) - 1)
-                            .y((d: any) => yScale(d.value) + 1)
+                            .x((d: any) => xScale(d.timestamp + ghost().timeDelta))
+                            .y((d: any) => yScale(d.value))
                             .curve(d3.curveStepAfter)(
                                 ghost().manualChannelArr.find(gmc => gmc.id == props.channel_id)?.dataArr as any
                             ) as string | undefined}
                     />
                 </Show>
+                <path
+                    clip-path="url(#clip-path-input-0)"
+                    fill="none"
+                    stroke="#0000CD"
+                    stroke-width="1.5"
+                    d={line(
+                        [...mc.dataArr(), { timestamp: timer(), value: mc.currentDataSig[GET]() }] as any
+                    ) as string | undefined}
+                />
 
                 {/* realtime tooltip */}
                 <Show when={status() == AppStatus.RECORDING}>

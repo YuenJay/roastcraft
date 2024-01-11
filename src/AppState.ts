@@ -341,6 +341,7 @@ export function reset() {
     })
 
     manualChannelArr().forEach((mc) => {
+        mc.currentDataSig[SET](mc.defaultValue);
         mc.setDataArr([new Point(0, mc.defaultValue)]);
     });
 

@@ -61,7 +61,7 @@ export default function PhaseTempChart() {
             <For each={data}>{
                 (d) => (<>
                     <rect
-                        fill="darkorange"
+                        fill="#FF8C00"
                         x={x(0)}
                         y={y(d.id)}
                         width={x(d.phase().temp_rise) - x(0)}
