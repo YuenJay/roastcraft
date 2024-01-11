@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { For, } from "solid-js";
-import { GET, SET, Point, appStateSig, ManualChannel } from "./AppState";
+import { SET, Point, appStateSig, ManualChannel, AppStatus, GET } from "./AppState";
 
 export default function RangeInput(props: { channel_id: string }) {
 
     const [appState, _setAppState] = appStateSig;
+    const [status, _setStatus] = appState().statusSig;
     const [timer, _setTimer] = appState().timerSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
 
@@ -14,7 +15,6 @@ export default function RangeInput(props: { channel_id: string }) {
     let min = mc.min;
     let max = mc.max;
     let step = mc.step;
-    let defaultValue = mc.defaultValue;
 
     let pips: number[] = [];
     for (let i = 0; i < (max - min) / step; i++) {
@@ -40,12 +40,13 @@ export default function RangeInput(props: { channel_id: string }) {
             </div>
             <input
                 type="range"
-                class="range range-primary range-xs"
+                class="w-full accent-blue-700"
                 min={min}
                 max={max}
-                value={defaultValue}
+                value={mc.currentDataSig[GET]()}
                 step={step}
                 onInput={handleInput}
+                disabled={status() == AppStatus.OFF}
             />
             <div class="w-full flex justify-between text-xs px-2 pb-4 relative">
                 <For each={pips}>

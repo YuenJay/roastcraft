@@ -98,7 +98,9 @@ export default function DashboardPanel(props: any) {
             {/* timer and on/off buttons */}
             <div class="flex flex-wrap gap-1">
                 <div class="flex items-center justify-center bg-black text-white rounded text-4xl font-extrabold w-28 ">
-                    {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
+                    <Show when={status() == AppStatus.ON || status() == AppStatus.RECORDING} fallback={"00:00"}>
+                        {timestamp_format(timer() + appState().timeDeltaSig[GET]())}
+                    </Show>
                 </div>
                 <Show when={status() == AppStatus.OFF}>
                     <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonResetClicked}>RESET
@@ -161,43 +163,64 @@ export default function DashboardPanel(props: any) {
             {/* event buttons */}
             <div class="flex flex-wrap gap-1">
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleCharge}>
                     CHARGE
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Z</span>
                 </button>
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleDryEnd}>
                     DRY END
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">X</span>
                 </button>
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleFCStart}>
                     FC START
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">C</span>
                 </button>
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleFCEnd}>
                     FC END
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">V</span>
                 </button>
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleSCStart}>
                     SC START
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">B</span>
                 </button>
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleSCEnd}>
                     SC END
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">N</span>
                 </button>
 
-                <button class={`relative btn btn-primary rounded w-20 ${roastEvents().DROP != undefined ? "btn-disabled" : ""}`}
+                <button class={`relative btn btn-primary rounded w-20 
+                    ${roastEvents().DROP != undefined ? "btn-disabled" : ""}
+                    ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
+                    `}
                     onClick={handleDrop}>
                     DROP
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">M</span>
