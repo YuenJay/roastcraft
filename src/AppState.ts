@@ -372,3 +372,7 @@ export function reset() {
     appState().toggleShowRorRegressionSig[SET](false);
 
 }
+
+export function resetGhost() {
+    appStateSig[GET]().ghostSig[SET](init_ghostSig());
+}

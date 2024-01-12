@@ -5,7 +5,7 @@ import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
-import { GET, SET, BT, AppStatus, Point, appStateSig, Channel } from "./AppState";
+import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost } from "./AppState";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, loadGhost, saveFile } from "./fileUtil";
@@ -109,7 +109,7 @@ function App() {
                     loadGhost();
                     break;
                 case "RESET_GHOST":
-
+                    resetGhost();
                     break;
                 default:
                     break;

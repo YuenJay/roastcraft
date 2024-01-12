@@ -110,19 +110,24 @@ async fn get_config(app: tauri::AppHandle) -> Config {
 }
 
 fn main() {
+    const OPEN_FILE: &str = "OPEN_FILE";
+    const SAVE_FILE: &str = "SAVE_FILE";
+    const LOAD_GHOST: &str = "LOAD_GHOST";
+    const RESET_GHOST: &str = "RESET_GHOST";
+
     let submenu = Submenu::new(
         "File",
         Menu::new()
-            .add_item(CustomMenuItem::new("open_file".to_string(), "Open"))
-            .add_item(CustomMenuItem::new("save_file".to_string(), "Save"))
+            .add_item(CustomMenuItem::new(OPEN_FILE.to_string(), "Open"))
+            .add_item(CustomMenuItem::new(SAVE_FILE.to_string(), "Save"))
             .add_native_item(MenuItem::Quit),
     );
 
     let ghost_submenu = Submenu::new(
         "Ghost",
         Menu::new()
-            .add_item(CustomMenuItem::new("load_ghost".to_string(), "Load"))
-            .add_item(CustomMenuItem::new("reset_Ghost".to_string(), "Reset")),
+            .add_item(CustomMenuItem::new(LOAD_GHOST.to_string(), "Load"))
+            .add_item(CustomMenuItem::new(RESET_GHOST.to_string(), "Reset")),
     );
 
     let menu = Menu::new().add_submenu(submenu).add_submenu(ghost_submenu);
@@ -130,17 +135,17 @@ fn main() {
     tauri::Builder::default()
         .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
-            "open_file" => {
-                event.window().emit("menu_event", "OPEN_FILE").unwrap();
+            OPEN_FILE => {
+                event.window().emit("menu_event", OPEN_FILE).unwrap();
             }
-            "save_file" => {
-                event.window().emit("menu_event", "SAVE_FILE").unwrap();
+            SAVE_FILE => {
+                event.window().emit("menu_event", SAVE_FILE).unwrap();
             }
-            "load_ghost" => {
-                event.window().emit("menu_event", "LOAD_GHOST").unwrap();
+            LOAD_GHOST => {
+                event.window().emit("menu_event", LOAD_GHOST).unwrap();
             }
-            "reset_ghost" => {
-                event.window().emit("menu_event", "RESET_GHOST").unwrap();
+            RESET_GHOST => {
+                event.window().emit("menu_event", RESET_GHOST).unwrap();
             }
             _ => {}
         })
