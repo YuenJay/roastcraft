@@ -8,7 +8,7 @@ import MainChart from "./MainChart";
 import { GET, SET, BT, AppStatus, Point, appStateSig, Channel } from "./AppState";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
-import { openFile, openFileAsGhost, saveFile } from "./fileUtil";
+import { openFile, loadGhost, saveFile } from "./fileUtil";
 import DashboardPanel from "./DashboardPanel";
 import NotesPanel from "./NotesPanel";
 import SettingsPanel from "./SettingsPanel";
@@ -99,17 +99,18 @@ function App() {
         // event listener
         unlisten_menu_event_listener = await listen("menu_event", (event) => {
             switch (event.payload) {
-                case "OPEN":
+                case "OPEN_FILE":
                     openFile();
                     break;
-                case "GHOST":
-                    openFileAsGhost();
-                    break;
-
-                case "SAVE":
+                case "SAVE_FILE":
                     saveFile();
                     break;
+                case "LOAD_GHOST":
+                    loadGhost();
+                    break;
+                case "RESET_GHOST":
 
+                    break;
                 default:
                     break;
             }

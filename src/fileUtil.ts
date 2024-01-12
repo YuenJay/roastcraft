@@ -66,7 +66,7 @@ export async function openFile() {
     }
 }
 
-export async function openFileAsGhost() {
+export async function loadGhost() {
     const [appState, _setAppState] = appStateSig;
     const [ghost, setGhost] = appState().ghostSig;
 

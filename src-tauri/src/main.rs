@@ -110,35 +110,37 @@ async fn get_config(app: tauri::AppHandle) -> Config {
 }
 
 fn main() {
-    let open = CustomMenuItem::new("open".to_string(), "Open");
-    let ghost = CustomMenuItem::new("ghost".to_string(), "Ghost");
-    let save = CustomMenuItem::new("save".to_string(), "Save");
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-
     let submenu = Submenu::new(
         "File",
         Menu::new()
-            .add_item(open)
-            .add_item(ghost)
-            .add_item(save)
-            .add_item(quit),
+            .add_item(CustomMenuItem::new("open_file".to_string(), "Open"))
+            .add_item(CustomMenuItem::new("save_file".to_string(), "Save"))
+            .add_native_item(MenuItem::Quit),
     );
-    let menu = Menu::new().add_submenu(submenu);
+
+    let ghost_submenu = Submenu::new(
+        "Ghost",
+        Menu::new()
+            .add_item(CustomMenuItem::new("load_ghost".to_string(), "Load"))
+            .add_item(CustomMenuItem::new("reset_Ghost".to_string(), "Reset")),
+    );
+
+    let menu = Menu::new().add_submenu(submenu).add_submenu(ghost_submenu);
 
     tauri::Builder::default()
         .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
-            "open" => {
-                event.window().emit("menu_event", "OPEN").unwrap();
+            "open_file" => {
+                event.window().emit("menu_event", "OPEN_FILE").unwrap();
             }
-            "ghost" => {
-                event.window().emit("menu_event", "GHOST").unwrap();
+            "save_file" => {
+                event.window().emit("menu_event", "SAVE_FILE").unwrap();
             }
-            "save" => {
-                event.window().emit("menu_event", "SAVE").unwrap();
+            "load_ghost" => {
+                event.window().emit("menu_event", "LOAD_GHOST").unwrap();
             }
-            "quit" => {
-                std::process::exit(0);
+            "reset_ghost" => {
+                event.window().emit("menu_event", "RESET_GHOST").unwrap();
             }
             _ => {}
         })

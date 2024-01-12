@@ -108,7 +108,7 @@ export default function SecondaryChart(props: { channel_id: string }) {
                         clip-path="url(#clip-path-input-0)"
                         fill="none"
                         stroke="#FF8C00"
-                        stroke-width="1"
+                        stroke-width="1.5"
                         d={d3.line()
                             .x((d: any) => xScale(d.timestamp + ghost().timeDelta))
                             .y((d: any) => yScale(d.value))
