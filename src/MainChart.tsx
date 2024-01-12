@@ -25,7 +25,7 @@ export default function MainChart() {
     const [cursorIndex, setCursorIndex] = createSignal(0);
     const [cursorIndexROR, setCursorIndexROR] = createSignal(0);
 
-    const [ghost, setGhost] = appState().ghostSig;
+    const [ghost, _setGhost] = appState().ghostSig;
 
     const width = 800;
     const height = 400;
@@ -323,7 +323,7 @@ export default function MainChart() {
                         <ToolTip
                             x={xScale(c.dataArr()[cursorIndex()].timestamp + timeDelta())}
                             y={yScale(c.dataArr()[cursorIndex()].value)}
-                            text={c.dataArr()[cursorIndex()].value}
+                            text={c.dataArr()[cursorIndex()].value.toFixed(1)}
                             color={c.color}
                         />
                     </Show>
@@ -333,7 +333,7 @@ export default function MainChart() {
                 <ToolTip
                     x={xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta())}
                     y={yScale(bt.dataArr()[cursorIndex()].value)}
-                    text={bt.dataArr()[cursorIndex()].value}
+                    text={bt.dataArr()[cursorIndex()].value.toFixed(1)}
                     color={bt.color}
                 />
             </Show>

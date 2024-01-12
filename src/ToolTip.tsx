@@ -12,17 +12,29 @@ export default function ToolTip(props: any) {
     const [w, setW] = createSignal(0);
     const [h, setH] = createSignal(0);
 
+    let deltaX = 12;
+    let deltaY = -6;
+
     createEffect(() => {
         value();
         let text = d3.select(textRef).node() as SVGGraphicsElement;
         let box = text.getBBox();
-        setW(box.width + 4);
+        setW(box.width + 2);
         setH(box.height);
 
     });
 
     return (
         <>
+            <line stroke="black"
+                opacity={0.5}
+                stroke-width="0.5"
+                x1={props.x}
+                y1={props.y}
+                x2={props.x + deltaX}
+                y2={props.y + deltaY}
+            ></line>
+
             <circle
                 fill={props.color}
                 stroke={props.color}
@@ -31,33 +43,24 @@ export default function ToolTip(props: any) {
                 cy={props.y}
                 r="2" />
 
-            <line stroke="black"
-                opacity={0.5}
-                stroke-width="0.5"
-                x1={props.x + 3}
-                y1={props.y - 2}
-                x2={props.x + 12}
-                y2={props.y - 6}
-            ></line>
-
             <rect
                 style="fill:#E6E6FA"
                 rx="2"
-                x={props.x + 12 + 2}
-                y={props.y - h() - 6}
+                x={props.x + deltaX + 1}
+                y={props.y - h() / 2 + deltaY}
                 width={w()}
                 height={h()}
             />
 
             <text ref={textRef}
-                font-size="0.8em"
+                font-size="0.7em"
                 fill={props.color}
-                x={props.x + 12}
-                y={props.y - h() / 2 - 6}
+                x={props.x + deltaX}
+                y={props.y + deltaY}
                 dy="0.4em"
-                dx="4">
+                dx="2">
                 {value()}
-            </text>
+            </text >
 
         </>
 
