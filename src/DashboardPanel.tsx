@@ -6,9 +6,8 @@ import { GET, SET, BT, AppStatus, RoastEventId, appStateSig, reset, RoastEvent, 
 import { timestamp_format } from "./calculate";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
-import PhaseChart from "./PhaseChart";
-import PhaseTempChart from "./PhaseTempChart";
 import RangeInput from "./RangeInput";
+import PhaseChart2 from "./PhaseChart2";
 
 
 export default function DashboardPanel(props: any) {
@@ -162,38 +161,12 @@ export default function DashboardPanel(props: any) {
 
             </div>
             <div>
-                <Show when={appState().isGhostLoadedSig[GET]()}>
-                    <PhaseChart data={
-                        [
-                            { id: "Dry", phase: ghost().dryingPhase },
-                            { id: "Mai", phase: ghost().maillardPhase },
-                            { id: "Dev", phase: ghost().developPhase },
-                        ]
-                    } opacity={0.6}></PhaseChart>
-                </Show>
-                <PhaseChart data={
+                <PhaseChart2 data={
                     [
-                        { id: "Dry", phase: dryingPhase() },
-                        { id: "Mai", phase: maillardPhase() },
-                        { id: "Dev", phase: developPhase() },
+                        { id: "G", dry: ghost().dryingPhase, mai: ghost().maillardPhase, dev: ghost().developPhase },
+                        { id: "#", dry: dryingPhase(), mai: maillardPhase(), dev: developPhase() },
                     ]
-                }></PhaseChart>
-                <Show when={appState().isGhostLoadedSig[GET]()}>
-                    <PhaseTempChart data={
-                        [
-                            { id: "Dry", phase: ghost().dryingPhase },
-                            { id: "Mai", phase: ghost().maillardPhase },
-                            { id: "Dev", phase: ghost().developPhase },
-                        ]
-                    } opacity={0.6}></PhaseTempChart>
-                </Show>
-                <PhaseTempChart data={
-                    [
-                        { id: "Dry", phase: dryingPhase() },
-                        { id: "Mai", phase: maillardPhase() },
-                        { id: "Dev", phase: developPhase() },
-                    ]
-                }></PhaseTempChart>
+                }></PhaseChart2>
             </div>
             {/* event buttons */}
             <div class="flex flex-wrap gap-1">
