@@ -2,24 +2,12 @@
 
 import { For, Show, onMount } from "solid-js";
 import * as d3 from "d3";
-import { appStateSig } from "./AppState";
 
 function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
 }
 
-export default function PhaseChart() {
-
-    const [appState, _setAppState] = appStateSig;
-    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
-    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
-    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
-
-    let data = [
-        { id: "Dry", phase: dryingPhase },
-        { id: "Mai", phase: maillardPhase },
-        { id: "Dev", phase: developPhase },
-    ];
+export default function PhaseChart(props: any) {
 
     // Specify the chart’s dimensions, based on a bar’s height.
     const barHeight = 20;
@@ -28,7 +16,7 @@ export default function PhaseChart() {
     const marginBottom = 20;
     const marginLeft = 30;
     const width = 360;
-    const height = Math.ceil((data.length + 0.1) * barHeight) + marginTop + marginBottom;
+    const height = Math.ceil((props.data.length + 0.1) * barHeight) + marginTop + marginBottom;
 
     // Create the scales.
     const x = d3.scaleLinear()
@@ -36,7 +24,7 @@ export default function PhaseChart() {
         .range([marginLeft, width - marginRight]);
 
     const y = d3.scaleBand()
-        .domain(data.map((d: { id: any; }) => d.id))
+        .domain(props.data.map((d: { id: any; }) => d.id))
         .rangeRound([marginTop, height - marginBottom])
         .padding(0.15);
 
@@ -64,7 +52,7 @@ export default function PhaseChart() {
         <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`} height={height}>
 
             {/* Add a rect for each bar. */}
-            <For each={data}>{
+            <For each={props.data}>{
                 (d) => (<>
 
                     <rect

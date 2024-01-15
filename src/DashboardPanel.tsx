@@ -20,6 +20,9 @@ export default function DashboardPanel(props: any) {
     const [logArr, setLogArr] = appState().logArrSig;
     const [roastEvents, setRoastEvents] = appState().roastEventsSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
+    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
+    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
+    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
     const bt = channelArr().find(c => c.id == BT) as Channel;
     let timer_worker: Worker;
 
@@ -157,8 +160,20 @@ export default function DashboardPanel(props: any) {
 
             </div>
             <div>
-                <PhaseChart></PhaseChart>
-                <PhaseTempChart></PhaseTempChart>
+                <PhaseChart data={
+                    [
+                        { id: "Dry", phase: dryingPhase },
+                        { id: "Mai", phase: maillardPhase },
+                        { id: "Dev", phase: developPhase },
+                    ]
+                }></PhaseChart>
+                <PhaseTempChart data={
+                    [
+                        { id: "Dry", phase: dryingPhase },
+                        { id: "Mai", phase: maillardPhase },
+                        { id: "Dev", phase: developPhase },
+                    ]
+                }></PhaseTempChart>
             </div>
             {/* event buttons */}
             <div class="flex flex-wrap gap-1">
