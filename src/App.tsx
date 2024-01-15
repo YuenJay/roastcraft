@@ -5,7 +5,7 @@ import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
-import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost } from "./AppState";
+import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost, Phase } from "./AppState";
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, loadGhost, saveFile } from "./fileUtil";
@@ -23,6 +23,9 @@ function App() {
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
     const [currentTabId, setCurrentTabId] = appState().currentTabIdSig;
+    const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
+    const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
+    const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
     const channelIdList = channelArr().map(m => m.id);
     const bt = channelArr().find(c => c.id == BT) as Channel;
 
@@ -86,7 +89,10 @@ function App() {
             autoDetectChargeDrop();
             findTurningPoint();
             findDryEnd();
-            calculatePhases(timer(), bt.currentDataSig[GET](), roastEvents());
+            let result = calculatePhases(timer(), bt.currentDataSig[GET](), roastEvents());
+            setDryingPhase(result.dry);
+            setMaillardPhase(result.mai);
+            setDevelopPhase(result.dev);
 
             // dump bt data to console
             // console.log(bt.dataArr());

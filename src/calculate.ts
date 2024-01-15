@@ -323,26 +323,31 @@ export function calculatePhases(t: number, lastTemp: number, roastEvents: RoastE
     // 7 o	    o	o	x	o	    drop time	drying + maillard
     // 8 o	    o	x	o	x	    timer	    drying + develop
 
+    let result = {
+        dry: new Phase(0, 0.0, 0.0),
+        mai: new Phase(0, 0.0, 0.0),
+        dev: new Phase(0, 0.0, 0.0)
+    };
+
     let charge = roastEvents.CHARGE;
     if (charge == undefined) {
         warn!("no CHARGE event");
-        return;
+        return result;
     }
 
     let tp = roastEvents.TP;
     if (tp == undefined) {
-        setDryingPhase(new Phase(
+        result.dry = new Phase(
             timer() - charge.timestamp,
             100.0,
             0.0
-        ));
-        return;
+        );
+        return result;
     }
 
     let de = roastEvents.DRY_END;
     let fc = roastEvents.FC_START;
     let drop = roastEvents.DROP;
-
 
     if (drop != undefined) {
         t = drop.timestamp;
@@ -352,11 +357,11 @@ export function calculatePhases(t: number, lastTemp: number, roastEvents: RoastE
     if (de == undefined && fc == undefined) {
         // condition 1, 5
 
-        setDryingPhase(new Phase(
+        result.dry = new Phase(
             t - charge.timestamp,
             100.0,
             lastTemp - tp.value
-        ));
+        );
     } else if (de != undefined && fc == undefined) {
         // condition 2, 7
 
@@ -366,17 +371,17 @@ export function calculatePhases(t: number, lastTemp: number, roastEvents: RoastE
         let maillard_time = t - de.timestamp;
         let maillard_temp_rise = lastTemp - de.value;
 
-        setDryingPhase(new Phase(
+        result.dry = new Phase(
             drying_time,
             drying_time / (drying_time + maillard_time) * 100,
             drying_temp_rise
-        ));
+        );
 
-        setMaillardPhase(new Phase(
+        result.mai = new Phase(
             maillard_time,
             maillard_time / (drying_time + maillard_time) * 100,
             maillard_temp_rise
-        ));
+        );
     } else if (de != undefined && fc != undefined) {
         // condition 3, 4
 
@@ -389,23 +394,23 @@ export function calculatePhases(t: number, lastTemp: number, roastEvents: RoastE
         let develop_time = t - fc.timestamp;
         let develop_temp_rise = lastTemp - fc.value;
 
-        setDryingPhase(new Phase(
+        result.dry = new Phase(
             drying_time,
             drying_time / (drying_time + maillard_time + develop_time) * 100,
             drying_temp_rise
-        ));
+        );
 
-        setMaillardPhase(new Phase(
+        result.mai = new Phase(
             maillard_time,
             maillard_time / (drying_time + maillard_time + develop_time) * 100,
             maillard_temp_rise
-        ));
+        );
 
-        setDevelopPhase(new Phase(
+        result.dev = new Phase(
             develop_time,
             develop_time / (drying_time + maillard_time + develop_time) * 100,
             develop_temp_rise
-        ));
+        );
     } else if (de == undefined && fc != undefined) {
         // condition 6, 8
 
@@ -415,19 +420,19 @@ export function calculatePhases(t: number, lastTemp: number, roastEvents: RoastE
         let develop_time = t - fc.timestamp;
         let develop_temp_rise = lastTemp - fc.value;
 
-        setDryingPhase(new Phase(
+        result.dry = new Phase(
             drying_time,
             drying_time / (drying_time + develop_time) * 100,
             drying_temp_rise
-        ));
+        );
 
-        setDevelopPhase(new Phase(
+        result.dev = new Phase(
             develop_time,
             develop_time / (drying_time + develop_time) * 100,
             develop_temp_rise
-        ));
+        );
     }
-
+    return result;
 }
 
 function hann(i: number, N: number) {

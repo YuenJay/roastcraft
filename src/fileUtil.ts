@@ -10,6 +10,9 @@ export async function openFile() {
     const [appState, _setAppState] = appStateSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
+    const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
+    const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
+    const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
     const bt = channelArr().find(c => c.id == BT) as Channel;
 
     try {
@@ -60,7 +63,11 @@ export async function openFile() {
         let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
         appState().timerSig[SET](lastBTPoint.timestamp);
 
-        calculatePhases(lastBTPoint.timestamp, lastBTPoint.value, roastEvents());
+        let result = calculatePhases(lastBTPoint.timestamp, lastBTPoint.value, roastEvents());
+        setDryingPhase(result.dry);
+        setMaillardPhase(result.mai);
+        setDevelopPhase(result.dev);
+
     } catch (e) {
         console.log(e);
     }
