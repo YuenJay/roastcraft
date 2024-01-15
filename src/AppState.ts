@@ -151,6 +151,9 @@ export class Ghost {
     channelArr: Array<GhostChannel>;
     manualChannelArr: Array<GhostManualChannel>;
     roastEvents: RoastEvents;
+    dryingPhase: Phase;
+    maillardPhase: Phase;
+    developPhase: Phase;
 
     constructor(
         timeDelta: number,
@@ -162,6 +165,9 @@ export class Ghost {
         this.channelArr = channelArr;
         this.manualChannelArr = manualChannelArr;
         this.roastEvents = roastEvents;
+        this.dryingPhase = new Phase(0, 0.0, 0.0);
+        this.maillardPhase = new Phase(0, 0.0, 0.0);
+        this.developPhase = new Phase(0, 0.0, 0.0);
     }
 }
 
@@ -313,6 +319,7 @@ async function init_appStateSig() {
         toggleShowRorFilteredSig: createSignal(false),
         toggleShowRorOutlierSig: createSignal(false),
         toggleShowRorRegressionSig: createSignal(false),
+        isGhostLoadedSig: createSignal(false),
         ghostSig: createSignal(init_ghostSig()),
         currentTabIdSig: createSignal(0),
     }
@@ -374,5 +381,7 @@ export function reset() {
 }
 
 export function resetGhost() {
+    const [appState, _setAppState] = appStateSig;
     appStateSig[GET]().ghostSig[SET](init_ghostSig());
+    appState().isGhostLoadedSig[SET](false);
 }

@@ -10,7 +10,7 @@ function timestamp_format(timestamp: number) {
 export default function PhaseChart(props: any) {
 
     // Specify the chart’s dimensions, based on a bar’s height.
-    const barHeight = 20;
+    const barHeight = 18;
     const marginTop = 0;
     const marginRight = 30;
     const marginBottom = 20;
@@ -56,37 +56,38 @@ export default function PhaseChart(props: any) {
                 (d) => (<>
 
                     <rect
+                        opacity={props.opacity}
                         fill="#4682B4"
                         x={x(0)}
                         y={y(d.id)}
-                        width={x(d.phase().percent) - x(0)}
+                        width={x(d.phase.percent) - x(0)}
                         height={y.bandwidth()}
                     />
 
-                    <Show when={d.phase().percent < 80}
+                    <Show when={d.phase.percent < 80}
                         fallback={
                             <g
                                 fill="white"
                                 text-anchor="end">
                                 <text
-                                    x={x(d.phase().percent)}
+                                    x={x(d.phase.percent)}
                                     y={y(d.id) as number + y.bandwidth() / 2}
                                     dy="0.35em"
                                     dx="-4"
-                                    font-size="0.8em">
-                                    {d.phase().percent.toFixed(1) + "%"}
+                                    font-size="0.7em">
+                                    {d.phase.percent.toFixed(1) + "%"}
                                 </text>
                             </g>
                         }>
                         <g
                             text-anchor="start">
                             <text
-                                x={x(d.phase().percent)}
+                                x={x(d.phase.percent)}
                                 y={y(d.id) as number + y.bandwidth() / 2}
                                 dy="0.35em"
                                 dx="4"
-                                font-size="0.8em">
-                                {d.phase().percent.toFixed(1) + "%"}
+                                font-size="0.7em">
+                                {d.phase.percent.toFixed(1) + "%"}
                             </text>
                         </g>
                     </Show>
@@ -97,8 +98,8 @@ export default function PhaseChart(props: any) {
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="0.35em"
                             dx="4"
-                            font-size="0.8em">
-                            {timestamp_format(d.phase().time)}
+                            font-size="0.7em">
+                            {timestamp_format(d.phase.time)}
                         </text>
                     </g>
                 </>)

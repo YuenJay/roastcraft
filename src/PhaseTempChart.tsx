@@ -6,7 +6,7 @@ import * as d3 from "d3";
 export default function PhaseTempChart(props: any) {
 
     // Specify the chart’s dimensions, based on a bar’s height.
-    const barHeight = 20;
+    const barHeight = 18;
     const marginTop = 0;
     const marginRight = 30;
     const marginBottom = 20;
@@ -49,21 +49,22 @@ export default function PhaseTempChart(props: any) {
             <For each={props.data}>{
                 (d) => (<>
                     <rect
+                        opacity={props.opacity}
                         fill="#FF8C00"
                         x={x(0)}
                         y={y(d.id)}
-                        width={x(d.phase().temp_rise) - x(0)}
+                        width={x(d.phase.temp_rise) - x(0)}
                         height={y.bandwidth()}
                     />
                     <g
                         text-anchor="start">
                         <text
-                            x={x(d.phase().temp_rise)}
+                            x={x(d.phase.temp_rise)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="0.35em"
                             dx="4"
-                            font-size="0.8em">
-                            {d.phase().temp_rise.toFixed(1) + "°"}
+                            font-size="0.7em">
+                            {d.phase.temp_rise.toFixed(1) + "°"}
                         </text>
                     </g>
                 </>)

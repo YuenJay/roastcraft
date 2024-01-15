@@ -26,6 +26,8 @@ export default function DashboardPanel(props: any) {
     const bt = channelArr().find(c => c.id == BT) as Channel;
     let timer_worker: Worker;
 
+    const [ghost, _setGhost] = appState().ghostSig;
+
     createEffect(() => {
 
     });
@@ -160,18 +162,36 @@ export default function DashboardPanel(props: any) {
 
             </div>
             <div>
+                <Show when={appState().isGhostLoadedSig[GET]()}>
+                    <PhaseChart data={
+                        [
+                            { id: "Dry", phase: ghost().dryingPhase },
+                            { id: "Mai", phase: ghost().maillardPhase },
+                            { id: "Dev", phase: ghost().developPhase },
+                        ]
+                    } opacity={0.6}></PhaseChart>
+                </Show>
                 <PhaseChart data={
                     [
-                        { id: "Dry", phase: dryingPhase },
-                        { id: "Mai", phase: maillardPhase },
-                        { id: "Dev", phase: developPhase },
+                        { id: "Dry", phase: dryingPhase() },
+                        { id: "Mai", phase: maillardPhase() },
+                        { id: "Dev", phase: developPhase() },
                     ]
                 }></PhaseChart>
+                <Show when={appState().isGhostLoadedSig[GET]()}>
+                    <PhaseTempChart data={
+                        [
+                            { id: "Dry", phase: ghost().dryingPhase },
+                            { id: "Mai", phase: ghost().maillardPhase },
+                            { id: "Dev", phase: ghost().developPhase },
+                        ]
+                    } opacity={0.6}></PhaseTempChart>
+                </Show>
                 <PhaseTempChart data={
                     [
-                        { id: "Dry", phase: dryingPhase },
-                        { id: "Mai", phase: maillardPhase },
-                        { id: "Dev", phase: developPhase },
+                        { id: "Dry", phase: dryingPhase() },
+                        { id: "Mai", phase: maillardPhase() },
+                        { id: "Dev", phase: developPhase() },
                     ]
                 }></PhaseTempChart>
             </div>

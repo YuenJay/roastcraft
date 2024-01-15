@@ -139,7 +139,13 @@ export async function loadGhost() {
 
         let g = new Ghost(timeDelta, channelArr, manualChannelArr, roastEvents);
 
+        let result = calculatePhases(lastBTPoint.timestamp, lastBTPoint.value, roastEvents);
+        g.dryingPhase = result.dry;
+        g.maillardPhase = result.mai;
+        g.developPhase = result.dev;
+
         setGhost(g);
+        appState().isGhostLoadedSig[SET](true);
 
         console.log(ghost());
 
