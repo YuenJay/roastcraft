@@ -309,7 +309,7 @@ export function findDryEnd() {
     }
 }
 
-export function calculatePhases(t: number, lastTemp: number) {
+export function calculatePhases(t: number, lastTemp: number, roastEvents: RoastEvents) {
 
     //   charge	tp	de	fc	drop	last point  phases	                    
     //   ------------------------------------------------------------------
@@ -323,17 +323,13 @@ export function calculatePhases(t: number, lastTemp: number) {
     // 7 o	    o	o	x	o	    drop time	drying + maillard
     // 8 o	    o	x	o	x	    timer	    drying + develop
 
-    // let bt = channelArr().find(c => c.id == BT) as Channel;
-    // let t = timer();
-    // let lastTemp = bt.currentDataSig[GET]();
-
-    let charge = roastEvents().CHARGE;
+    let charge = roastEvents.CHARGE;
     if (charge == undefined) {
         warn!("no CHARGE event");
         return;
     }
 
-    let tp = roastEvents().TP;
+    let tp = roastEvents.TP;
     if (tp == undefined) {
         setDryingPhase(new Phase(
             timer() - charge.timestamp,
@@ -343,9 +339,9 @@ export function calculatePhases(t: number, lastTemp: number) {
         return;
     }
 
-    let de = roastEvents().DRY_END;
-    let fc = roastEvents().FC_START;
-    let drop = roastEvents().DROP;
+    let de = roastEvents.DRY_END;
+    let fc = roastEvents.FC_START;
+    let drop = roastEvents.DROP;
 
 
     if (drop != undefined) {

@@ -86,7 +86,7 @@ function App() {
             autoDetectChargeDrop();
             findTurningPoint();
             findDryEnd();
-            calculatePhases(timer(), bt.currentDataSig[GET]());
+            calculatePhases(timer(), bt.currentDataSig[GET](), roastEvents());
 
             // dump bt data to console
             // console.log(bt.dataArr());

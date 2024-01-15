@@ -60,7 +60,7 @@ export async function openFile() {
         let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
         appState().timerSig[SET](lastBTPoint.timestamp);
 
-        calculatePhases(lastBTPoint.timestamp, lastBTPoint.value);
+        calculatePhases(lastBTPoint.timestamp, lastBTPoint.value, roastEvents());
     } catch (e) {
         console.log(e);
     }
