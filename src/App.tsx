@@ -26,6 +26,7 @@ function App() {
     const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
     const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
     const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
+    const [phaseChartWidth, setPhaseChartWidth] = appState().phaseChartWidthSig;
     const channelIdList = channelArr().map(m => m.id);
     const bt = channelArr().find(c => c.id == BT) as Channel;
 
@@ -142,6 +143,7 @@ function App() {
 
             // track current mouse position in x var
             let x: number, w: number;
+            let pw: number;
 
             function rs_mousedownHandler(e: any) {
 
@@ -152,6 +154,8 @@ function App() {
 
                 document.addEventListener("mousemove", rs_mousemoveHandler);
                 document.addEventListener("mouseup", rs_mouseupHandler);
+
+                pw = phaseChartWidth();
             }
 
             function rs_mousemoveHandler(e: any) {
@@ -161,6 +165,7 @@ function App() {
 
                 if (cw < 768) {
                     sidebar.style.width = `${cw}px`;
+                    setPhaseChartWidth(pw - dx);
                 }
             }
 

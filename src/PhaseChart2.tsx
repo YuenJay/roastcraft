@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { For, Show, onMount } from "solid-js";
+import { For, Show, createEffect, createSignal, onMount } from "solid-js";
 import * as d3 from "d3";
+import { appStateSig } from "./AppState";
 
 function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString() + ":" + (timestamp % 60).toString().padStart(2, '0');
@@ -15,19 +16,22 @@ export default function PhaseChart(props: any) {
     //     { id: "#", dry: dryingPhase(), mai: maillardPhase(), dev: developPhase() },
     // ]
 
+    const [appState, _setAppState] = appStateSig;
+    const [phaseChartWidth, setPhaseChartWidth] = appState().phaseChartWidthSig;
+
     // Specify the chart’s dimensions, based on a bar’s height.
     const barHeight = 36;
     const marginTop = 0;
     const marginRight = 64;
     const marginBottom = 20;
     const marginLeft = 10;
-    const width = 360;
+    // const width = 360;
     const height = Math.ceil((props.data.length + 0.1) * barHeight) + marginTop + marginBottom;
 
     // Create the scales.
-    const x = d3.scaleLinear()
+    let x = d3.scaleLinear()
         .domain([0, 100])
-        .range([marginLeft, width - marginRight]);
+        .range([marginLeft, phaseChartWidth() - marginRight]);
 
     const y = d3.scaleBand()
         .domain(props.data.map((d: { id: any; }) => d.id))
@@ -35,16 +39,11 @@ export default function PhaseChart(props: any) {
         .padding(0.1);
 
     let svgRef: SVGSVGElement | undefined;
-
+    let xAxisRef: SVGGElement | undefined;
     onMount(() => {
         if (svgRef) {
 
             const svg = d3.select(svgRef);
-
-            // Create the axes.
-            svg.append("g")
-                .attr("transform", `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(5).tickFormat((d) => (d + "%")));
 
             svg.append("g")
                 .attr("transform", `translate(${marginLeft},0)`)
@@ -53,16 +52,25 @@ export default function PhaseChart(props: any) {
         }
     });
 
+    createEffect(() => {
+        // Create the axes.
+        if (xAxisRef) {
+            x = x.range([marginLeft, phaseChartWidth() - marginRight]);
+            d3.select(xAxisRef)
+                .call(d3.axisBottom(x).ticks(5).tickFormat((d) => (d + "%")));
+        }
+    });
+
     return (
 
-        <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${width} ${height}`} height={height}>
-
+        <svg ref={svgRef} preserveAspectRatio="xMinYMin meet" viewBox={`0 0 ${phaseChartWidth()} ${height}`} height={height}>
+            <g ref={xAxisRef} transform={`translate(0,${height - marginBottom})`}></g>
             <defs>
                 {/* Defines clipping area, rect is inside axis*/}
                 <clipPath
                     clipPathUnits="userSpaceOnUse"
                     id="phaseChart">
-                    <rect x={marginLeft} y={marginTop} width={width - marginLeft - marginRight} height={height - marginTop - marginBottom} />
+                    <rect x={marginLeft} y={marginTop} width={phaseChartWidth() - marginLeft - marginRight} height={height - marginTop - marginBottom} />
                 </clipPath>
             </defs>
 
@@ -72,7 +80,7 @@ export default function PhaseChart(props: any) {
                     <rect
                         opacity={d.id == "#" ? 1 : 0.8}
                         fill="#22c55e"
-                        x={x(0)}
+                        x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
                         y={y(d.id)}
                         width={x(d.dry.percent) - x(0)}
                         height={y.bandwidth()}
@@ -81,7 +89,7 @@ export default function PhaseChart(props: any) {
                         fill="black"
                         text-anchor="start">
                         <text
-                            x={x(0)}
+                            x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="-2"
                             dx="2"
@@ -89,7 +97,7 @@ export default function PhaseChart(props: any) {
                             {d.dry.percent.toFixed(1) + "%"}
                         </text>
                         <text
-                            x={x(0)}
+                            x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="1em"
                             dx="2"
@@ -102,9 +110,9 @@ export default function PhaseChart(props: any) {
                         <rect
                             opacity={d.id == "#" ? 1 : 0.8}
                             fill="#ea580c"
-                            x={x(d.dry.percent)}
+                            x={x.range([marginLeft, phaseChartWidth() - marginRight])(d.dry.percent)}
                             y={y(d.id)}
-                            width={x(d.mai.percent) - x(0)}
+                            width={x.range([marginLeft, phaseChartWidth() - marginRight])(d.mai.percent) - x(0)}
                             height={y.bandwidth()}
                         />
                         <g
@@ -113,7 +121,7 @@ export default function PhaseChart(props: any) {
                             clip-path="url(#phaseChart)"
                         >
                             <text
-                                x={x(d.dry.percent)}
+                                x={x.range([marginLeft, phaseChartWidth() - marginRight])(d.dry.percent)}
                                 y={y(d.id) as number + y.bandwidth() / 2}
                                 dy="-2"
                                 dx="2"
@@ -121,7 +129,7 @@ export default function PhaseChart(props: any) {
                                 {d.mai.percent.toFixed(1) + "%"}
                             </text>
                             <text
-                                x={x(d.dry.percent)}
+                                x={x.range([marginLeft, phaseChartWidth() - marginRight])(d.dry.percent)}
                                 y={y(d.id) as number + y.bandwidth() / 2}
                                 dy="1em"
                                 dx="2"
@@ -134,7 +142,7 @@ export default function PhaseChart(props: any) {
                     <rect
                         opacity={d.id == "#" ? 1 : 0.8}
                         fill="#991b1b"
-                        x={x(d.dry.percent + d.mai.percent)}
+                        x={x.range([marginLeft, phaseChartWidth() - marginRight])(d.dry.percent + d.mai.percent)}
                         y={y(d.id)}
                         width={x(d.dev.percent) - x(0)}
                         height={y.bandwidth()}
@@ -143,7 +151,7 @@ export default function PhaseChart(props: any) {
                         fill="black"
                         text-anchor="start">
                         <text
-                            x={x(100)}
+                            x={x.range([marginLeft, phaseChartWidth() - marginRight])(100)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="-2"
                             dx="2"
@@ -151,7 +159,7 @@ export default function PhaseChart(props: any) {
                             {d.dev.percent.toFixed(1) + "%"}
                         </text>
                         <text
-                            x={x(100)}
+                            x={x.range([marginLeft, phaseChartWidth() - marginRight])(100)}
                             y={y(d.id) as number + y.bandwidth() / 2}
                             dy="1em"
                             dx="2"
