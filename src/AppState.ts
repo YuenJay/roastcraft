@@ -323,6 +323,7 @@ async function init_appStateSig() {
         ghostSig: createSignal(init_ghostSig()),
         currentTabIdSig: createSignal(0),
         phaseChartWidthSig: createSignal(360),
+        titleSig: createSignal(""),
     }
 }
 

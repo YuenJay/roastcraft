@@ -17,7 +17,7 @@ export default function PhaseChart(props: any) {
     // ]
 
     const [appState, _setAppState] = appStateSig;
-    const [phaseChartWidth, setPhaseChartWidth] = appState().phaseChartWidthSig;
+    const [phaseChartWidth, _setPhaseChartWidth] = appState().phaseChartWidthSig;
 
     // Specify the chart’s dimensions, based on a bar’s height.
     const barHeight = 36;
@@ -77,35 +77,36 @@ export default function PhaseChart(props: any) {
             <For each={props.data}>{
                 (d) => (<>
 
-                    <rect
-                        opacity={d.id == "#" ? 1 : 0.8}
-                        fill="#22c55e"
-                        x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
-                        y={y(d.id)}
-                        width={x(d.dry.percent) - x(0)}
-                        height={y.bandwidth()}
-                    />
-                    <g
-                        fill="black"
-                        text-anchor="start">
-                        <text
+                    <Show when={d.dry.percent > 0}>
+                        <rect
+                            opacity={d.id == "#" ? 1 : 0.8}
+                            fill="#22c55e"
                             x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
-                            y={y(d.id) as number + y.bandwidth() / 2}
-                            dy="-2"
-                            dx="2"
-                            font-size="0.8em">
-                            {d.dry.percent.toFixed(1) + "%"}
-                        </text>
-                        <text
-                            x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
-                            y={y(d.id) as number + y.bandwidth() / 2}
-                            dy="1em"
-                            dx="2"
-                            font-size="0.8em">
-                            {timestamp_format(d.dry.time) + ", " + d.dry.temp_rise.toFixed(1) + "°"}
-                        </text>
-                    </g>
-
+                            y={y(d.id)}
+                            width={x(d.dry.percent) - x(0)}
+                            height={y.bandwidth()}
+                        />
+                        <g
+                            fill="black"
+                            text-anchor="start">
+                            <text
+                                x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
+                                y={y(d.id) as number + y.bandwidth() / 2}
+                                dy="-2"
+                                dx="2"
+                                font-size="0.8em">
+                                {d.dry.percent.toFixed(1) + "%"}
+                            </text>
+                            <text
+                                x={x.range([marginLeft, phaseChartWidth() - marginRight])(0)}
+                                y={y(d.id) as number + y.bandwidth() / 2}
+                                dy="1em"
+                                dx="2"
+                                font-size="0.8em">
+                                {timestamp_format(d.dry.time) + ", " + d.dry.temp_rise.toFixed(1) + "°"}
+                            </text>
+                        </g>
+                    </Show>
                     <Show when={d.mai.percent > 0}>
                         <rect
                             opacity={d.id == "#" ? 1 : 0.8}

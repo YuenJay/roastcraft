@@ -222,6 +222,9 @@ function App() {
             {/* main start*/}
             <div class="grow overflow-y-auto pr-1">
 
+                <div class="mx-1">
+                    <h1>{appState().titleSig[GET]()}</h1>
+                </div>
                 <MainChart />
 
                 <For each={manualChannelArr()}>

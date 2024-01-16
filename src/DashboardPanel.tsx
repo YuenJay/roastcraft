@@ -7,7 +7,7 @@ import { timestamp_format } from "./calculate";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import RangeInput from "./RangeInput";
-import PhaseChart2 from "./PhaseChart2";
+import PhaseChart from "./PhaseChart";
 
 
 export default function DashboardPanel(props: any) {
@@ -161,12 +161,12 @@ export default function DashboardPanel(props: any) {
 
             </div>
             <div>
-                <PhaseChart2 data={
+                <PhaseChart data={
                     [
                         { id: "G", dry: ghost().dryingPhase, mai: ghost().maillardPhase, dev: ghost().developPhase },
                         { id: "#", dry: dryingPhase(), mai: maillardPhase(), dev: developPhase() },
                     ]
-                }></PhaseChart2>
+                }></PhaseChart>
             </div>
             {/* event buttons */}
             <div class="flex flex-wrap gap-1">
