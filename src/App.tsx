@@ -222,7 +222,7 @@ function App() {
             {/* main start*/}
             <div class="grow overflow-y-auto pr-1">
 
-                <div class="mx-1">
+                <div class="mx-1 mb-1 h-4">
                     <h1>{appState().titleSig[GET]()}</h1>
                 </div>
                 <MainChart />

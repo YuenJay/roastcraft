@@ -58,43 +58,51 @@ export default function NotesPanel(props: any) {
                 </div>
             </div>
 
-            <div class="grid grid-cols-4 gap-1">
+
+            <div class="grid grid-cols-5 gap-1">
                 <h1 class="col-span-1"></h1>
                 <h1 class="col-span-1">Green</h1>
                 <h1 class="col-span-1">Roasted</h1>
                 <h1 class="col-span-1"></h1>
+                <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Weight</h1>
-                <input type="text" class="input input-bordered input-xs w-20" />
-                <input type="text" class="input input-bordered input-xs w-20" />
+                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs w-16" />
                 <h1 class="col-span-1">g</h1>
+                <h1 class="col-span-1">-10%</h1>
 
                 <h1 class="col-span-1">Volume</h1>
-                <input type="text" class="input input-bordered input-xs w-20" />
-                <input type="text" class="input input-bordered input-xs w-20" />
+                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs w-16" />
                 <h1 class="col-span-1">ml</h1>
+                <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Density</h1>
-                <input type="text" class="input input-bordered input-xs w-20" />
-                <input type="text" class="input input-bordered input-xs w-20" />
+                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs w-16" />
                 <h1 class="col-span-1">g/ml</h1>
+                <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Moisture</h1>
-                <input type="text" class="input input-bordered input-xs w-20" />
-                <input type="text" class="input input-bordered input-xs w-20" />
+                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs w-16" />
                 <h1 class="col-span-1">%</h1>
+                <h1 class="col-span-1"></h1>
             </div>
             <div class="w-full border-b-2 my-2"></div>
-            <div class="grid grid-cols-4 gap-1">
+            <div class="grid grid-cols-5 gap-1">
                 <h1 class="col-span-1"></h1>
                 <h1 class="col-span-1">Whole</h1>
                 <h1 class="col-span-1">Ground</h1>
                 <h1 class="col-span-1"></h1>
+                <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Color</h1>
-                <input type="text" class="input input-bordered input-xs w-20" />
-                <input type="text" class="input input-bordered input-xs w-20" />
+                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs w-16" />
                 <h1 class="col-span-1">agtron</h1>
+                <h1 class="col-span-1">-10</h1>
             </div>
             <div class="w-full border-b-2 my-2"></div>
             <textarea class="textarea textarea-bordered textarea-xs w-full h-36" placeholder="Roast Notes"></textarea>
