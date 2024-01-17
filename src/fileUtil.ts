@@ -163,7 +163,7 @@ function getCurrentFormattedTime() {
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
 
-    const formattedTime = `${year}_${month}_${day}_${hours}${minutes}`;
+    const formattedTime = `${year}${month}${day}_${hours}${minutes}`;
     return formattedTime;
 }
 
@@ -172,7 +172,10 @@ export async function saveFile() {
     try {
 
         let filepath = await save({
-            defaultPath: getCurrentFormattedTime() + ".json",
+            defaultPath: appState().titleSig[GET]()
+                + (appState().titleSig[GET]() != "" ? "_" : "")
+                + getCurrentFormattedTime()
+                + ".json",
             filters: [{
                 name: 'Profile',
                 extensions: ['json']

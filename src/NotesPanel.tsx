@@ -21,13 +21,18 @@ export default function NotesPanel(props: any) {
                 <div class="dropdown">
                     <input id="title" class="input input-bordered input-sm w-full"
                         value={appState().titleSig[GET]()}
-                        onInput={(e) => {
-                            appState().titleSig[SET](e.target.value);
+                        onKeyDown={(e: KeyboardEvent) => {
+                            if (e.key === "Enter") {
+                                (e.target as HTMLInputElement).blur();
+                            }
+                        }}
+                        onInput={(e: InputEvent) => {
+                            appState().titleSig[SET]((e.target as HTMLInputElement).value);
                         }}
                         onChange={(e) => {
 
                             let r = recentTitles();
-                            while (r.length > 5) {
+                            while (r.length > 4) {
                                 r.shift();
                             }
                             setRecentTitles([...r, e.target.value]);
@@ -36,7 +41,7 @@ export default function NotesPanel(props: any) {
                             console.log(localStorage.getItem("recentTitles"));
                         }}
                     />
-                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full">
+                    <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
                         <For each={[...recentTitles()].reverse()}>
                             {(title) => (
                                 <li>
