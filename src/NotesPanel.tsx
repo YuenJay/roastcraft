@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { For, createEffect, createSignal, onMount } from "solid-js";
-import { SET, appStateSig } from "./AppState";
-import { local } from "d3";
+import { For, createEffect, createSignal } from "solid-js";
+import { GET, SET, appStateSig } from "./AppState";
 
 export default function NotesPanel(props: any) {
 
     const [appState, _setAppState] = appStateSig;
+
+    const [recentTitles, setRecentTitles] = createSignal(JSON.parse(localStorage.getItem("recentTitles") || "[]") as Array<string>);
 
     createEffect(() => {
 
@@ -15,29 +16,42 @@ export default function NotesPanel(props: any) {
     return (
 
         <div class="flex flex-col gap-1 ">
+            <div class="flex flex-col" >
+                <label>Title</label>
+                <div class="dropdown">
+                    <input id="title" class="input input-bordered input-sm w-full"
+                        value={appState().titleSig[GET]()}
+                        onInput={(e) => {
+                            appState().titleSig[SET](e.target.value);
+                        }}
+                        onChange={(e) => {
 
-            <label for="title">Title</label>
-            <div class="dropdown">
-                <input id="title" placeholder="Type here" class="input input-bordered input-sm w-full"
-                    onInput={(e) => {
-                        appState().titleSig[SET](e.target.value);
-                    }}
-                    onChange={(e) => {
-                        let recentTitles: Array<string> = JSON.parse(localStorage.getItem("recentTitles") || "[]");
-                        recentTitles.push(e.target.value);
-                        if (recentTitles.length > 5) {
-                            recentTitles.shift();
-                        }
-                        localStorage.setItem("recentTitles", JSON.stringify(recentTitles));
-                        console.log(localStorage.getItem("recentTitles"));
-                    }}
-                />
-                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full">
-                    <li><a>Item 1</a></li>
-                    <li><a>Item 2</a></li>
-                </ul>
+                            let r = recentTitles();
+                            while (r.length > 5) {
+                                r.shift();
+                            }
+                            setRecentTitles([...r, e.target.value]);
+
+                            localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
+                            console.log(localStorage.getItem("recentTitles"));
+                        }}
+                    />
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full">
+                        <For each={[...recentTitles()].reverse()}>
+                            {(title) => (
+                                <li>
+                                    <a onClick={(e) => {
+                                        e.preventDefault();
+                                        appState().titleSig[SET](title);
+                                        (document.activeElement as HTMLElement).blur();
+                                    }}>{title}</a>
+                                </li>
+                            )}
+                        </For>
+
+                    </ul>
+                </div>
             </div>
-
 
             <div class="grid grid-cols-4 gap-1">
                 <h1 class="col-span-1"></h1>
