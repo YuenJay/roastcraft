@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { For, createEffect, createSignal } from "solid-js";
+import { For, Show, createEffect, createSignal } from "solid-js";
 import { GET, SET, appStateSig } from "./AppState";
 
 export default function NotesPanel(props: any) {
@@ -10,6 +10,26 @@ export default function NotesPanel(props: any) {
     const [recentTitles, setRecentTitles] = createSignal(JSON.parse(localStorage.getItem("recentTitles") || "[]") as Array<string>);
 
     let flavor = [
+        {
+            name: "Green/Vegetative", checked: false,
+            children: [
+                { name: "Olive Oil", checked: false, },
+                { name: "Raw", checked: false, },
+                { name: "Beany", checked: false, },
+                {
+                    name: "Green/Vegetative", checked: false,
+                    children: [
+                        { name: "Under-Ripe", checked: false, },
+                        { name: "Peapod", checked: false, },
+                        { name: "Fresh", checked: false, },
+                        { name: "Dark Green", checked: false, },
+                        { name: "Vegetative", checked: false, },
+                        { name: "Hay-Like", checked: false, },
+                        { name: "Herb-Like", checked: false, },
+                    ]
+                }
+            ]
+        },
         {
             name: "Sour/Fermented", checked: false,
             children: [
@@ -25,8 +45,7 @@ export default function NotesPanel(props: any) {
                     ]
                 },
                 {
-                    name: "Alcohol/Fermented",
-                    checked: false,
+                    name: "Alcohol/Fermented", checked: false,
                     children: [
                         { name: "Winey", checked: false, },
                         { name: "Whiskey", checked: false, },
@@ -49,16 +68,105 @@ export default function NotesPanel(props: any) {
                     ]
                 },
                 {
-                    name: "Dried Fruit",
-                    checked: false,
+                    name: "Dried Fruit", checked: false,
                     children: [
                         { name: "Raisin", checked: false, },
                         { name: "Prune", checked: false, },
-
                     ]
                 }
             ]
-        }
+        },
+        {
+            name: "Floral", checked: false,
+            children: [
+                { name: "Black Tea", checked: false, },
+                {
+                    name: "Floral", checked: false,
+                    children: [
+                        { name: "Chamomile", checked: false, },
+                        { name: "Rose", checked: false, },
+                        { name: "Jasmine", checked: false, },
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Sweet", checked: false,
+            children: [
+                { name: "Sweet Aromatics", checked: false, },
+                { name: "Overall Sweet", checked: false, },
+                { name: "Vanillin", checked: false, },
+                { name: "Vanilla", checked: false, },
+                {
+                    name: "Brown Sugar", checked: false,
+                    children: [
+                        { name: "Honey", checked: false, },
+                        { name: "Caramelized", checked: false, },
+                        { name: "Maple Syrup", checked: false, },
+                        { name: "Molasses", checked: false, },
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Nutty/Cocoa", checked: false,
+            children: [
+                {
+                    name: "Nutty", checked: false,
+                    children: [
+                        { name: "Almond", checked: false, },
+                        { name: "Hazelnut", checked: false, },
+                        { name: "Peanuts", checked: false, },
+                    ]
+                },
+                {
+                    name: "Cocoa", checked: false,
+                    children: [
+                        { name: "Dark Chocolate", checked: false, },
+                        { name: "Chocolate", checked: false, },
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Spices", checked: false,
+            children: [
+                { name: "Pepper", checked: false, },
+                { name: "Pungent", checked: false, },
+                {
+                    name: "Brown Spice", checked: false,
+                    children: [
+                        { name: "Clove", checked: false, },
+                        { name: "Cinnamon", checked: false, },
+                        { name: "Nutmeg", checked: false, },
+                        { name: "Anise", checked: false, },
+                    ]
+                },
+            ]
+        },
+        {
+            name: "Roasted", checked: false,
+            children: [
+                { name: "Tobacco", checked: false, },
+                { name: "Pipe Tobacco", checked: false, },
+                {
+                    name: "Cereal", checked: false,
+                    children: [
+                        { name: "Malt", checked: false, },
+                        { name: "Grain", checked: false, },
+                    ]
+                },
+                {
+                    name: "Burnt", checked: false,
+                    children: [
+                        { name: "Brown, Roast", checked: false, },
+                        { name: "Smoky", checked: false, },
+                        { name: "Ashy", checked: false, },
+                        { name: "Acrid", checked: false, },
+                    ]
+                },
+            ]
+        },
     ]
 
     createEffect(() => {
@@ -163,40 +271,43 @@ export default function NotesPanel(props: any) {
 
             <For each={flavor}>
                 {(f) => (
-                    <>
-                        <details open={false}>
-                            <summary class="space-x-1">
-                                <input type="checkbox" />
-                                <span>{f.name}</span>
-                            </summary>
-                            <div class="pl-4">
-                                <For each={f.children}>
-                                    {(ff) => (
-                                        <>
-                                            <details >
-                                                <summary class="space-x-1">
-                                                    <input type="checkbox" />
-                                                    <span>{ff.name}</span>
-                                                </summary>
-                                                <div class="pl-4">
-                                                    <For each={ff.children}>
-                                                        {(fff) => (
-                                                            <>
-                                                                <div class="pl-4 space-x-1">
-                                                                    <input type="checkbox" />
-                                                                    <span>{fff.name}</span>
-                                                                </div>
-                                                            </>
-                                                        )}
-                                                    </For>
-                                                </div>
-                                            </details>
-                                        </>
-                                    )}
-                                </For>
-                            </div>
-                        </details>
-                    </>
+                    <details open={false}>
+                        <summary class="space-x-1">
+                            <input type="checkbox" />
+                            <span>{f.name}</span>
+                        </summary>
+                        <div class="pl-4">
+                            <For each={f.children}>
+                                {(ff) => (
+                                    <Show when={ff.children != undefined}
+                                        fallback={
+                                            <div class="pl-4 space-x-1">
+                                                <input type="checkbox" />
+                                                <span>{ff.name}</span>
+                                            </div>
+                                        }
+                                    >
+                                        <details >
+                                            <summary class="space-x-1">
+                                                <input type="checkbox" />
+                                                <span>{ff.name}</span>
+                                            </summary>
+                                            <div class="pl-4">
+                                                <For each={ff.children}>
+                                                    {(fff) => (
+                                                        <div class="pl-4 space-x-1">
+                                                            <input type="checkbox" />
+                                                            <span>{fff.name}</span>
+                                                        </div>
+                                                    )}
+                                                </For>
+                                            </div>
+                                        </details>
+                                    </Show>
+                                )}
+                            </For>
+                        </div>
+                    </details>
                 )}
             </For>
 
