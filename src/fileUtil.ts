@@ -61,12 +61,15 @@ export async function openFile() {
         // use BT last Point as timer and currentData
         let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");
         let lastBTPoint = btLoaded.dataArr[btLoaded.dataArr.length - 1];
-        appState().timerSig[SET](lastBTPoint.timestamp);
+        if (lastBTPoint != undefined) {
+            appState().timerSig[SET](lastBTPoint.timestamp);
+            let result = calculatePhases(lastBTPoint.timestamp, lastBTPoint.value, roastEvents());
+            setDryingPhase(result.dry);
+            setMaillardPhase(result.mai);
+            setDevelopPhase(result.dev);
+        }
 
-        let result = calculatePhases(lastBTPoint.timestamp, lastBTPoint.value, roastEvents());
-        setDryingPhase(result.dry);
-        setMaillardPhase(result.mai);
-        setDevelopPhase(result.dev);
+        appState().titleSig[SET](loadObject.title);
 
     } catch (e) {
         console.log(e);
@@ -187,6 +190,7 @@ export async function saveFile() {
             channelArr: new Array<any>(),
             manualChannelArr: new Array<any>(),
             roastEvents: appState().roastEventsSig[GET](),
+            title: appState().titleSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((c) => {

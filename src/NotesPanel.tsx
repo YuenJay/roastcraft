@@ -167,6 +167,37 @@ export default function NotesPanel(props: any) {
                 },
             ]
         },
+        {
+            name: "Other", checked: false,
+            children: [
+                {
+                    name: "Papery/Musty", checked: false,
+                    children: [
+                        { name: "Phenolic", checked: false, },
+                        { name: "Meaty Brothy", checked: false, },
+                        { name: "Animalic", checked: false, },
+                        { name: "Musty/Earthy", checked: false, },
+                        { name: "Musty/Dusty", checked: false, },
+                        { name: "Moldy/Damp", checked: false, },
+                        { name: "Woody", checked: false, },
+                        { name: "Papery", checked: false, },
+                        { name: "Cardboard", checked: false, },
+                        { name: "Stale", checked: false, },
+                    ]
+                },
+                {
+                    name: "Chemical", checked: false,
+                    children: [
+                        { name: "Rubber", checked: false, },
+                        { name: "Skunky", checked: false, },
+                        { name: "Petroleum", checked: false, },
+                        { name: "Medicinal", checked: false, },
+                        { name: "Salty", checked: false, },
+                        { name: "Bitter", checked: false, },
+                    ]
+                }
+            ]
+        },
     ]
 
     createEffect(() => {

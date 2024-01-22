@@ -44,10 +44,10 @@ export default function ToolTip(props: any) {
                 r="2" />
 
             <rect
-                style="fill:#E6E6FA"
+                fill="#E6E6FA"
                 rx="2"
                 x={props.x + deltaX + 1}
-                y={props.y - h() / 2 + deltaY}
+                y={props.y - h() + deltaY}
                 width={w()}
                 height={h()}
             />
@@ -56,7 +56,7 @@ export default function ToolTip(props: any) {
                 font-size="0.7em"
                 fill={props.color}
                 x={props.x + deltaX}
-                y={props.y + deltaY}
+                y={props.y - h() / 2 + deltaY}
                 dy="0.4em"
                 dx="2">
                 {value()}

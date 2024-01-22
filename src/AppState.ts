@@ -354,7 +354,8 @@ export function reset() {
         mc.setDataArr([new Point(0, mc.defaultValue)]);
     });
 
-    // not reset logs
+    // not reset title and logs 
+    // appState().titleSig[SET]("");
     // appState().logArrSig[SET](new Array<string>());   
 
     appState().roastEventsSig[SET]({
@@ -379,6 +380,7 @@ export function reset() {
     appState().toggleShowRorFilteredSig[SET](false);
     appState().toggleShowRorOutlierSig[SET](false);
     appState().toggleShowRorRegressionSig[SET](false);
+
 
 }
 
