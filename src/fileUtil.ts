@@ -70,6 +70,7 @@ export async function openFile() {
         }
 
         appState().titleSig[SET](loadObject.title);
+        appState().notesSig[SET](loadObject.notes);
 
     } catch (e) {
         console.log(e);
@@ -191,6 +192,7 @@ export async function saveFile() {
             manualChannelArr: new Array<any>(),
             roastEvents: appState().roastEventsSig[GET](),
             title: appState().titleSig[GET](),
+            notes: appState().notesSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((c) => {

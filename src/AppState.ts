@@ -324,6 +324,7 @@ async function init_appStateSig() {
         currentTabIdSig: createSignal(0),
         phaseChartWidthSig: createSignal(360),
         titleSig: createSignal(""),
+        notesSig: createSignal(""),
         weightGreenSig: createSignal(0.0),
         weightRoastedSig: createSignal(0.0),
         volumeGreenSig: createSignal(0.0),
@@ -367,6 +368,8 @@ export function reset() {
     // not reset title and logs 
     // appState().titleSig[SET]("");
     // appState().logArrSig[SET](new Array<string>());   
+
+    appState().notesSig[SET]("");
 
     appState().roastEventsSig[SET]({
         CHARGE: undefined,

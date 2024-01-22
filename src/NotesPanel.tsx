@@ -229,9 +229,9 @@ export default function NotesPanel(props: any) {
 
     return (
 
-        <div class="flex flex-col gap-1 ">
-            <div class="flex flex-col" >
-                <label>Title</label>
+        <div class="flex flex-col gap-1 text-sm">
+            <div class="flex flex-col " >
+                <label class="">Title</label>
                 <div class="dropdown">
                     <input id="title" class="input input-bordered input-sm w-full"
                         value={appState().titleSig[GET]()}
@@ -271,7 +271,15 @@ export default function NotesPanel(props: any) {
                     </ul>
                 </div>
             </div>
-
+            <div class="flex flex-col" >
+                <label>Notes</label>
+                <textarea class="textarea textarea-bordered textarea-xs w-full h-36"
+                    value={appState().notesSig[GET]()}
+                    onChange={(e) => {
+                        appState().notesSig[SET](e.target.value);
+                    }}
+                ></textarea>
+            </div>
 
             <div class="grid grid-cols-5 gap-1">
                 <h1 class="col-span-1"></h1>
@@ -286,7 +294,7 @@ export default function NotesPanel(props: any) {
                     onChange={(e) => {
                         setWeightGreen(parseFloat(e.target.value));
                         if (weightGreen() != 0 && volumeGreen() != 0) {
-                            setDensityGreen((weightGreen() / volumeGreen()));
+                            setDensityGreen(1000 * weightGreen() / volumeGreen());
                         }
                     }}
                 />
@@ -295,7 +303,7 @@ export default function NotesPanel(props: any) {
                     onChange={(e) => {
                         setWeightRoasted(parseFloat(e.target.value));
                         if (weightRoasted() != 0 && volumeRoasted() != 0) {
-                            setDensityRoasted((weightRoasted() / volumeRoasted()));
+                            setDensityRoasted(1000 * weightRoasted() / volumeRoasted());
                         }
                     }}
                 />
@@ -315,7 +323,7 @@ export default function NotesPanel(props: any) {
                     onChange={(e) => {
                         setVolumeGreen(parseFloat(e.target.value));
                         if (weightGreen() != 0 && volumeGreen() != 0) {
-                            setDensityGreen(weightGreen() / volumeGreen());
+                            setDensityGreen(1000 * weightGreen() / volumeGreen());
                         }
                     }}
                 />
@@ -324,7 +332,7 @@ export default function NotesPanel(props: any) {
                     onChange={(e) => {
                         setVolumeRoasted(parseFloat(e.target.value));
                         if (weightRoasted() != 0 && volumeRoasted() != 0) {
-                            setDensityRoasted(weightRoasted() / volumeRoasted());
+                            setDensityRoasted(1000 * weightRoasted() / volumeRoasted());
                         }
                     }}
                 />
@@ -356,7 +364,7 @@ export default function NotesPanel(props: any) {
                         }
                     }}
                 />
-                <h1 class="col-span-1">g/ml</h1>
+                <h1 class="col-span-1">g/l</h1>
                 <Show when={densityGreen() != 0 && densityRoasted() != 0}
                     fallback={
                         <h1 class="col-span-1"></h1>
@@ -423,9 +431,8 @@ export default function NotesPanel(props: any) {
                 <h1 class="col-span-1"></h1>
             </div>
             <div class="w-full border-b-2 my-2"></div>
-            <textarea class="textarea textarea-bordered textarea-xs w-full h-36" placeholder="Roast Notes"></textarea>
 
-            <textarea class="textarea textarea-bordered textarea-xs w-full h-36" placeholder="Cupping Notes"></textarea>
+
 
             <For each={flavor}>
                 {(f) => (
