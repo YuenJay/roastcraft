@@ -3,6 +3,19 @@
 import { For, Show, createEffect, createSignal } from "solid-js";
 import { GET, SET, appStateSig } from "./AppState";
 
+function agtronLevel(agtron: number) {
+    if (agtron < 20) return "Over Developed";
+    if (agtron < 30) return "Extremely Dark";
+    if (agtron < 40) return "Dark";
+    if (agtron < 50) return "Medium Dark";
+    if (agtron < 60) return "Meduim";
+    if (agtron < 70) return "Medium Light";
+    if (agtron < 80) return "Light";
+    if (agtron < 90) return "Very Light";
+    if (agtron < 100) return "Extremely Light";
+    return "Under Developed"
+}
+
 export default function NotesPanel(props: any) {
 
     const [appState, _setAppState] = appStateSig;
@@ -272,12 +285,18 @@ export default function NotesPanel(props: any) {
                     value={weightGreen()}
                     onChange={(e) => {
                         setWeightGreen(parseFloat(e.target.value));
+                        if (weightGreen() != 0 && volumeGreen() != 0) {
+                            setDensityGreen((weightGreen() / volumeGreen()));
+                        }
                     }}
                 />
                 <input type="text" class="input input-bordered input-xs text-right w-16"
                     value={weightRoasted()}
                     onChange={(e) => {
                         setWeightRoasted(parseFloat(e.target.value));
+                        if (weightRoasted() != 0 && volumeRoasted() != 0) {
+                            setDensityRoasted((weightRoasted() / volumeRoasted()));
+                        }
                     }}
                 />
                 <h1 class="col-span-1">g</h1>
@@ -295,12 +314,18 @@ export default function NotesPanel(props: any) {
                     value={volumeGreen()}
                     onChange={(e) => {
                         setVolumeGreen(parseFloat(e.target.value));
+                        if (weightGreen() != 0 && volumeGreen() != 0) {
+                            setDensityGreen(weightGreen() / volumeGreen());
+                        }
                     }}
                 />
                 <input type="text" class="input input-bordered input-xs text-right w-16"
                     value={volumeRoasted()}
                     onChange={(e) => {
                         setVolumeRoasted(parseFloat(e.target.value));
+                        if (weightRoasted() != 0 && volumeRoasted() != 0) {
+                            setDensityRoasted(weightRoasted() / volumeRoasted());
+                        }
                     }}
                 />
                 <h1 class="col-span-1">ml</h1>
@@ -317,12 +342,18 @@ export default function NotesPanel(props: any) {
                     value={densityGreen()}
                     onChange={(e) => {
                         setDensityGreen(parseFloat(e.target.value));
+                        if (weightGreen() != 0 && densityGreen() != 0) {
+                            setVolumeGreen(weightGreen() / densityGreen());
+                        }
                     }}
                 />
                 <input type="text" class="input input-bordered input-xs text-right w-16"
                     value={densityRoasted()}
                     onChange={(e) => {
                         setDensityRoasted(parseFloat(e.target.value));
+                        if (weightRoasted() != 0 && densityRoasted() != 0) {
+                            setVolumeRoasted(weightRoasted() / densityRoasted());
+                        }
                     }}
                 />
                 <h1 class="col-span-1">g/ml</h1>
@@ -353,7 +384,7 @@ export default function NotesPanel(props: any) {
                         <h1 class="col-span-1"></h1>
                     }
                 >
-                    <h1 class="col-span-1">{((moistureRoasted() - moistureGreen()) * 100 / moistureGreen()).toFixed(1)}%</h1>
+                    <h1 class="col-span-1">{moistureRoasted() - moistureGreen()}</h1>
                 </Show>
             </div>
             <div class="w-full border-b-2 my-2"></div>
@@ -386,8 +417,8 @@ export default function NotesPanel(props: any) {
                     <h1 class="col-span-1">{colorGround() - colorWhole()}</h1>
                 </Show>
                 <h1 class="col-span-1"></h1>
-                <h1 class="col-span-1 text-xs">Medium</h1>
-                <h1 class="col-span-1  text-xs">Medium Light</h1>
+                <h1 class="col-span-1 text-xs">{colorWhole() > 0 ? agtronLevel(colorWhole()) : ""}</h1>
+                <h1 class="col-span-1  text-xs">{colorGround() > 0 ? agtronLevel(colorGround()) : ""}</h1>
                 <h1 class="col-span-1"></h1>
                 <h1 class="col-span-1"></h1>
             </div>
