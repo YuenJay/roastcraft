@@ -6,6 +6,16 @@ import { GET, SET, appStateSig } from "./AppState";
 export default function NotesPanel(props: any) {
 
     const [appState, _setAppState] = appStateSig;
+    const [weightGreen, setWeightGreen] = appState().weightGreenSig;
+    const [weightRoasted, setWeightRoasted] = appState().weightRoastedSig
+    const [volumeGreen, setVolumeGreen] = appState().volumeGreenSig;
+    const [volumeRoasted, setVolumeRoasted] = appState().volumeRoastedSig;
+    const [densityGreen, setDensityGreen] = appState().densityGreenSig;
+    const [densityRoasted, setDensityRoasted] = appState().densityRoastedSig;
+    const [moistureGreen, setMoistureGreen] = appState().moistureGreenSig;
+    const [moistureRoasted, setMoistureRoasted] = appState().moistureRoastedSig;
+    const [colorWhole, setColorWhole] = appState().colorWholeSig;
+    const [colorGround, setColorGround] = appState().colorGroundSig;
 
     const [recentTitles, setRecentTitles] = createSignal(JSON.parse(localStorage.getItem("recentTitles") || "[]") as Array<string>);
 
@@ -258,28 +268,93 @@ export default function NotesPanel(props: any) {
                 <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Weight</h1>
-                <input type="text" class="input input-bordered input-xs w-16" />
-                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={weightGreen()}
+                    onChange={(e) => {
+                        setWeightGreen(parseFloat(e.target.value));
+                    }}
+                />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={weightRoasted()}
+                    onChange={(e) => {
+                        setWeightRoasted(parseFloat(e.target.value));
+                    }}
+                />
                 <h1 class="col-span-1">g</h1>
-                <h1 class="col-span-1">-10%</h1>
+                <Show when={weightGreen() != 0 && weightRoasted() != 0}
+                    fallback={
+                        <h1 class="col-span-1"></h1>
+                    }
+                >
+                    <h1 class="col-span-1">{((weightRoasted() - weightGreen()) * 100 / weightGreen()).toFixed(1)}%</h1>
+                </Show>
+
 
                 <h1 class="col-span-1">Volume</h1>
-                <input type="text" class="input input-bordered input-xs w-16" />
-                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={volumeGreen()}
+                    onChange={(e) => {
+                        setVolumeGreen(parseFloat(e.target.value));
+                    }}
+                />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={volumeRoasted()}
+                    onChange={(e) => {
+                        setVolumeRoasted(parseFloat(e.target.value));
+                    }}
+                />
                 <h1 class="col-span-1">ml</h1>
-                <h1 class="col-span-1"></h1>
+                <Show when={volumeGreen() != 0 && volumeRoasted() != 0}
+                    fallback={
+                        <h1 class="col-span-1"></h1>
+                    }
+                >
+                    <h1 class="col-span-1">{((volumeRoasted() - volumeGreen()) * 100 / volumeGreen()).toFixed(1)}%</h1>
+                </Show>
 
                 <h1 class="col-span-1">Density</h1>
-                <input type="text" class="input input-bordered input-xs w-16" />
-                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={densityGreen()}
+                    onChange={(e) => {
+                        setDensityGreen(parseFloat(e.target.value));
+                    }}
+                />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={densityRoasted()}
+                    onChange={(e) => {
+                        setDensityRoasted(parseFloat(e.target.value));
+                    }}
+                />
                 <h1 class="col-span-1">g/ml</h1>
-                <h1 class="col-span-1"></h1>
+                <Show when={densityGreen() != 0 && densityRoasted() != 0}
+                    fallback={
+                        <h1 class="col-span-1"></h1>
+                    }
+                >
+                    <h1 class="col-span-1">{((densityRoasted() - densityGreen()) * 100 / densityGreen()).toFixed(1)}%</h1>
+                </Show>
 
                 <h1 class="col-span-1">Moisture</h1>
-                <input type="text" class="input input-bordered input-xs w-16" />
-                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={moistureGreen()}
+                    onChange={(e) => {
+                        setMoistureGreen(parseFloat(e.target.value));
+                    }}
+                />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={moistureRoasted()}
+                    onChange={(e) => {
+                        setMoistureRoasted(parseFloat(e.target.value));
+                    }}
+                />
                 <h1 class="col-span-1">%</h1>
-                <h1 class="col-span-1"></h1>
+                <Show when={moistureGreen() != 0 && moistureRoasted() != 0}
+                    fallback={
+                        <h1 class="col-span-1"></h1>
+                    }
+                >
+                    <h1 class="col-span-1">{((moistureRoasted() - moistureGreen()) * 100 / moistureGreen()).toFixed(1)}%</h1>
+                </Show>
             </div>
             <div class="w-full border-b-2 my-2"></div>
             <div class="grid grid-cols-5 gap-1">
@@ -290,10 +365,31 @@ export default function NotesPanel(props: any) {
                 <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Color</h1>
-                <input type="text" class="input input-bordered input-xs w-16" />
-                <input type="text" class="input input-bordered input-xs w-16" />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={colorWhole()}
+                    onChange={(e) => {
+                        setColorWhole(parseFloat(e.target.value));
+                    }}
+                />
+                <input type="text" class="input input-bordered input-xs text-right w-16"
+                    value={colorGround()}
+                    onChange={(e) => {
+                        setColorGround(parseFloat(e.target.value));
+                    }}
+                />
                 <h1 class="col-span-1">agtron</h1>
-                <h1 class="col-span-1">-10</h1>
+                <Show when={colorWhole() != 0 && colorGround() != 0}
+                    fallback={
+                        <h1 class="col-span-1"></h1>
+                    }
+                >
+                    <h1 class="col-span-1">{colorGround() - colorWhole()}</h1>
+                </Show>
+                <h1 class="col-span-1"></h1>
+                <h1 class="col-span-1 text-xs">Medium</h1>
+                <h1 class="col-span-1  text-xs">Medium Light</h1>
+                <h1 class="col-span-1"></h1>
+                <h1 class="col-span-1"></h1>
             </div>
             <div class="w-full border-b-2 my-2"></div>
             <textarea class="textarea textarea-bordered textarea-xs w-full h-36" placeholder="Roast Notes"></textarea>

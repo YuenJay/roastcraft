@@ -324,6 +324,16 @@ async function init_appStateSig() {
         currentTabIdSig: createSignal(0),
         phaseChartWidthSig: createSignal(360),
         titleSig: createSignal(""),
+        weightGreenSig: createSignal(0.0),
+        weightRoastedSig: createSignal(0.0),
+        volumeGreenSig: createSignal(0.0),
+        volumeRoastedSig: createSignal(0.0),
+        densityGreenSig: createSignal(0.0),
+        densityRoastedSig: createSignal(0.0),
+        moistureGreenSig: createSignal(0.0),
+        moistureRoastedSig: createSignal(0.0),
+        colorWholeSig: createSignal(0),
+        colorGroundSig: createSignal(0),
     }
 }
 
