@@ -2,6 +2,7 @@
 
 import { For, Show, createEffect, createSignal } from "solid-js";
 import { GET, SET, appStateSig } from "./AppState";
+import { loadGreenBeanInfo } from "./fileUtil";
 
 function agtronLevel(agtron: number) {
     if (agtron < 20) return "Over Developed";
@@ -16,7 +17,7 @@ function agtronLevel(agtron: number) {
     return "Under Developed"
 }
 
-export default function NotesPanel(props: any) {
+export default function NotesPanel() {
 
     const [appState, _setAppState] = appStateSig;
     const [weightGreen, setWeightGreen] = appState().weightGreenSig;
@@ -31,6 +32,8 @@ export default function NotesPanel(props: any) {
     const [colorGround, setColorGround] = appState().colorGroundSig;
 
     const [recentTitles, setRecentTitles] = createSignal(JSON.parse(localStorage.getItem("recentTitles") || "[]") as Array<string>);
+    const [recentCountries, setRecentCountries] = createSignal(JSON.parse(localStorage.getItem("recentCountries") || "[]") as Array<string>);
+    const [recentProcesses, setRecentProcesses] = createSignal(JSON.parse(localStorage.getItem("recentProcesses") || "[]") as Array<string>);
 
     let flavor = [
         {
@@ -253,18 +256,17 @@ export default function NotesPanel(props: any) {
                                 setRecentTitles([...r, e.target.value]);
 
                                 localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
-                                console.log(localStorage.getItem("recentTitles"));
                             }}
                         />
                         <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
                             <For each={[...recentTitles()].reverse()}>
-                                {(title) => (
+                                {(t) => (
                                     <li>
                                         <a onClick={(e) => {
                                             e.preventDefault();
-                                            appState().titleSig[SET](title);
+                                            appState().titleSig[SET](t);
                                             (document.activeElement as HTMLElement).blur();
-                                        }}>{title}</a>
+                                        }}>{t}</a>
                                     </li>
                                 )}
                             </For>
@@ -274,43 +276,44 @@ export default function NotesPanel(props: any) {
                     </div>
                 </div>
 
-                <button class="basis-1/5 btn btn-sm btn-accent rounded place-self-end" >LOAD</button>
+                <button class="basis-1/5 btn btn-sm btn-accent rounded place-self-end"
+                    onClick={() => loadGreenBeanInfo()}
+                >LOAD</button>
             </div>
             <div class="flex flex-row gap-1">
                 <div class="basis-1/2 flex flex-col " >
                     <label class="">Country</label>
                     <div class="dropdown ">
                         <input id="title" class="input input-bordered input-sm rounded w-full"
-                            value={appState().titleSig[GET]()}
+                            value={appState().countrySig[GET]()}
                             onKeyDown={(e: KeyboardEvent) => {
                                 if (e.key === "Enter") {
                                     (e.target as HTMLInputElement).blur();
                                 }
                             }}
                             onInput={(e: InputEvent) => {
-                                appState().titleSig[SET]((e.target as HTMLInputElement).value);
+                                appState().countrySig[SET]((e.target as HTMLInputElement).value);
                             }}
                             onChange={(e) => {
 
-                                let r = recentTitles();
+                                let r = recentCountries();
                                 while (r.length > 4) {
                                     r.shift();
                                 }
-                                setRecentTitles([...r, e.target.value]);
+                                setRecentCountries([...r, e.target.value]);
 
-                                localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
-                                console.log(localStorage.getItem("recentTitles"));
+                                localStorage.setItem("recentCountries", JSON.stringify(recentCountries()));
                             }}
                         />
                         <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
-                            <For each={[...recentTitles()].reverse()}>
-                                {(title) => (
+                            <For each={[...recentCountries()].reverse()}>
+                                {(c) => (
                                     <li>
                                         <a onClick={(e) => {
                                             e.preventDefault();
-                                            appState().titleSig[SET](title);
+                                            appState().countrySig[SET](c);
                                             (document.activeElement as HTMLElement).blur();
-                                        }}>{title}</a>
+                                        }}>{c}</a>
                                     </li>
                                 )}
                             </For>
@@ -323,36 +326,35 @@ export default function NotesPanel(props: any) {
                     <label class="">Process</label>
                     <div class="dropdown ">
                         <input id="title" class="input input-bordered input-sm rounded w-full"
-                            value={appState().titleSig[GET]()}
+                            value={appState().processSig[GET]()}
                             onKeyDown={(e: KeyboardEvent) => {
                                 if (e.key === "Enter") {
                                     (e.target as HTMLInputElement).blur();
                                 }
                             }}
                             onInput={(e: InputEvent) => {
-                                appState().titleSig[SET]((e.target as HTMLInputElement).value);
+                                appState().processSig[SET]((e.target as HTMLInputElement).value);
                             }}
                             onChange={(e) => {
 
-                                let r = recentTitles();
+                                let r = recentProcesses();
                                 while (r.length > 4) {
                                     r.shift();
                                 }
-                                setRecentTitles([...r, e.target.value]);
+                                setRecentProcesses([...r, e.target.value]);
 
-                                localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
-                                console.log(localStorage.getItem("recentTitles"));
+                                localStorage.setItem("recentProcesses", JSON.stringify(recentProcesses()));
                             }}
                         />
                         <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
-                            <For each={[...recentTitles()].reverse()}>
-                                {(title) => (
+                            <For each={[...recentProcesses()].reverse()}>
+                                {(p) => (
                                     <li>
                                         <a onClick={(e) => {
                                             e.preventDefault();
-                                            appState().titleSig[SET](title);
+                                            appState().processSig[SET](p);
                                             (document.activeElement as HTMLElement).blur();
-                                        }}>{title}</a>
+                                        }}>{p}</a>
                                     </li>
                                 )}
                             </For>

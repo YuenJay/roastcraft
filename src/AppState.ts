@@ -324,6 +324,8 @@ async function init_appStateSig() {
         currentTabIdSig: createSignal(0),
         phaseChartWidthSig: createSignal(360),
         titleSig: createSignal(""),
+        countrySig: createSignal(""),
+        processSig: createSignal(""),
         notesSig: createSignal(""),
         weightGreenSig: createSignal(0.0),
         weightRoastedSig: createSignal(0.0),

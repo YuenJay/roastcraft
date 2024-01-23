@@ -70,11 +70,45 @@ export async function openFile() {
         }
 
         appState().titleSig[SET](loadObject.title);
+        appState().countrySig[SET](loadObject.country);
+        appState().processSig[SET](loadObject.process);
         appState().notesSig[SET](loadObject.notes);
+
+        appState().weightGreenSig[SET](loadObject.weightGreen);
+        appState().weightRoastedSig[SET](loadObject.weightRoasted);
+        appState().volumeGreenSig[SET](loadObject.volumeGreen);
+        appState().volumeRoastedSig[SET](loadObject.volumeRoasted);
+        appState().densityGreenSig[SET](loadObject.densityGreen);
+        appState().densityRoastedSig[SET](loadObject.densityRoasted);
+        appState().moistureGreenSig[SET](loadObject.moistureGreen);
+        appState().moistureRoastedSig[SET](loadObject.moistureRoasted);
+        appState().colorWholeSig[SET](loadObject.colorWhole);
+        appState().colorGroundSig[SET](loadObject.colorGround);
 
     } catch (e) {
         console.log(e);
     }
+}
+
+export async function loadGreenBeanInfo() {
+    const [appState, _setAppState] = appStateSig;
+
+    let filepath = await open({
+        filters: [{
+            name: 'Profile',
+            extensions: ['json']
+        }]
+    }) as string;
+    let content = await readTextFile(filepath);
+
+    let loadObject = JSON.parse(content);
+
+    appState().titleSig[SET](loadObject.title);
+    appState().countrySig[SET](loadObject.country);
+    appState().processSig[SET](loadObject.process);
+
+    appState().densityGreenSig[SET](loadObject.densityGreen);
+    appState().moistureGreenSig[SET](loadObject.moistureGreen);
 }
 
 export async function loadGhost() {
@@ -192,7 +226,19 @@ export async function saveFile() {
             manualChannelArr: new Array<any>(),
             roastEvents: appState().roastEventsSig[GET](),
             title: appState().titleSig[GET](),
+            country: appState().countrySig[GET](),
+            process: appState().processSig[GET](),
             notes: appState().notesSig[GET](),
+            weightGreen: appState().weightGreenSig[GET](),
+            weightRoasted: appState().weightRoastedSig[GET](),
+            volumeGreen: appState().volumeGreenSig[GET](),
+            volumeRoasted: appState().volumeRoastedSig[GET](),
+            densityGreen: appState().densityGreenSig[GET](),
+            densityRoasted: appState().densityRoastedSig[GET](),
+            moistureGreen: appState().moistureGreenSig[GET](),
+            moistureRoasted: appState().moistureRoastedSig[GET](),
+            colorWhole: appState().colorWholeSig[GET](),
+            colorGround: appState().colorGroundSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((c) => {
