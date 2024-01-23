@@ -230,50 +230,141 @@ export default function NotesPanel(props: any) {
     return (
 
         <div class="flex flex-col gap-1 text-sm">
-            <div class="flex flex-col " >
-                <label class="">Title</label>
-                <div class="dropdown">
-                    <input id="title" class="input input-bordered input-sm w-full"
-                        value={appState().titleSig[GET]()}
-                        onKeyDown={(e: KeyboardEvent) => {
-                            if (e.key === "Enter") {
-                                (e.target as HTMLInputElement).blur();
-                            }
-                        }}
-                        onInput={(e: InputEvent) => {
-                            appState().titleSig[SET]((e.target as HTMLInputElement).value);
-                        }}
-                        onChange={(e) => {
+            <div class="flex flex-row gap-1">
+                <div class="basis-4/5 flex flex-col " >
+                    <label class="">Title</label>
+                    <div class="dropdown ">
+                        <input id="title" class="input input-bordered input-sm rounded w-full"
+                            value={appState().titleSig[GET]()}
+                            onKeyDown={(e: KeyboardEvent) => {
+                                if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                }
+                            }}
+                            onInput={(e: InputEvent) => {
+                                appState().titleSig[SET]((e.target as HTMLInputElement).value);
+                            }}
+                            onChange={(e) => {
 
-                            let r = recentTitles();
-                            while (r.length > 4) {
-                                r.shift();
-                            }
-                            setRecentTitles([...r, e.target.value]);
+                                let r = recentTitles();
+                                while (r.length > 4) {
+                                    r.shift();
+                                }
+                                setRecentTitles([...r, e.target.value]);
 
-                            localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
-                            console.log(localStorage.getItem("recentTitles"));
-                        }}
-                    />
-                    <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
-                        <For each={[...recentTitles()].reverse()}>
-                            {(title) => (
-                                <li>
-                                    <a onClick={(e) => {
-                                        e.preventDefault();
-                                        appState().titleSig[SET](title);
-                                        (document.activeElement as HTMLElement).blur();
-                                    }}>{title}</a>
-                                </li>
-                            )}
-                        </For>
+                                localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
+                                console.log(localStorage.getItem("recentTitles"));
+                            }}
+                        />
+                        <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
+                            <For each={[...recentTitles()].reverse()}>
+                                {(title) => (
+                                    <li>
+                                        <a onClick={(e) => {
+                                            e.preventDefault();
+                                            appState().titleSig[SET](title);
+                                            (document.activeElement as HTMLElement).blur();
+                                        }}>{title}</a>
+                                    </li>
+                                )}
+                            </For>
 
-                    </ul>
+                        </ul>
+
+                    </div>
+                </div>
+
+                <button class="basis-1/5 btn btn-sm btn-accent rounded place-self-end" >LOAD</button>
+            </div>
+            <div class="flex flex-row gap-1">
+                <div class="basis-1/2 flex flex-col " >
+                    <label class="">Country</label>
+                    <div class="dropdown ">
+                        <input id="title" class="input input-bordered input-sm rounded w-full"
+                            value={appState().titleSig[GET]()}
+                            onKeyDown={(e: KeyboardEvent) => {
+                                if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                }
+                            }}
+                            onInput={(e: InputEvent) => {
+                                appState().titleSig[SET]((e.target as HTMLInputElement).value);
+                            }}
+                            onChange={(e) => {
+
+                                let r = recentTitles();
+                                while (r.length > 4) {
+                                    r.shift();
+                                }
+                                setRecentTitles([...r, e.target.value]);
+
+                                localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
+                                console.log(localStorage.getItem("recentTitles"));
+                            }}
+                        />
+                        <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
+                            <For each={[...recentTitles()].reverse()}>
+                                {(title) => (
+                                    <li>
+                                        <a onClick={(e) => {
+                                            e.preventDefault();
+                                            appState().titleSig[SET](title);
+                                            (document.activeElement as HTMLElement).blur();
+                                        }}>{title}</a>
+                                    </li>
+                                )}
+                            </For>
+
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="basis-1/2 flex flex-col " >
+                    <label class="">Process</label>
+                    <div class="dropdown ">
+                        <input id="title" class="input input-bordered input-sm rounded w-full"
+                            value={appState().titleSig[GET]()}
+                            onKeyDown={(e: KeyboardEvent) => {
+                                if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                }
+                            }}
+                            onInput={(e: InputEvent) => {
+                                appState().titleSig[SET]((e.target as HTMLInputElement).value);
+                            }}
+                            onChange={(e) => {
+
+                                let r = recentTitles();
+                                while (r.length > 4) {
+                                    r.shift();
+                                }
+                                setRecentTitles([...r, e.target.value]);
+
+                                localStorage.setItem("recentTitles", JSON.stringify(recentTitles()));
+                                console.log(localStorage.getItem("recentTitles"));
+                            }}
+                        />
+                        <ul tabindex="0" class="dropdown-content z-[1] menu shadow bg-base-100 w-full">
+                            <For each={[...recentTitles()].reverse()}>
+                                {(title) => (
+                                    <li>
+                                        <a onClick={(e) => {
+                                            e.preventDefault();
+                                            appState().titleSig[SET](title);
+                                            (document.activeElement as HTMLElement).blur();
+                                        }}>{title}</a>
+                                    </li>
+                                )}
+                            </For>
+
+                        </ul>
+
+                    </div>
                 </div>
             </div>
             <div class="flex flex-col" >
                 <label>Notes</label>
-                <textarea class="textarea textarea-bordered textarea-xs w-full h-36"
+                <textarea class="textarea textarea-bordered textarea-xs w-full rounded h-36"
                     value={appState().notesSig[GET]()}
                     onChange={(e) => {
                         appState().notesSig[SET](e.target.value);
@@ -289,7 +380,7 @@ export default function NotesPanel(props: any) {
                 <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Weight</h1>
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={weightGreen()}
                     onChange={(e) => {
                         setWeightGreen(parseFloat(e.target.value));
@@ -298,7 +389,7 @@ export default function NotesPanel(props: any) {
                         }
                     }}
                 />
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={weightRoasted()}
                     onChange={(e) => {
                         setWeightRoasted(parseFloat(e.target.value));
@@ -318,7 +409,7 @@ export default function NotesPanel(props: any) {
 
 
                 <h1 class="col-span-1">Volume</h1>
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={volumeGreen()}
                     onChange={(e) => {
                         setVolumeGreen(parseFloat(e.target.value));
@@ -327,7 +418,7 @@ export default function NotesPanel(props: any) {
                         }
                     }}
                 />
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={volumeRoasted()}
                     onChange={(e) => {
                         setVolumeRoasted(parseFloat(e.target.value));
@@ -346,7 +437,7 @@ export default function NotesPanel(props: any) {
                 </Show>
 
                 <h1 class="col-span-1">Density</h1>
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={densityGreen()}
                     onChange={(e) => {
                         setDensityGreen(parseFloat(e.target.value));
@@ -355,7 +446,7 @@ export default function NotesPanel(props: any) {
                         }
                     }}
                 />
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={densityRoasted()}
                     onChange={(e) => {
                         setDensityRoasted(parseFloat(e.target.value));
@@ -374,13 +465,13 @@ export default function NotesPanel(props: any) {
                 </Show>
 
                 <h1 class="col-span-1">Moisture</h1>
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={moistureGreen()}
                     onChange={(e) => {
                         setMoistureGreen(parseFloat(e.target.value));
                     }}
                 />
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={moistureRoasted()}
                     onChange={(e) => {
                         setMoistureRoasted(parseFloat(e.target.value));
@@ -404,13 +495,13 @@ export default function NotesPanel(props: any) {
                 <h1 class="col-span-1"></h1>
 
                 <h1 class="col-span-1">Color</h1>
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={colorWhole()}
                     onChange={(e) => {
                         setColorWhole(parseFloat(e.target.value));
                     }}
                 />
-                <input type="text" class="input input-bordered input-xs text-right w-16"
+                <input type="text" class="input input-bordered input-xs text-right rounded w-16"
                     value={colorGround()}
                     onChange={(e) => {
                         setColorGround(parseFloat(e.target.value));
