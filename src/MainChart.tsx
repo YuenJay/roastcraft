@@ -2,7 +2,7 @@
 
 import { onMount, Show, For, createSignal, createEffect, } from "solid-js";
 import * as d3 from "d3";
-import { GET, RoastEventId, appStateSig, BT, AppStatus, Point, Ghost, Channel } from "./AppState";
+import { GET, appStateSig, BT, AppStatus, Channel } from "./AppState";
 import Annotation from "./Annotation";
 import ToolTip from "./ToolTip";
 
@@ -152,7 +152,7 @@ export default function MainChart() {
                     <Annotation
                         opacity={0.5}
                         x={xScale(item.timestamp + ghost().timeDelta)}
-                        y={item.id == RoastEventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
+                        y={yScale(item.value)}
                         length={30}
                         direction="topRight"
                         line1={item.id}
@@ -161,24 +161,6 @@ export default function MainChart() {
                     />
                 )}
             </For>
-
-            {/* ROR linear regression */}
-            <Show when={appState().roastEventsSig[GET]().ROR_TP != undefined && appState().toggleShowRorRegressionSig[GET]()}>
-                <line stroke="#00DD00"
-                    stroke-width="2"
-                    clip-path="url(#clip-path)"
-                    x1={xScale(appState().rorLinearStartSig[GET]().timestamp + timeDelta())}
-                    y1={yScaleROR(appState().rorLinearStartSig[GET]().value)}
-                    x2={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
-                    y2={yScaleROR(appState().rorLinearEndSig[GET]().value)}
-                ></line>
-                <ToolTip
-                    x={xScale(appState().rorLinearEndSig[GET]().timestamp + timeDelta())}
-                    y={yScaleROR(appState().rorLinearEndSig[GET]().value)}
-                    text={"m : " + (appState().rorLinearSlopeSig[GET]() * 60).toFixed(2)}
-                    color="#00BB00"
-                />
-            </Show>
 
             <For each={channelArr().filter(c => c.id != BT)}>
                 {(c) => (
@@ -252,7 +234,7 @@ export default function MainChart() {
                     <Annotation
                         opacity={1}
                         x={xScale(item.timestamp + timeDelta())}
-                        y={item.id == RoastEventId.ROR_TP ? yScaleROR(item.value) : yScale(item.value)}
+                        y={yScale(item.value)}
                         length={30}
                         direction="bottomRight"
                         line1={item.id}

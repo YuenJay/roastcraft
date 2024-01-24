@@ -95,7 +95,6 @@ export enum RoastEventId {
     SC_END = 'SC_END',
     DROP = 'DROP',
     TP = 'TP',
-    ROR_TP = 'ROR_TP'
 }
 
 export interface RoastEvents {
@@ -107,7 +106,6 @@ export interface RoastEvents {
     SC_END: RoastEvent | undefined,
     DROP: RoastEvent | undefined,
     TP: RoastEvent | undefined,
-    ROR_TP: RoastEvent | undefined,
 }
 
 export enum AppStatus {
@@ -305,11 +303,7 @@ async function init_appStateSig() {
             SC_END: undefined,
             DROP: undefined,
             TP: undefined,
-            ROR_TP: undefined,
         } as RoastEvents),
-        rorLinearStartSig: createSignal(new Point(0, 0)),
-        rorLinearEndSig: createSignal(new Point(0, 0)),
-        rorLinearSlopeSig: createSignal(0),
         dryingPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         maillardPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         developPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
@@ -318,7 +312,6 @@ async function init_appStateSig() {
         cursorIndexSig: createSignal(0),
         toggleShowRorFilteredSig: createSignal(false),
         toggleShowRorOutlierSig: createSignal(false),
-        toggleShowRorRegressionSig: createSignal(false),
         isGhostLoadedSig: createSignal(false),
         ghostSig: createSignal(init_ghostSig()),
         currentTabIdSig: createSignal(0),
@@ -367,11 +360,24 @@ export function reset() {
         mc.setDataArr([new Point(0, mc.defaultValue)]);
     });
 
-    // not reset title and logs 
-    // appState().titleSig[SET]("");
+    // not reset logs 
     // appState().logArrSig[SET](new Array<string>());   
 
+    appState().titleSig[SET]("");
+    appState().countrySig[SET]("");
+    appState().processSig[SET]("");
     appState().notesSig[SET]("");
+
+    appState().weightGreenSig[SET](0.0);
+    appState().weightRoastedSig[SET](0.0);
+    appState().volumeGreenSig[SET](0.0);
+    appState().volumeRoastedSig[SET](0.0);
+    appState().densityGreenSig[SET](0.0);
+    appState().densityRoastedSig[SET](0.0);
+    appState().moistureGreenSig[SET](0.0);
+    appState().moistureRoastedSig[SET](0.0);
+    appState().colorWholeSig[SET](0);
+    appState().colorGroundSig[SET](0);
 
     appState().roastEventsSig[SET]({
         CHARGE: undefined,
@@ -382,20 +388,14 @@ export function reset() {
         SC_END: undefined,
         DROP: undefined,
         TP: undefined,
-        ROR_TP: undefined,
     } as RoastEvents);
 
-    appState().rorLinearStartSig[SET](new Point(0, 0));
-    appState().rorLinearEndSig[SET](new Point(0, 0));
-    appState().rorLinearSlopeSig[SET](0);
     appState().dryingPhaseSig[SET](new Phase(0, 0.0, 0.0));
     appState().maillardPhaseSig[SET](new Phase(0, 0.0, 0.0));
     appState().developPhaseSig[SET](new Phase(0, 0.0, 0.0));
     appState().cursorLineXSig[SET](0);
     appState().toggleShowRorFilteredSig[SET](false);
     appState().toggleShowRorOutlierSig[SET](false);
-    appState().toggleShowRorRegressionSig[SET](false);
-
 
 }
 

@@ -3,7 +3,7 @@
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel, BT } from "./AppState";
-import { calculatePhases, calculateRor, findROR_TP, findRorOutlier } from './calculate';
+import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 import { createSignal } from 'solid-js';
 
 export async function openFile() {
@@ -56,7 +56,6 @@ export async function openFile() {
 
         calculateRor(bt, roastEvents());
         findRorOutlier(bt);
-        findROR_TP(bt);
 
         // use BT last Point as timer and currentData
         let btLoaded = loadObject.channelArr.find((c: any) => c.id == "BT");

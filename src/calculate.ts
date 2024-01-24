@@ -136,47 +136,6 @@ export function findRorOutlier(channel: Channel) {
 
 }
 
-export function findROR_TP(channel: Channel) {
-
-    let ror_filtered = channel.rorFilteredArrSig[GET]();
-    let ror_convolve = channel.rorConvolveArrSig[GET]();
-
-    // find ROR TP
-    if (roastEvents().TP != undefined && roastEvents().ROR_TP == undefined) {
-        let window_size = 9
-        let window = ror_convolve.slice(-window_size).map((r) => ([r.timestamp, r.value]));
-        if (linearRegression(window).m < 0) {
-            let target_index = window.length - 5;
-
-            setRoastEvents({
-                ...roastEvents(),
-                ROR_TP: new RoastEvent(
-                    RoastEventId.ROR_TP,
-                    window[target_index][0],
-                    window[target_index][1]
-                )
-            });
-        }
-    }
-
-    // ROR linear regression all
-    if (roastEvents().ROR_TP != undefined && roastEvents().DROP == undefined) {
-        let ROR_TP_timestamp = (roastEvents().ROR_TP as RoastEvent).timestamp;
-        let window = ror_filtered.filter((r) => (r.timestamp > ROR_TP_timestamp)).map((r) => ([r.timestamp, r.value]));
-        let mb = linearRegression(window); // m: slope, b: intersect
-        let l = linearRegressionLine(mb);
-
-        appState().rorLinearStartSig[SET](new Point(
-            window[0][0],
-            l(window[0][0])
-        ));
-        appState().rorLinearEndSig[SET](new Point(
-            window[window.length - 1][0],
-            l(window[window.length - 1][0])
-        ));
-        appState().rorLinearSlopeSig[SET](mb.m);
-    }
-}
 
 // reference: artisan/src/artisanlib/main.py  BTbreak()
 // idea:

@@ -5,8 +5,8 @@ import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
-import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost, Phase } from "./AppState";
-import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findROR_TP, findRorOutlier, findTurningPoint } from "./calculate";
+import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost } from "./AppState";
+import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, loadGhost, saveFile } from "./fileUtil";
 import DashboardPanel from "./DashboardPanel";
@@ -85,7 +85,6 @@ function App() {
             // BT only for now
             calculateRor(bt, roastEvents());
             findRorOutlier(bt);
-            findROR_TP(bt);
 
             autoDetectChargeDrop();
             findTurningPoint();
