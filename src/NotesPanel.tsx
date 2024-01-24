@@ -270,9 +270,7 @@ export default function NotesPanel() {
                                     </li>
                                 )}
                             </For>
-
                         </ul>
-
                     </div>
                 </div>
 
@@ -317,9 +315,7 @@ export default function NotesPanel() {
                                     </li>
                                 )}
                             </For>
-
                         </ul>
-
                     </div>
                 </div>
                 <div class="basis-1/2 flex flex-col " >
@@ -519,14 +515,11 @@ export default function NotesPanel() {
                 </Show>
                 <h1 class="col-span-1"></h1>
                 <h1 class="col-span-1 text-xs">{colorWhole() > 0 ? agtronLevel(colorWhole()) : ""}</h1>
-                <h1 class="col-span-1  text-xs">{colorGround() > 0 ? agtronLevel(colorGround()) : ""}</h1>
+                <h1 class="col-span-1 text-xs">{colorGround() > 0 ? agtronLevel(colorGround()) : ""}</h1>
                 <h1 class="col-span-1"></h1>
                 <h1 class="col-span-1"></h1>
             </div>
             <div class="w-full border-b-2 my-2"></div>
-
-
-
             <For each={flavor}>
                 {(f) => (
                     <details open={false}>
@@ -568,11 +561,6 @@ export default function NotesPanel() {
                     </details>
                 )}
             </For>
-
-
-
-
-
         </div>
     )
 }

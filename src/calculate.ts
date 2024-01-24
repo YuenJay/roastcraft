@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { GET, SET, Point, RoastEvent, RoastEvents, RoastEventId, Phase, appStateSig, AppStatus, Channel, BT } from "./AppState";
-import { mean, standardDeviation, linearRegression, linearRegressionLine } from "simple-statistics";
+import { mean, standardDeviation } from "simple-statistics";
 // import { median, medianAbsoluteDeviation } from "simple-statistics";
 import { info, warn } from "tauri-plugin-log-api";
 
@@ -9,9 +9,6 @@ const [appState, _setAppState] = appStateSig;
 const [timer, _setTimer] = appState().timerSig;
 const [channelArr, _setChannelArr] = appState().channelArrSig;
 const [roastEvents, setRoastEvents] = appState().roastEventsSig;
-const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
-const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
-const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
 
 export function timestamp_format(timestamp: number) {
     return Math.floor(timestamp / 60).toString().padStart(2, '0') + ":" + (timestamp % 60).toString().padStart(2, '0');
