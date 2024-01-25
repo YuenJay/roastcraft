@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { invoke } from "@tauri-apps/api/tauri";
-import { For, Show, createEffect, } from "solid-js";
+import { For, Show, } from "solid-js";
 import { GET, SET, BT, AppStatus, RoastEventId, appStateSig, reset, RoastEvent, Channel } from "./AppState";
 import { timestamp_format } from "./calculate";
 import WorkerFactory from "./WorkerFactory";
@@ -9,93 +9,87 @@ import timerWorker from "./timer.worker";
 import RangeInput from "./RangeInput";
 import PhaseChart from "./PhaseChart";
 
+const [appState, _setAppState] = appStateSig;
+const [status, setStatus] = appState().statusSig;
+const [timer, setTimer] = appState().timerSig;
+const [channelArr, _setChannelArr] = appState().channelArrSig;
+const [logArr, setLogArr] = appState().logArrSig;
+const [roastEvents, setRoastEvents] = appState().roastEventsSig;
+const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
+const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
+const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
+const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
+const [ghost, _setGhost] = appState().ghostSig;
+const bt = channelArr().find(c => c.id == BT) as Channel;
+let timer_worker: Worker;
 
-export default function DashboardPanel(props: any) {
+export function handleCharge() {
+    setRoastEvents({ ...roastEvents(), CHARGE: new RoastEvent(RoastEventId.CHARGE, timer(), bt.currentDataSig[GET]()) });
+    appState().timeDeltaSig[SET](- timer());
+}
 
-    const [appState, _setAppState] = appStateSig;
-    const [status, setStatus] = appState().statusSig;
-    const [timer, setTimer] = appState().timerSig;
-    const [channelArr, _setChannelArr] = appState().channelArrSig;
-    const [logArr, setLogArr] = appState().logArrSig;
-    const [roastEvents, setRoastEvents] = appState().roastEventsSig;
-    const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
-    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
-    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
-    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
-    const bt = channelArr().find(c => c.id == BT) as Channel;
-    let timer_worker: Worker;
+export function handleDryEnd() {
+    setRoastEvents({ ...roastEvents(), DRY_END: new RoastEvent(RoastEventId.DRY_END, timer(), bt.currentDataSig[GET]()) });
+}
 
-    const [ghost, _setGhost] = appState().ghostSig;
+export function handleFCStart() {
+    setRoastEvents({ ...roastEvents(), FC_START: new RoastEvent(RoastEventId.FC_START, timer(), bt.currentDataSig[GET]()) });
+}
 
-    createEffect(() => {
+export function handleFCEnd() {
+    setRoastEvents({ ...roastEvents(), FC_END: new RoastEvent(RoastEventId.FC_END, timer(), bt.currentDataSig[GET]()) });
+}
 
-    });
+export function handleSCStart() {
+    setRoastEvents({ ...roastEvents(), SC_START: new RoastEvent(RoastEventId.SC_START, timer(), bt.currentDataSig[GET]()) });
+}
 
-    async function buttonOnClicked() {
+export function handleSCEnd() {
+    setRoastEvents({ ...roastEvents(), SC_END: new RoastEvent(RoastEventId.SC_END, timer(), bt.currentDataSig[GET]()) });
+}
 
-        // implicit reset data
-        reset();
+export function handleDrop() {
+    setRoastEvents({ ...roastEvents(), DROP: new RoastEvent(RoastEventId.DROP, timer(), bt.currentDataSig[GET]()) });
+}
 
-        await invoke("button_on_clicked");
-        setStatus(AppStatus.ON);
-        setLogArr([...logArr(), "start reading channels..."]);
-    }
+export async function buttonOnClicked() {
 
-    async function buttonOffClicked() {
-        await invoke("button_off_clicked");
-        if (timer_worker) {
-            timer_worker.terminate()
-        };
+    // implicit reset data
+    reset();
 
-        setStatus(AppStatus.OFF);
+    await invoke("button_on_clicked");
+    setStatus(AppStatus.ON);
+    setLogArr([...logArr(), "start reading channels..."]);
+}
 
-        setLogArr([...logArr(), "stopped reading channels"]);
-    }
+export async function buttonOffClicked() {
+    await invoke("button_off_clicked");
+    if (timer_worker) {
+        timer_worker.terminate()
+    };
 
-    async function buttonStartClicked() {
-        timer_worker = new WorkerFactory(timerWorker) as Worker;
-        timer_worker.postMessage(1000);
-        timer_worker.onmessage = (event: any) => {
-            setTimer(event.data);
-        };
+    setStatus(AppStatus.OFF);
 
-        setStatus(AppStatus.RECORDING);
-        setLogArr([...logArr(), "start recording"]);
-    }
+    setLogArr([...logArr(), "stopped reading channels"]);
+}
 
-    async function buttonResetClicked() {
-        reset();
-        setStatus(AppStatus.OFF);
-    }
+export async function buttonStartClicked() {
+    timer_worker = new WorkerFactory(timerWorker) as Worker;
+    timer_worker.postMessage(1000);
+    timer_worker.onmessage = (event: any) => {
+        setTimer(event.data);
+    };
 
-    async function handleCharge() {
-        setRoastEvents({ ...roastEvents(), CHARGE: new RoastEvent(RoastEventId.CHARGE, timer(), bt.currentDataSig[GET]()) });
-        appState().timeDeltaSig[SET](- timer());
-    }
+    setStatus(AppStatus.RECORDING);
+    setLogArr([...logArr(), "start recording"]);
+}
 
-    async function handleDryEnd() {
-        setRoastEvents({ ...roastEvents(), DRY_END: new RoastEvent(RoastEventId.DRY_END, timer(), bt.currentDataSig[GET]()) });
-    }
+export async function buttonResetClicked() {
+    reset();
+    setStatus(AppStatus.OFF);
+}
 
-    async function handleFCStart() {
-        setRoastEvents({ ...roastEvents(), FC_START: new RoastEvent(RoastEventId.FC_START, timer(), bt.currentDataSig[GET]()) });
-    }
-
-    async function handleFCEnd() {
-        setRoastEvents({ ...roastEvents(), FC_END: new RoastEvent(RoastEventId.FC_END, timer(), bt.currentDataSig[GET]()) });
-    }
-
-    async function handleSCStart() {
-        setRoastEvents({ ...roastEvents(), SC_START: new RoastEvent(RoastEventId.SC_START, timer(), bt.currentDataSig[GET]()) });
-    }
-
-    async function handleSCEnd() {
-        setRoastEvents({ ...roastEvents(), SC_END: new RoastEvent(RoastEventId.SC_END, timer(), bt.currentDataSig[GET]()) });
-    }
-
-    async function handleDrop() {
-        setRoastEvents({ ...roastEvents(), DROP: new RoastEvent(RoastEventId.DROP, timer(), bt.currentDataSig[GET]()) });
-    }
+export default function DashboardPanel() {
 
     return (
         <>
@@ -117,7 +111,7 @@ export default function DashboardPanel(props: any) {
                 </Show>
                 <Show when={status() == AppStatus.ON}>
                     <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonOffClicked}>OFF
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">E</span>
                     </button>
 
                     <button class="btn btn-accent rounded relative w-20" onClick={buttonStartClicked}>START
@@ -126,7 +120,7 @@ export default function DashboardPanel(props: any) {
                 </Show>
                 <Show when={status() == AppStatus.RECORDING}>
                     <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonOffClicked}>OFF
-                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
+                        <span class="absolute bottom-0 right-0 mr-1 underline text-xs">E</span>
                     </button>
                 </Show>
 

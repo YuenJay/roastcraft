@@ -9,9 +9,10 @@ import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost } from
 import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, loadGhost, saveFile } from "./fileUtil";
-import DashboardPanel from "./DashboardPanel";
+import DashboardPanel, { buttonOffClicked, buttonOnClicked, buttonResetClicked, buttonStartClicked, handleCharge, handleDrop, handleDryEnd, handleFCEnd, handleFCStart, handleSCEnd, handleSCStart } from "./DashboardPanel";
 import NotesPanel from "./NotesPanel";
 import SettingsPanel from "./SettingsPanel";
+import hotkeys from "hotkeys-js";
 
 function App() {
 
@@ -29,6 +30,10 @@ function App() {
     const [phaseChartWidth, setPhaseChartWidth] = appState().phaseChartWidthSig;
     const channelIdList = channelArr().map(m => m.id);
     const bt = channelArr().find(c => c.id == BT) as Channel;
+
+    const DASHBOARD = "DASHBOARD";
+    const NOTES = "NOTES";
+    const SETTINGS = "SETTINGS";
 
     let detach: UnlistenFn;
     let unlisten_reader: UnlistenFn;
@@ -131,53 +136,49 @@ function App() {
             }
         };
 
-        // alternative: https://tauri.app/v1/api/js/globalshortcut/
-        // but I think this is ok
-        document.addEventListener("keydown", handleKeyDownEvent);
-
-        let resizer = document.querySelector(".resizer");
-        let sidebar = document.querySelector(".sidebar");
-
-        function initResizerFn(resizer: any, sidebar: any) {
-
-            // track current mouse position in x var
-            let x: number, w: number;
-            let pw: number;
-
-            function rs_mousedownHandler(e: any) {
-
-                x = e.clientX;
-
-                var sbWidth = window.getComputedStyle(sidebar as Element).width;
-                w = parseInt(sbWidth, 10);
-
-                document.addEventListener("mousemove", rs_mousemoveHandler);
-                document.addEventListener("mouseup", rs_mouseupHandler);
-
-                pw = phaseChartWidth();
+        hotkeys('q,w,e,r,z,x,c,v,b,n,m', DASHBOARD, function (_event, handler) {
+            switch (handler.key) {
+                case 'q':
+                    buttonOnClicked();
+                    break;
+                case 'w':
+                    buttonStartClicked();
+                    break;
+                case 'e':
+                    buttonOffClicked();
+                    break;
+                case 'r':
+                    buttonResetClicked();
+                    break;
+                case 'z':
+                    handleCharge();
+                    break;
+                case 'x':
+                    handleDryEnd();
+                    break;
+                case 'c':
+                    handleFCStart();
+                    break;
+                case 'v':
+                    handleFCEnd();
+                    break;
+                case 'b':
+                    handleSCStart();
+                    break;
+                case 'n':
+                    handleSCEnd();
+                    break;
+                case 'm':
+                    handleDrop();
+                    break;
+                default:
+                    break;
             }
+        });
 
-            function rs_mousemoveHandler(e: any) {
-                var dx = e.clientX - x;
+        hotkeys.setScope(DASHBOARD);
 
-                var cw = w - dx; // complete width
-
-                if (cw < 768) {
-                    sidebar.style.width = `${cw}px`;
-                    setPhaseChartWidth(pw - dx);
-                }
-            }
-
-            function rs_mouseupHandler() {
-                // remove event mousemove && mouseup
-                document.removeEventListener("mouseup", rs_mouseupHandler);
-                document.removeEventListener("mousemove", rs_mousemoveHandler);
-            }
-
-            resizer.addEventListener("mousedown", rs_mousedownHandler);
-        }
-
-        initResizerFn(resizer, sidebar);
+        initResizerFn();
     });
 
     onCleanup(() => {
@@ -186,33 +187,46 @@ function App() {
         unlisten_menu_event_listener();
     })
 
-    function handleKeyDownEvent(event: KeyboardEvent) {
-        console.log("key down event: " + event.code);
-        switch (event.code) {
-            case 'KeyZ':
-                // handleCharge();
-                break;
-            case 'KeyX':
-                // handleDryEnd();
-                break;
-            case 'KeyC':
-                // handleFCStart();
-                break;
-            case 'KeyV':
-                // handleFCEnd();
-                break;
-            case 'KeyB':
-                // handleSCStart();
-                break;
-            case 'KeyN':
-                // handleSCEnd();
-                break;
-            case 'KeyM':
-                // handleDrop();
-                break;
-            default:
+    function initResizerFn() {
 
+        let resizer = document.querySelector(".resizer") as HTMLElement;
+        let sidebar = document.querySelector(".sidebar") as HTMLElement;
+
+        // track current mouse position in x var
+        let x: number, w: number;
+        let pw: number;
+
+        function rs_mousedownHandler(e: any) {
+
+            x = e.clientX;
+
+            var sbWidth = window.getComputedStyle(sidebar).width;
+            w = parseInt(sbWidth, 10);
+
+            document.addEventListener("mousemove", rs_mousemoveHandler);
+            document.addEventListener("mouseup", rs_mouseupHandler);
+
+            pw = phaseChartWidth();
         }
+
+        function rs_mousemoveHandler(e: any) {
+            var dx = e.clientX - x;
+
+            var cw = w - dx; // complete width
+
+            if (cw < 768) {
+                sidebar.style.width = `${cw}px`;
+                setPhaseChartWidth(pw - dx);
+            }
+        }
+
+        function rs_mouseupHandler() {
+            // remove event mousemove && mouseup
+            document.removeEventListener("mouseup", rs_mouseupHandler);
+            document.removeEventListener("mousemove", rs_mousemoveHandler);
+        }
+
+        resizer.addEventListener("mousedown", rs_mousedownHandler);
     }
 
     return (
@@ -244,22 +258,27 @@ function App() {
                 <div class="h-full overflow-y-auto pr-1 flex flex-col gap-y-1">
 
                     <div role="tablist" class="tabs tabs-bordered">
-                        <a role="tab" class={`tab ${currentTabId() == 0 ? "tab-active" : ""}`} onClick={() => {
-                            setCurrentTabId(0);
-                            document.addEventListener("keydown", handleKeyDownEvent);
-                        }}>Dashboard</a>
+                        <a role="tab" class={`tab ${currentTabId() == 0 ? "tab-active" : ""}`}
+                            onClick={() => {
+                                setCurrentTabId(0);
+                                hotkeys.setScope(DASHBOARD);
+                            }}>
+                            Dashboard
+                        </a>
                         <a role="tab" class={`tab ${currentTabId() == 1 ? "tab-active" : ""}`}
                             onClick={() => {
                                 setCurrentTabId(1);
-                                // hoykey is disabled in Notes panel
-                                document.removeEventListener("keydown", handleKeyDownEvent);
+                                hotkeys.setScope(NOTES); // hotkeys is disabled in Notes panel
                             }}>
                             Notes
                         </a>
-                        <a role="tab" class={`tab ${currentTabId() == 2 ? "tab-active" : ""}`} onClick={() => {
-                            setCurrentTabId(2);
-                            document.addEventListener("keydown", handleKeyDownEvent);
-                        }}>Settings</a>
+                        <a role="tab" class={`tab ${currentTabId() == 2 ? "tab-active" : ""}`}
+                            onClick={() => {
+                                setCurrentTabId(2);
+                                hotkeys.setScope(SETTINGS);
+                            }}>
+                            Settings
+                        </a>
                     </div>
 
                     <div class={`flex flex-col gap-y-1 ${currentTabId() == 0 ? "" : "hidden"}`}>
