@@ -246,37 +246,34 @@ export default function MainChart() {
 
             {/* realtime tooltip */}
             <Show when={status() == AppStatus.RECORDING}>
-                <g clip-path="url(#clip-path)" >
-                    <For each={channelArr().filter(c => c.id != BT)}>
-                        {(c) => (
-                            // <g clip-path="url(#clip-path)" >
+                <For each={channelArr().filter(c => c.id != BT)}>
+                    {(c) => (
+                        <g clip-path="url(#clip-path)" >
                             <ToolTip
                                 x={xScale(timer() + timeDelta())}
                                 y={yScale(c.currentDataSig[GET]())}
                                 text={c.currentDataSig[GET]().toFixed(1)}
                                 color={c.color}
                             />
-                            // </g>
-                        )}
-                    </For>
+                        </g>
+                    )}
+                </For>
 
+                <g clip-path="url(#clip-path)" >
+                    <ToolTip
+                        x={xScale(timer() + timeDelta())}
+                        y={yScaleROR(bt.currentRorSig[GET]())}
+                        text={bt.currentRorSig[GET]().toFixed(1)}
+                        color={bt.color}
+                    />
                     <ToolTip
                         x={xScale(timer() + timeDelta())}
                         y={yScale(bt.currentDataSig[GET]())}
                         text={bt.currentDataSig[GET]().toFixed(1)}
                         color={bt.color}
                     />
-                    <Show when={bt.rorConvolveArrSig[GET]().at(-1) != undefined}>
-                        <ToolTip
-                            x={xScale(bt.rorConvolveArrSig[GET]().at(-1)!.timestamp + timeDelta())}
-                            y={yScaleROR(bt.rorConvolveArrSig[GET]().at(-1)!.value)}
-                            text={bt.rorConvolveArrSig[GET]().at(-1)!.value.toFixed(1)}
-                            color={bt.rorColor}
-                        />
-                    </Show>
                 </g>
             </Show>
-
 
             {/* cursor line and tooltip */}
             <line stroke="gray"
