@@ -151,6 +151,8 @@ export async function loadGhost() {
                     createSignal(new Array<Point>()), // rorOutlierSig
                     createSignal(new Array<Point>()), // rorFilteredSig
                     createSignal(new Array<Point>()), // rorConvolveSig
+                    createSignal(0),
+                    createSignal(-100),
                 );
                 tempChannel.setDataArr(c.dataArr);
                 calculateRor(tempChannel, roastEvents);

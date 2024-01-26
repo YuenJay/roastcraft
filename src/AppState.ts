@@ -256,7 +256,7 @@ async function init_appStateSig() {
                 createSignal(new Array<Point>()), // rorFilteredSig
                 createSignal(new Array<Point>()), // rorConvolveSig
                 createSignal(0),
-                createSignal(0),
+                createSignal(-100),
             )
         );
     } else {
@@ -276,7 +276,7 @@ async function init_appStateSig() {
                 createSignal(new Array<Point>()), // rorFilteredSig
                 createSignal(new Array<Point>()), // rorConvolveSig
                 createSignal(0),
-                createSignal(0),
+                createSignal(-100),
             )
         );
     }

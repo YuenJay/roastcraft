@@ -246,31 +246,30 @@ export default function MainChart() {
 
             {/* realtime tooltip */}
             <Show when={status() == AppStatus.RECORDING}>
-                <For each={channelArr().filter(c => c.id != BT)}>
-                    {(c) => (
-                        <g clip-path="url(#clip-path)" >
+                <g clip-path="url(#clip-path)" >
+                    <For each={channelArr().filter(c => c.id != BT)}>
+                        {(c) => (
+
                             <ToolTip
                                 x={xScale(timer() + timeDelta())}
                                 y={yScale(c.currentDataSig[GET]())}
                                 text={c.currentDataSig[GET]().toFixed(1)}
                                 color={c.color}
                             />
-                        </g>
-                    )}
-                </For>
 
-                <g clip-path="url(#clip-path)" >
-                    <ToolTip
-                        x={xScale(bt.lastRorConvolveTimestampSig[GET]() + timeDelta())}
-                        y={yScaleROR(bt.lastRorConvolveValueSig[GET]())}
-                        text={bt.lastRorConvolveValueSig[GET]().toFixed(1)}
-                        color={bt.rorColor}
-                    />
+                        )}
+                    </For>
                     <ToolTip
                         x={xScale(timer() + timeDelta())}
                         y={yScale(bt.currentDataSig[GET]())}
                         text={bt.currentDataSig[GET]().toFixed(1)}
                         color={bt.color}
+                    />
+                    <ToolTip
+                        x={xScale(bt.lastRorConvolveTimestampSig[GET]() + timeDelta())}
+                        y={yScaleROR(bt.lastRorConvolveValueSig[GET]())}
+                        text={bt.lastRorConvolveValueSig[GET]().toFixed(1)}
+                        color={bt.rorColor}
                     />
                 </g>
             </Show>

@@ -129,14 +129,12 @@ export default function SecondaryChart(props: { channel_id: string }) {
 
                 {/* realtime tooltip */}
                 <Show when={status() == AppStatus.RECORDING}>
-                    <g clip-path="url(#clip-path-input-0)" >
-                        <ToolTip
-                            x={xScale(timer() + timeDelta())}
-                            y={yScale(mc.currentDataSig[GET]())}
-                            text={mc.currentDataSig[GET]()}
-                            color="blue"
-                        />
-                    </g>
+                    <ToolTip
+                        x={xScale(timer() + timeDelta())}
+                        y={yScale(mc.currentDataSig[GET]())}
+                        text={mc.currentDataSig[GET]()}
+                        color="blue"
+                    />
                 </Show>
                 <line stroke="gray"
                     stroke-width="0.5"
