@@ -363,6 +363,8 @@ export function reset() {
         channel.rorOutlierArrSig[SET](new Array<Point>());
         channel.rorFilteredArrSig[SET](new Array<Point>());
         channel.rorConvolveArrSig[SET](new Array<Point>());
+        channel.lastRorConvolveTimestampSig[SET](0);
+        channel.lastRorConvolveValueSig[SET](-100);
     })
 
     manualChannelArr().forEach((mc) => {

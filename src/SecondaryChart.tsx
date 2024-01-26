@@ -144,14 +144,16 @@ export default function SecondaryChart(props: { channel_id: string }) {
                     x2={cursorLineX()}
                     y2={height - marginBottom}
                 ></line>
-                <Show when={mc.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
-                    <ToolTip
-                        x={cursorLineX()}
-                        y={yScale(mc.dataArr()[cursorIndex()].value)}
-                        text={mc.dataArr()[cursorIndex()].value}
-                        color="blue"
-                    />
-                </Show>
+                <g clip-path="url(#clip-path-input-0)" >
+                    <Show when={mc.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
+                        <ToolTip
+                            x={cursorLineX()}
+                            y={yScale(mc.dataArr()[cursorIndex()].value)}
+                            text={mc.dataArr()[cursorIndex()].value}
+                            color="blue"
+                        />
+                    </Show>
+                </g>
             </svg>
         </>
     );

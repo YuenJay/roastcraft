@@ -275,56 +275,57 @@ export default function MainChart() {
             </Show>
 
             {/* cursor line and tooltip */}
-            <line stroke="gray"
-                stroke-width="0.5"
-                clip-path="url(#clip-path)"
-                x1={cursorLineX()}
-                y1={marginTop}
-                x2={cursorLineX()}
-                y2={height - marginBottom}
-            ></line>
-            <Show when={timeDelta() < cursorTimestamp()}>
-                <text
-                    font-size="0.6em"
-                    fill="gray"
-                    x={cursorLineX()}
-                    y={height - marginBottom}
-                    dy="-0.2em"
-                    dx="2"
-                    clip-path="url(#clip-path)">
-                    {cursorTimestamp() > 0
-                        ? Math.floor(cursorTimestamp() / 60).toString().padStart(2, '0') + ":" + (cursorTimestamp() % 60).toString().padStart(2, '0')
-                        : Math.ceil(cursorTimestamp() / 60).toString().padStart(2, '0') + ":" + (cursorTimestamp() % 60).toString().padStart(2, '0')}
-                </text>
-            </Show>
-            <For each={channelArr().filter(c => c.id != BT)}>
-                {(c) => (
-                    <Show when={c.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
-                        <ToolTip
-                            x={xScale(c.dataArr()[cursorIndex()].timestamp + timeDelta())}
-                            y={yScale(c.dataArr()[cursorIndex()].value)}
-                            text={c.dataArr()[cursorIndex()].value.toFixed(1)}
-                            color={c.color}
-                        />
-                    </Show>
-                )}
-            </For>
-            <Show when={bt.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
-                <ToolTip
-                    x={xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta())}
-                    y={yScale(bt.dataArr()[cursorIndex()].value)}
-                    text={bt.dataArr()[cursorIndex()].value.toFixed(1)}
-                    color={bt.color}
-                />
-            </Show>
-            <Show when={bt.rorConvolveArrSig[GET]()[cursorIndexROR()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
-                <ToolTip
-                    x={xScale(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].timestamp + timeDelta())}
-                    y={yScaleROR(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value)}
-                    text={bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value.toFixed(1)}
-                    color={bt.rorColor}
-                />
-            </Show>
+            <g clip-path="url(#clip-path)" >
+                <line stroke="gray"
+                    stroke-width="0.5"
+                    x1={cursorLineX()}
+                    y1={marginTop}
+                    x2={cursorLineX()}
+                    y2={height - marginBottom}
+                ></line>
+                <Show when={timeDelta() < cursorTimestamp()}>
+                    <text
+                        font-size="0.6em"
+                        fill="gray"
+                        x={cursorLineX()}
+                        y={height - marginBottom}
+                        dy="-0.2em"
+                        dx="2"
+                    >
+                        {cursorTimestamp() > 0
+                            ? Math.floor(cursorTimestamp() / 60).toString().padStart(2, '0') + ":" + (cursorTimestamp() % 60).toString().padStart(2, '0')
+                            : Math.ceil(cursorTimestamp() / 60).toString().padStart(2, '0') + ":" + (cursorTimestamp() % 60).toString().padStart(2, '0')}
+                    </text>
+                </Show>
+                <For each={channelArr().filter(c => c.id != BT)}>
+                    {(c) => (
+                        <Show when={c.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
+                            <ToolTip
+                                x={xScale(c.dataArr()[cursorIndex()].timestamp + timeDelta())}
+                                y={yScale(c.dataArr()[cursorIndex()].value)}
+                                text={c.dataArr()[cursorIndex()].value.toFixed(1)}
+                                color={c.color}
+                            />
+                        </Show>
+                    )}
+                </For>
+                <Show when={bt.dataArr()[cursorIndex()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
+                    <ToolTip
+                        x={xScale(bt.dataArr()[cursorIndex()].timestamp + timeDelta())}
+                        y={yScale(bt.dataArr()[cursorIndex()].value)}
+                        text={bt.dataArr()[cursorIndex()].value.toFixed(1)}
+                        color={bt.color}
+                    />
+                </Show>
+                <Show when={bt.rorConvolveArrSig[GET]()[cursorIndexROR()] != undefined && timeDelta() < cursorTimestamp() && cursorTimestamp() < timer() + timeDelta()}>
+                    <ToolTip
+                        x={xScale(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].timestamp + timeDelta())}
+                        y={yScaleROR(bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value)}
+                        text={bt.rorConvolveArrSig[GET]()[cursorIndexROR()].value.toFixed(1)}
+                        color={bt.rorColor}
+                    />
+                </Show>
+            </g>
 
 
 
