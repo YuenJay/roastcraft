@@ -261,10 +261,10 @@ export default function MainChart() {
 
                 <g clip-path="url(#clip-path)" >
                     <ToolTip
-                        x={xScale(timer() + timeDelta())}
-                        y={yScaleROR(bt.currentRorSig[GET]())}
-                        text={bt.currentRorSig[GET]().toFixed(1)}
-                        color={bt.color}
+                        x={xScale(bt.lastRorConvolveTimestampSig[GET]() + timeDelta())}
+                        y={yScaleROR(bt.lastRorConvolveValueSig[GET]())}
+                        text={bt.lastRorConvolveValueSig[GET]().toFixed(1)}
+                        color={bt.rorColor}
                     />
                     <ToolTip
                         x={xScale(timer() + timeDelta())}

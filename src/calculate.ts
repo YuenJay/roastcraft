@@ -131,6 +131,14 @@ export function findRorOutlier(channel: Channel) {
     channel.rorFilteredArrSig[SET](ror_filtered);
     channel.rorConvolveArrSig[SET](ror_convolve);
 
+    if (ror_convolve.at(-1) != undefined && ror_convolve.at(-1)!.value != undefined) {
+        channel.lastRorConvolveTimestampSig[SET](ror_convolve.at(-1)!.timestamp);
+        channel.lastRorConvolveValueSig[SET](ror_convolve.at(-1)!.value);
+        // console.log("lastRorConvolve");
+        // console.log(channel.lastRorConvolveTimestampSig[GET]());
+        // console.log(channel.lastRorConvolveValueSig[GET]());
+    }
+
 }
 
 

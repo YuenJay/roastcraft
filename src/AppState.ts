@@ -31,6 +31,8 @@ export class Channel {
     rorOutlierArrSig: Signal<Array<Point>>;  // history records
     rorFilteredArrSig: Signal<Array<Point>>; // history records
     rorConvolveArrSig: Signal<Array<Point>>; // history records
+    lastRorConvolveTimestampSig: Signal<number>;
+    lastRorConvolveValueSig: Signal<number>;
 
     constructor(
         id: string,
@@ -45,7 +47,10 @@ export class Channel {
         rorArrSig: Signal<Array<Point>>,
         rorOutlierArrSig: Signal<Array<Point>>,
         rorFilteredArrSig: Signal<Array<Point>>,
-        rorConvolveArrSig: Signal<Array<Point>>,) {
+        rorConvolveArrSig: Signal<Array<Point>>,
+        lastRorConvolveTimestampSig: Signal<number>,
+        lastRorConvolveValueSig: Signal<number>,
+    ) {
         this.id = id;
         this.label = label;
         this.unit = unit;
@@ -60,7 +65,8 @@ export class Channel {
         this.rorOutlierArrSig = rorOutlierArrSig;
         this.rorFilteredArrSig = rorFilteredArrSig;
         this.rorConvolveArrSig = rorConvolveArrSig;
-
+        this.lastRorConvolveTimestampSig = lastRorConvolveTimestampSig;
+        this.lastRorConvolveValueSig = lastRorConvolveValueSig;
     }
 }
 
@@ -249,6 +255,8 @@ async function init_appStateSig() {
                 createSignal(new Array<Point>()), // rorOutlierSig
                 createSignal(new Array<Point>()), // rorFilteredSig
                 createSignal(new Array<Point>()), // rorConvolveSig
+                createSignal(0),
+                createSignal(0),
             )
         );
     } else {
@@ -267,6 +275,8 @@ async function init_appStateSig() {
                 createSignal(new Array<Point>()), // rorOutlierSig
                 createSignal(new Array<Point>()), // rorFilteredSig
                 createSignal(new Array<Point>()), // rorConvolveSig
+                createSignal(0),
+                createSignal(0),
             )
         );
     }
