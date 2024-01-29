@@ -2,7 +2,7 @@
 
 import { invoke } from "@tauri-apps/api/tauri";
 import { For, Show, } from "solid-js";
-import { GET, SET, BT, AppStatus, RoastEventId, appStateSig, reset, RoastEvent, Channel } from "./AppState";
+import { GET, SET, BT, AppStatus, RoastEventId, appStateSig, resetChannels, RoastEvent, Channel, resetNotes } from "./AppState";
 import { timestamp_format } from "./calculate";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
@@ -55,7 +55,7 @@ export function handleDrop() {
 export async function buttonOnClicked() {
 
     // implicit reset data
-    reset();
+    resetChannels();
 
     await invoke("button_on_clicked");
     setStatus(AppStatus.ON);
@@ -85,7 +85,8 @@ export async function buttonStartClicked() {
 }
 
 export async function buttonResetClicked() {
-    reset();
+    resetChannels();
+    resetNotes();
     setStatus(AppStatus.OFF);
 }
 

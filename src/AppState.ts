@@ -345,7 +345,7 @@ async function init_appStateSig() {
 
 export const appStateSig = createSignal(await init_appStateSig());
 
-export function reset() {
+export function resetChannels() {
     const [appState, _setAppState] = appStateSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
@@ -375,22 +375,6 @@ export function reset() {
     // not reset logs 
     // appState().logArrSig[SET](new Array<string>());   
 
-    appState().titleSig[SET]("");
-    appState().countrySig[SET]("");
-    appState().processSig[SET]("");
-    appState().notesSig[SET]("");
-
-    appState().weightGreenSig[SET](0.0);
-    appState().weightRoastedSig[SET](0.0);
-    appState().volumeGreenSig[SET](0.0);
-    appState().volumeRoastedSig[SET](0.0);
-    appState().densityGreenSig[SET](0.0);
-    appState().densityRoastedSig[SET](0.0);
-    appState().moistureGreenSig[SET](0.0);
-    appState().moistureRoastedSig[SET](0.0);
-    appState().colorWholeSig[SET](0);
-    appState().colorGroundSig[SET](0);
-
     appState().roastEventsSig[SET]({
         CHARGE: undefined,
         DRY_END: undefined,
@@ -409,6 +393,26 @@ export function reset() {
     appState().toggleShowRorFilteredSig[SET](false);
     appState().toggleShowRorOutlierSig[SET](false);
 
+}
+
+export function resetNotes() {
+    const [appState, _setAppState] = appStateSig;
+
+    appState().titleSig[SET]("");
+    appState().countrySig[SET]("");
+    appState().processSig[SET]("");
+    appState().notesSig[SET]("");
+
+    appState().weightGreenSig[SET](0.0);
+    appState().weightRoastedSig[SET](0.0);
+    appState().volumeGreenSig[SET](0.0);
+    appState().volumeRoastedSig[SET](0.0);
+    appState().densityGreenSig[SET](0.0);
+    appState().densityRoastedSig[SET](0.0);
+    appState().moistureGreenSig[SET](0.0);
+    appState().moistureRoastedSig[SET](0.0);
+    appState().colorWholeSig[SET](0);
+    appState().colorGroundSig[SET](0);
 }
 
 export function resetGhost() {
