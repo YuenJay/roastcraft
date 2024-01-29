@@ -10,6 +10,7 @@ export async function openFile() {
     const [appState, _setAppState] = appStateSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
+    const [logArr, setLogArr] = appState().logArrSig;
     const [_dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
     const [_maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
     const [_developPhase, setDevelopPhase] = appState().developPhaseSig;
@@ -84,6 +85,7 @@ export async function openFile() {
         appState().colorWholeSig[SET](loadObject.colorWhole);
         appState().colorGroundSig[SET](loadObject.colorGround);
 
+        setLogArr([...logArr(), "opened file: " + filepath.replace(/^.*[\\/]/, '')]);
     } catch (e) {
         console.log(e);
     }
@@ -112,6 +114,7 @@ export async function loadGreenBeanInfo() {
 
 export async function loadGhost() {
     const [appState, _setAppState] = appStateSig;
+    const [logArr, setLogArr] = appState().logArrSig;
     const [ghost, setGhost] = appState().ghostSig;
 
     try {
@@ -186,7 +189,7 @@ export async function loadGhost() {
         setGhost(g);
         appState().isGhostLoadedSig[SET](true);
 
-        console.log(ghost());
+        setLogArr([...logArr(), "loaded ghost: " + filepath.replace(/^.*[\\/]/, '')]);
 
     } catch (e) {
         console.log(e);

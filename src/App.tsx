@@ -127,8 +127,6 @@ function App() {
             }
         });
 
-        setLogArr([...logArr(), "RoastCraft is ready"]);
-
         window.speechSynthesis.onvoiceschanged = function () {
             // window.speechSynthesis.speak(new SpeechSynthesisUtterance("歡迎使用roastcraft"));
             if (window.speechSynthesis.getVoices().length > 0) {
@@ -179,6 +177,9 @@ function App() {
         hotkeys.setScope(DASHBOARD);
 
         initResizerFn();
+
+        setLogArr([...logArr(), "RoastCraft is ready"]);
+
     });
 
     onCleanup(() => {
