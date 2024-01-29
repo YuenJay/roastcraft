@@ -22,9 +22,20 @@ export default function RangeInput(props: { channel_id: string }) {
     }
     pips.push(max);
 
-    async function handleInput(event: InputEvent) {
+    function handleInput(event: InputEvent) {
 
         let value = (event.target as HTMLInputElement).value;
+
+        mc.currentDataSig[SET](Number(value));
+        mc.setDataArr(
+            [...mc.dataArr(), new Point(timer(), Number(value))]
+        );
+
+    }
+
+    function handlePipClick(pip: number) {
+
+        let value = pip;
 
         mc.currentDataSig[SET](Number(value));
         mc.setDataArr(
@@ -53,7 +64,9 @@ export default function RangeInput(props: { channel_id: string }) {
                 <For each={pips}>
                     {(pip) => (
                         <span class="h-2 w-px bg-black">
-                            <span class="absolute -translate-x-1/2 translate-y-1/2" >{pip}</span>
+                            <span class="absolute -translate-x-1/2 translate-y-1/2 hover:cursor-pointer"
+                                onClick={() => handlePipClick(pip)}
+                            >{pip}</span>
                         </span>
                     )}
                 </For>
