@@ -162,10 +162,10 @@ export function autoDetectChargeDrop() {
         //                              ^^^^^^
         //                              CHARGE
 
-        let dpre = window[1] + window[2] / 2.0;
+        let dpre = window[0] + window[1] / 2.0;
         let dpost = window[3] + window[4] / 2.0;
-        if (window[1] > 0.0 && window[2] > 0.0
-            && window[3] < 0.0 && window[3] < 0.0
+        if (window[0] > 0.0 && window[1] > 0.0
+            && window[3] < 0.0 && window[4] < 0.0
             && Math.abs(dpost) > Math.abs(dpre) * 2) {
             let target_index = ror.length - 3;
 
