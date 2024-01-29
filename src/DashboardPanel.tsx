@@ -101,25 +101,45 @@ export default function DashboardPanel() {
                     </Show>
                 </div>
                 <Show when={status() == AppStatus.OFF}>
-                    <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonResetClicked}>RESET
+                    <button class="ml-auto btn btn-accent rounded relative w-20"
+                        onClick={buttonResetClicked}
+                        tabindex="-1"
+                    >
+                        RESET
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">R</span>
                     </button>
 
-                    <button class="btn btn-accent rounded relative w-20" onClick={buttonOnClicked}>ON
+                    <button class="btn btn-accent rounded relative w-20"
+                        onClick={buttonOnClicked}
+                        tabindex="-1"
+                    >
+                        ON
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Q</span>
                     </button>
                 </Show>
                 <Show when={status() == AppStatus.ON}>
-                    <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonOffClicked}>OFF
+                    <button class="ml-auto btn btn-accent rounded relative w-20"
+                        onClick={buttonOffClicked}
+                        tabindex="-1"
+                    >
+                        OFF
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">E</span>
                     </button>
 
-                    <button class="btn btn-accent rounded relative w-20" onClick={buttonStartClicked}>START
+                    <button class="btn btn-accent rounded relative w-20"
+                        onClick={buttonStartClicked}
+                        tabindex="-1"
+                    >
+                        START
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs1">W</span>
                     </button>
                 </Show>
                 <Show when={status() == AppStatus.RECORDING}>
-                    <button class="ml-auto btn btn-accent rounded relative w-20" onClick={buttonOffClicked}>OFF
+                    <button class="ml-auto btn btn-accent rounded relative w-20"
+                        onClick={buttonOffClicked}
+                        tabindex="-1"
+                    >
+                        OFF
                         <span class="absolute bottom-0 right-0 mr-1 underline text-xs">E</span>
                     </button>
                 </Show>
@@ -169,7 +189,9 @@ export default function DashboardPanel() {
                     ${roastEvents().CHARGE != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleCharge}>
+                    onClick={handleCharge}
+                    tabindex="-1"
+                >
                     CHARGE
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">Z</span>
                 </button>
@@ -178,7 +200,9 @@ export default function DashboardPanel() {
                     ${roastEvents().DRY_END != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleDryEnd}>
+                    onClick={handleDryEnd}
+                    tabindex="-1"
+                >
                     DRY END
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">X</span>
                 </button>
@@ -187,7 +211,9 @@ export default function DashboardPanel() {
                     ${roastEvents().FC_START != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleFCStart}>
+                    onClick={handleFCStart}
+                    tabindex="-1"
+                >
                     FC START
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">C</span>
                 </button>
@@ -196,7 +222,9 @@ export default function DashboardPanel() {
                     ${roastEvents().FC_END != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleFCEnd}>
+                    onClick={handleFCEnd}
+                    tabindex="-1"
+                >
                     FC END
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">V</span>
                 </button>
@@ -205,7 +233,9 @@ export default function DashboardPanel() {
                     ${roastEvents().SC_START != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleSCStart}>
+                    onClick={handleSCStart}
+                    tabindex="-1"
+                >
                     SC START
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">B</span>
                 </button>
@@ -214,7 +244,9 @@ export default function DashboardPanel() {
                     ${roastEvents().SC_END != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleSCEnd}>
+                    onClick={handleSCEnd}
+                    tabindex="-1"
+                >
                     SC END
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">N</span>
                 </button>
@@ -223,7 +255,9 @@ export default function DashboardPanel() {
                     ${roastEvents().DROP != undefined ? "btn-disabled" : ""}
                     ${status() != AppStatus.RECORDING ? "btn-disabled" : ""}
                     `}
-                    onClick={handleDrop}>
+                    onClick={handleDrop}
+                    tabindex="-1"
+                >
                     DROP
                     <span class="absolute bottom-0 right-0 mr-1 underline text-xs">M</span>
                 </button>

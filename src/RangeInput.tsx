@@ -47,6 +47,7 @@ export default function RangeInput(props: { channel_id: string }) {
                 step={step}
                 onInput={handleInput}
                 disabled={status() == AppStatus.OFF}
+                onclick={event => (event.target as HTMLInputElement).blur()}
             />
             <div class="w-full flex justify-between text-xs px-2 pb-4 relative">
                 <For each={pips}>
