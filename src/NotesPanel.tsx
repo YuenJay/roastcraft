@@ -35,196 +35,220 @@ export default function NotesPanel() {
     const [recentCountries, setRecentCountries] = createSignal(JSON.parse(localStorage.getItem("recentCountries") || "[]") as Array<string>);
     const [recentProcesses, setRecentProcesses] = createSignal(JSON.parse(localStorage.getItem("recentProcesses") || "[]") as Array<string>);
 
-    let flavor = [
-        {
-            name: "Green/Vegetative", checked: false,
-            children: [
-                { name: "Olive Oil", checked: false, },
-                { name: "Raw", checked: false, },
-                { name: "Beany", checked: false, },
+    let flavor =
+    {
+        name: "root", checked: false,
+        children:
+            [
                 {
                     name: "Green/Vegetative", checked: false,
                     children: [
-                        { name: "Under-Ripe", checked: false, },
-                        { name: "Peapod", checked: false, },
-                        { name: "Fresh", checked: false, },
-                        { name: "Dark Green", checked: false, },
-                        { name: "Vegetative", checked: false, },
-                        { name: "Hay-Like", checked: false, },
-                        { name: "Herb-Like", checked: false, },
-                    ]
-                }
-            ]
-        },
-        {
-            name: "Sour/Fermented", checked: false,
-            children: [
-                {
-                    name: "Sour", checked: false,
-                    children: [
-                        { name: "Sour Aromatics", checked: false, },
-                        { name: "Acetic Acid", checked: false, },
-                        { name: "Butyric Acid", checked: false, },
-                        { name: "Isovaleric Acid", checked: false, },
-                        { name: "Citric Acid", checked: false, },
-                        { name: "Malic Acid", checked: false, },
+                        { name: "Olive Oil", checked: false, },
+                        { name: "Raw", checked: false, },
+                        { name: "Beany", checked: false, },
+                        {
+                            name: "Green/Vegetative", checked: false,
+                            children: [
+                                { name: "Under-Ripe", checked: false, },
+                                { name: "Peapod", checked: false, },
+                                { name: "Fresh", checked: false, },
+                                { name: "Dark Green", checked: false, },
+                                { name: "Vegetative", checked: false, },
+                                { name: "Hay-Like", checked: false, },
+                                { name: "Herb-Like", checked: false, },
+                            ]
+                        }
                     ]
                 },
                 {
-                    name: "Alcohol/Fermented", checked: false,
+                    name: "Sour/Fermented", checked: false,
                     children: [
-                        { name: "Winey", checked: false, },
-                        { name: "Whiskey", checked: false, },
-                        { name: "Fermented", checked: false, },
-                        { name: "Overripe", checked: false, },
-                    ]
-                }
-            ]
-        },
-        {
-            name: "Fruity", checked: false,
-            children: [
-                {
-                    name: "Berry", checked: false,
-                    children: [
-                        { name: "Blackberry", checked: false, },
-                        { name: "Raspberry", checked: false, },
-                        { name: "Blueberry", checked: false, },
-                        { name: "Strawberry", checked: false, },
+                        {
+                            name: "Sour", checked: false,
+                            children: [
+                                { name: "Sour Aromatics", checked: false, },
+                                { name: "Acetic Acid", checked: false, },
+                                { name: "Butyric Acid", checked: false, },
+                                { name: "Isovaleric Acid", checked: false, },
+                                { name: "Citric Acid", checked: false, },
+                                { name: "Malic Acid", checked: false, },
+                            ]
+                        },
+                        {
+                            name: "Alcohol/Fermented", checked: false,
+                            children: [
+                                { name: "Winey", checked: false, },
+                                { name: "Whiskey", checked: false, },
+                                { name: "Fermented", checked: false, },
+                                { name: "Overripe", checked: false, },
+                            ]
+                        }
                     ]
                 },
                 {
-                    name: "Dried Fruit", checked: false,
+                    name: "Fruity", checked: false,
                     children: [
-                        { name: "Raisin", checked: false, },
-                        { name: "Prune", checked: false, },
+                        {
+                            name: "Berry", checked: false,
+                            children: [
+                                { name: "Blackberry", checked: false, },
+                                { name: "Raspberry", checked: false, },
+                                { name: "Blueberry", checked: false, },
+                                { name: "Strawberry", checked: false, },
+                            ]
+                        },
+                        {
+                            name: "Dried Fruit", checked: false,
+                            children: [
+                                { name: "Raisin", checked: false, },
+                                { name: "Prune", checked: false, },
+                            ]
+                        }
                     ]
-                }
-            ]
-        },
-        {
-            name: "Floral", checked: false,
-            children: [
-                { name: "Black Tea", checked: false, },
+                },
                 {
                     name: "Floral", checked: false,
                     children: [
-                        { name: "Chamomile", checked: false, },
-                        { name: "Rose", checked: false, },
-                        { name: "Jasmine", checked: false, },
+                        { name: "Black Tea", checked: false, },
+                        {
+                            name: "Floral", checked: false,
+                            children: [
+                                { name: "Chamomile", checked: false, },
+                                { name: "Rose", checked: false, },
+                                { name: "Jasmine", checked: false, },
+                            ]
+                        }
                     ]
+                },
+                {
+                    name: "Sweet", checked: false,
+                    children: [
+                        { name: "Sweet Aromatics", checked: false, },
+                        { name: "Overall Sweet", checked: false, },
+                        { name: "Vanillin", checked: false, },
+                        { name: "Vanilla", checked: false, },
+                        {
+                            name: "Brown Sugar", checked: false,
+                            children: [
+                                { name: "Honey", checked: false, },
+                                { name: "Caramelized", checked: false, },
+                                { name: "Maple Syrup", checked: false, },
+                                { name: "Molasses", checked: false, },
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Nutty/Cocoa", checked: false,
+                    children: [
+                        {
+                            name: "Nutty", checked: false,
+                            children: [
+                                { name: "Almond", checked: false, },
+                                { name: "Hazelnut", checked: false, },
+                                { name: "Peanuts", checked: false, },
+                            ]
+                        },
+                        {
+                            name: "Cocoa", checked: false,
+                            children: [
+                                { name: "Dark Chocolate", checked: false, },
+                                { name: "Chocolate", checked: false, },
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Spices", checked: false,
+                    children: [
+                        { name: "Pepper", checked: false, },
+                        { name: "Pungent", checked: false, },
+                        {
+                            name: "Brown Spice", checked: false,
+                            children: [
+                                { name: "Clove", checked: false, },
+                                { name: "Cinnamon", checked: false, },
+                                { name: "Nutmeg", checked: false, },
+                                { name: "Anise", checked: false, },
+                            ]
+                        },
+                    ]
+                },
+                {
+                    name: "Roasted", checked: false,
+                    children: [
+                        { name: "Tobacco", checked: false, },
+                        { name: "Pipe Tobacco", checked: false, },
+                        {
+                            name: "Cereal", checked: false,
+                            children: [
+                                { name: "Malt", checked: false, },
+                                { name: "Grain", checked: false, },
+                            ]
+                        },
+                        {
+                            name: "Burnt", checked: false,
+                            children: [
+                                { name: "Brown, Roast", checked: false, },
+                                { name: "Smoky", checked: false, },
+                                { name: "Ashy", checked: false, },
+                                { name: "Acrid", checked: false, },
+                            ]
+                        },
+                    ]
+                },
+                {
+                    name: "Other", checked: false,
+                    children: [
+                        {
+                            name: "Papery/Musty", checked: false,
+                            children: [
+                                { name: "Phenolic", checked: false, },
+                                { name: "Meaty Brothy", checked: false, },
+                                { name: "Animalic", checked: false, },
+                                { name: "Musty/Earthy", checked: false, },
+                                { name: "Musty/Dusty", checked: false, },
+                                { name: "Moldy/Damp", checked: false, },
+                                { name: "Woody", checked: false, },
+                                { name: "Papery", checked: false, },
+                                { name: "Cardboard", checked: false, },
+                                { name: "Stale", checked: false, },
+                            ]
+                        },
+                        {
+                            name: "Chemical", checked: false,
+                            children: [
+                                { name: "Rubber", checked: false, },
+                                { name: "Skunky", checked: false, },
+                                { name: "Petroleum", checked: false, },
+                                { name: "Medicinal", checked: false, },
+                                { name: "Salty", checked: false, },
+                                { name: "Bitter", checked: false, },
+                            ]
+                        }
+                    ]
+                },
+            ]
+    }
+
+    function updateFlavorList() {
+        let result = new Array<string>();
+        findFlavor(flavor, result);
+        appState().flavorListSig[SET](result);
+    }
+
+    function findFlavor(f: any, result: Array<string>) {
+        if (f.checked == true) {
+            result.push(f.name);
+        }
+        if (f.children != undefined) {
+            f.children.forEach(
+                (element: any) => {
+                    findFlavor(element, result);
                 }
-            ]
-        },
-        {
-            name: "Sweet", checked: false,
-            children: [
-                { name: "Sweet Aromatics", checked: false, },
-                { name: "Overall Sweet", checked: false, },
-                { name: "Vanillin", checked: false, },
-                { name: "Vanilla", checked: false, },
-                {
-                    name: "Brown Sugar", checked: false,
-                    children: [
-                        { name: "Honey", checked: false, },
-                        { name: "Caramelized", checked: false, },
-                        { name: "Maple Syrup", checked: false, },
-                        { name: "Molasses", checked: false, },
-                    ]
-                }
-            ]
-        },
-        {
-            name: "Nutty/Cocoa", checked: false,
-            children: [
-                {
-                    name: "Nutty", checked: false,
-                    children: [
-                        { name: "Almond", checked: false, },
-                        { name: "Hazelnut", checked: false, },
-                        { name: "Peanuts", checked: false, },
-                    ]
-                },
-                {
-                    name: "Cocoa", checked: false,
-                    children: [
-                        { name: "Dark Chocolate", checked: false, },
-                        { name: "Chocolate", checked: false, },
-                    ]
-                }
-            ]
-        },
-        {
-            name: "Spices", checked: false,
-            children: [
-                { name: "Pepper", checked: false, },
-                { name: "Pungent", checked: false, },
-                {
-                    name: "Brown Spice", checked: false,
-                    children: [
-                        { name: "Clove", checked: false, },
-                        { name: "Cinnamon", checked: false, },
-                        { name: "Nutmeg", checked: false, },
-                        { name: "Anise", checked: false, },
-                    ]
-                },
-            ]
-        },
-        {
-            name: "Roasted", checked: false,
-            children: [
-                { name: "Tobacco", checked: false, },
-                { name: "Pipe Tobacco", checked: false, },
-                {
-                    name: "Cereal", checked: false,
-                    children: [
-                        { name: "Malt", checked: false, },
-                        { name: "Grain", checked: false, },
-                    ]
-                },
-                {
-                    name: "Burnt", checked: false,
-                    children: [
-                        { name: "Brown, Roast", checked: false, },
-                        { name: "Smoky", checked: false, },
-                        { name: "Ashy", checked: false, },
-                        { name: "Acrid", checked: false, },
-                    ]
-                },
-            ]
-        },
-        {
-            name: "Other", checked: false,
-            children: [
-                {
-                    name: "Papery/Musty", checked: false,
-                    children: [
-                        { name: "Phenolic", checked: false, },
-                        { name: "Meaty Brothy", checked: false, },
-                        { name: "Animalic", checked: false, },
-                        { name: "Musty/Earthy", checked: false, },
-                        { name: "Musty/Dusty", checked: false, },
-                        { name: "Moldy/Damp", checked: false, },
-                        { name: "Woody", checked: false, },
-                        { name: "Papery", checked: false, },
-                        { name: "Cardboard", checked: false, },
-                        { name: "Stale", checked: false, },
-                    ]
-                },
-                {
-                    name: "Chemical", checked: false,
-                    children: [
-                        { name: "Rubber", checked: false, },
-                        { name: "Skunky", checked: false, },
-                        { name: "Petroleum", checked: false, },
-                        { name: "Medicinal", checked: false, },
-                        { name: "Salty", checked: false, },
-                        { name: "Bitter", checked: false, },
-                    ]
-                }
-            ]
-        },
-    ]
+            );
+        }
+    }
 
     createEffect(() => {
 
@@ -520,11 +544,25 @@ export default function NotesPanel() {
                 <h1 class="col-span-1"></h1>
             </div>
             <div class="w-full border-b-2 my-2"></div>
-            <For each={flavor}>
+            <Show when={appState().flavorListSig[GET]().length > 0}
+                fallback={<div class="">
+                    &nbsp;
+                </div>}
+            >
+                <div class="">
+                    <span>{appState().flavorListSig[GET]().join(", ")}</span>
+                </div>
+            </Show>
+            <For each={flavor.children}>
                 {(f) => (
                     <details open={false}>
                         <summary class="space-x-1">
-                            <input type="checkbox" />
+                            <input type="checkbox"
+                                onChange={(event) => {
+                                    f.checked = event.currentTarget.checked;
+                                    updateFlavorList();
+                                }}
+                            />
                             <span>{f.name}</span>
                         </summary>
                         <div class="pl-4">
@@ -533,21 +571,36 @@ export default function NotesPanel() {
                                     <Show when={ff.children != undefined}
                                         fallback={
                                             <div class="pl-4 space-x-1">
-                                                <input type="checkbox" />
+                                                <input type="checkbox"
+                                                    onChange={(event) => {
+                                                        ff.checked = event.currentTarget.checked;
+                                                        updateFlavorList();
+                                                    }}
+                                                />
                                                 <span>{ff.name}</span>
                                             </div>
                                         }
                                     >
                                         <details >
                                             <summary class="space-x-1">
-                                                <input type="checkbox" />
+                                                <input type="checkbox"
+                                                    onChange={(event) => {
+                                                        ff.checked = event.currentTarget.checked;
+                                                        updateFlavorList();
+                                                    }}
+                                                />
                                                 <span>{ff.name}</span>
                                             </summary>
                                             <div class="pl-4">
                                                 <For each={ff.children}>
                                                     {(fff) => (
                                                         <div class="pl-4 space-x-1">
-                                                            <input type="checkbox" />
+                                                            <input type="checkbox"
+                                                                onChange={(event) => {
+                                                                    fff.checked = event.currentTarget.checked;
+                                                                    updateFlavorList();
+                                                                }}
+                                                            />
                                                             <span>{fff.name}</span>
                                                         </div>
                                                     )}

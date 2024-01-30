@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { onMount, onCleanup, For } from "solid-js";
+import { onMount, onCleanup, For, Show } from "solid-js";
 import { trace, attachConsole } from "tauri-plugin-log-api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
@@ -236,9 +236,14 @@ function App() {
             {/* main start*/}
             <div class="grow overflow-y-auto pr-1">
 
-                <div class="mx-1 mb-1 h-4">
-                    <h1>{appState().titleSig[GET]()}</h1>
-                </div>
+                <Show when={appState().titleSig[GET]() != ""}
+                    fallback={<div class="mx-1 mb-1"><h1>&nbsp;</h1></div>}
+                >
+                    <div class="mx-1 mb-1">
+                        <h1>{appState().titleSig[GET]()}</h1>
+                    </div>
+                </Show>
+
                 <MainChart />
 
                 <For each={manualChannelArr()}>

@@ -340,6 +340,7 @@ async function init_appStateSig() {
         moistureRoastedSig: createSignal(0.0),
         colorWholeSig: createSignal(0),
         colorGroundSig: createSignal(0),
+        flavorListSig: createSignal(new Array<string>()),
     }
 }
 
