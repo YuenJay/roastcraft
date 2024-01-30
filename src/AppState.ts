@@ -19,7 +19,7 @@ export function init_flavorWheel(): any {
                         { name: "Raw", checked: false, },
                         { name: "Beany", checked: false, },
                         {
-                            name: "Green/Vegetative", checked: false,
+                            name: "Green/Vegetative ", checked: false,
                             children: [
                                 { name: "Under-Ripe", checked: false, },
                                 { name: "Peapod", checked: false, },
@@ -83,7 +83,7 @@ export function init_flavorWheel(): any {
                     children: [
                         { name: "Black Tea", checked: false, },
                         {
-                            name: "Floral", checked: false,
+                            name: "Floral ", checked: false,
                             children: [
                                 { name: "Chamomile", checked: false, },
                                 { name: "Rose", checked: false, },
@@ -519,7 +519,6 @@ async function init_appStateSig() {
         cursorIndexSig: createSignal(0),
         toggleShowRorFilteredSig: createSignal(false),
         toggleShowRorOutlierSig: createSignal(false),
-        isGhostLoadedSig: createSignal(false),
         ghostSig: createSignal(init_ghostSig()),
         currentTabIdSig: createSignal(0),
         phaseChartWidthSig: createSignal(360),
@@ -617,8 +616,8 @@ export function resetNotes() {
 }
 
 export function resetGhost() {
-    const [appState, _setAppState] = appStateSig;
+
     appStateSig[GET]().ghostSig[SET](init_ghostSig());
-    appState().isGhostLoadedSig[SET](false);
+
 }
 

@@ -205,7 +205,6 @@ export async function loadGhost() {
         g.developPhase = result.dev;
 
         setGhost(g);
-        appState().isGhostLoadedSig[SET](true);
 
         setLogArr([...logArr(), "loaded ghost: " + filepath.replace(/^.*[\\/]/, '')]);
 
