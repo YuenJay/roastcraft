@@ -2,7 +2,7 @@
 
 import { open, save } from '@tauri-apps/api/dialog';
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel, BT } from "./AppState";
+import { GET, SET, Point, appStateSig, Channel, Ghost, GhostChannel, BT, init_flavorWheel } from "./AppState";
 import { calculatePhases, calculateRor, findRorOutlier } from './calculate';
 import { createSignal } from 'solid-js';
 
@@ -85,6 +85,23 @@ export async function openFile() {
         appState().colorWholeSig[SET](loadObject.colorWhole);
         appState().colorGroundSig[SET](loadObject.colorGround);
         appState().flavorListSig[SET](loadObject.flavorList);
+
+        function updateFlavorWheel(f: any) {
+            if (loadObject.flavorList.includes(f.name)) {
+                f.checked = true;
+            }
+            if (f.children != undefined) {
+                f.children.forEach(
+                    (element: any) => {
+                        updateFlavorWheel(element);
+                    }
+                );
+            }
+        }
+
+        let flavorWheel = init_flavorWheel();
+        updateFlavorWheel(flavorWheel);
+        appState().flavorWheelSig[SET](flavorWheel);
 
         setLogArr([...logArr(), "opened file: " + filepath.replace(/^.*[\\/]/, '')]);
     } catch (e) {
