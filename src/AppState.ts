@@ -414,6 +414,7 @@ export function resetNotes() {
     appState().moistureRoastedSig[SET](0.0);
     appState().colorWholeSig[SET](0);
     appState().colorGroundSig[SET](0);
+    appState().flavorListSig[SET](new Array<string>());
 }
 
 export function resetGhost() {

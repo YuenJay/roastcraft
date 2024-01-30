@@ -84,6 +84,7 @@ export async function openFile() {
         appState().moistureRoastedSig[SET](loadObject.moistureRoasted);
         appState().colorWholeSig[SET](loadObject.colorWhole);
         appState().colorGroundSig[SET](loadObject.colorGround);
+        appState().flavorListSig[SET](loadObject.flavorList);
 
         setLogArr([...logArr(), "opened file: " + filepath.replace(/^.*[\\/]/, '')]);
     } catch (e) {
@@ -243,6 +244,7 @@ export async function saveFile() {
             moistureRoasted: appState().moistureRoastedSig[GET](),
             colorWhole: appState().colorWholeSig[GET](),
             colorGround: appState().colorGroundSig[GET](),
+            flavorList: appState().flavorListSig[GET](),
         };
 
         appState().channelArrSig[GET]().forEach((c) => {
