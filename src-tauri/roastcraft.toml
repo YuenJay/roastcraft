@@ -4,6 +4,8 @@ model   = "http"
 
 # pnpm tauri dev -- -- --config=../machines/kapok/501_inlet_rtu.toml
 
+alarms = [160, 170, 180, 190, 200]
+
 [tcp]
     ip = "127.0.0.1"
     port = 502
@@ -36,33 +38,17 @@ model   = "http"
     color       = "#007f00"
     min         = 0
     max         = 100
-    step        = 10        # 0 means no steps
-    default_value     = 20
+    step        = 10        
+    default_value = 20
 
 [[manual_channel]]
     channel_id  = "airflow"
     label       = "Airflow"
     unit        = "Pa"
     color       = "#007f00"
-    min         = 20
-    max         = 50
-    step        = 5         # 0 means no steps
-    default_value     = 30
+    min         = 26
+    max         = 40
+    step        = 1         
+    default_value = 32
 
-[[alarm]]
-    id              = 1
-    src_channel_id  = "BT"
-    from            = "TP"    # CHARGE, TP, DRY_END, FC_START, FC_END, SC_START, SC_END, DROP
-    condition       = "above" # above, below
-    value           = 170
-    [alarm.speech_synthesis]
-        utterance   = "170"
-
-[[alarm]]
-    id              = 1
-    src_channel_id  = "BT"
-    from            = "TP"    # CHARGE, TP, DRY_END, FC_START, FC_END, SC_START, SC_END, DROP
-    condition       = "above" # above, below
-    value           = 180
-    [alarm.speech_synthesis]
-        utterance   = "180"
+# you CANNOT write top level keys after array of tables

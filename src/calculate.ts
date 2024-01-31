@@ -426,12 +426,14 @@ export function detectAlarm() {
     const bt = channelArr().find(c => c.id == BT) as Channel;
 
     if (roastEvents().TP != undefined) {
-        let alarms = appState().alarmTempListSig[GET]();
-        if (bt.currentDataSig[GET]() > alarms[0]) {
-            let alarm = alarms.shift();
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(alarm?.toString()));
+        let alarms = appState().alarmsArrSig[GET]().filter((a: any) => a.triggeredSig[GET]() == false);
+
+        if (alarms[0] != undefined && bt.currentDataSig[GET]() > alarms[0].temperature) {
+
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(alarms[0]?.temperature.toString()));
+            alarms[0].triggeredSig[SET](true);
             console.log(alarms);
-            appState().alarmTempListSig[SET]([...alarms]);
+
         }
     }
 }

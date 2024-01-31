@@ -2,12 +2,12 @@
 
 [package]
     name = "roastcraft"
-    version = "0.0.1"
+    version = "0.1.0"
     description = "A Tauri App"
     authors = [
         "chihpingkuo",
     ]
-    license = ""
+    license = "GPL-3.0"
     repository = ""
     edition = "2021"
 

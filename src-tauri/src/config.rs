@@ -10,6 +10,7 @@ pub struct Config {
     pub serial: Option<Serial>,
     pub tcp: Option<Tcp>,
     pub manual_channel: Option<Vec<ManualChannel>>,
+    pub alarms: Vec<i32>,
 }
 
 impl Config {
@@ -21,6 +22,7 @@ impl Config {
             serial: None,
             tcp: None,
             manual_channel: None,
+            alarms: Vec::new(),
         }
     }
 }
