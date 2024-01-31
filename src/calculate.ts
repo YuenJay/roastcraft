@@ -421,3 +421,17 @@ function convValid(f: Array<number>, g: Array<number>) {
 
     return out;
 }
+
+export function detectAlarm() {
+    const bt = channelArr().find(c => c.id == BT) as Channel;
+
+    if (roastEvents().TP != undefined) {
+        let alarms = appState().alarmTempListSig[GET]();
+        if (bt.currentDataSig[GET]() > alarms[0]) {
+            let alarm = alarms.shift();
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(alarm?.toString()));
+            console.log(alarms);
+            appState().alarmTempListSig[SET]([...alarms]);
+        }
+    }
+}

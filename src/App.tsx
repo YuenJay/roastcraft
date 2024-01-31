@@ -6,7 +6,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 
 import MainChart from "./MainChart";
 import { GET, SET, BT, AppStatus, Point, appStateSig, Channel, resetGhost } from "./AppState";
-import { autoDetectChargeDrop, calculatePhases, calculateRor, findDryEnd, findRorOutlier, findTurningPoint } from "./calculate";
+import { autoDetectChargeDrop, calculatePhases, calculateRor, detectAlarm, findDryEnd, findRorOutlier, findTurningPoint } from "./calculate";
 import SecondaryChart from "./SecondaryChart";
 import { openFile, loadGhost, saveFile } from "./fileUtil";
 import DashboardPanel, { buttonOffClicked, buttonOnClicked, buttonResetClicked, buttonStartClicked, handleCharge, handleDrop, handleDryEnd, handleFCEnd, handleFCStart, handleSCEnd, handleSCStart } from "./DashboardPanel";
@@ -98,6 +98,8 @@ function App() {
             setDryingPhase(result.dry);
             setMaillardPhase(result.mai);
             setDevelopPhase(result.dev);
+
+            detectAlarm();
 
             // dump bt data to console
             // console.log(bt.dataArr());

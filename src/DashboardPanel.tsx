@@ -183,6 +183,13 @@ export default function DashboardPanel() {
                     ]
                 }></PhaseChart>
             </div>
+            <div class="flex flex-wrap gap-1">
+                <div class="badge badge-secondary badge-outline">160</div>
+                <div class="badge badge-secondary badge-outline">170</div>
+                <div class="badge badge-secondary badge-outline">180</div>
+                <div class="badge badge-secondary badge-outline">190</div>
+                <div class="badge badge-secondary badge-outline">190</div>
+            </div>
             {/* event buttons */}
             <div class="flex flex-wrap gap-1">
 

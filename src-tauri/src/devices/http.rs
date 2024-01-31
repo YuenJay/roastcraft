@@ -35,7 +35,7 @@ impl Device for HttpDevice {
             let tcp = config.tcp.as_ref().unwrap();
 
             let url = format!("http://{}:{}", tcp.ip, tcp.port);
-            info!("url : {}", url);
+            // info!("url : {}", url);
 
             let req = self.client.get(url);
             let res_str = req.send().await.unwrap().text().await.unwrap();

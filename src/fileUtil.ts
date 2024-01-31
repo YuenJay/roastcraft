@@ -133,7 +133,7 @@ export async function loadGreenBeanInfo() {
 export async function loadGhost() {
     const [appState, _setAppState] = appStateSig;
     const [logArr, setLogArr] = appState().logArrSig;
-    const [ghost, setGhost] = appState().ghostSig;
+    const [_ghost, setGhost] = appState().ghostSig;
 
     try {
         let filepath = await open({
