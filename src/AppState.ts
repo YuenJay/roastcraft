@@ -591,6 +591,7 @@ export function resetChannels() {
     appState().cursorLineXSig[SET](0);
     appState().toggleShowRorFilteredSig[SET](false);
     appState().toggleShowRorOutlierSig[SET](false);
+    appState().alarmsArrSig[GET]().forEach((alarm: any) => { alarm.triggeredSig[SET](false) });
 
 }
 
