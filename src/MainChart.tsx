@@ -332,97 +332,64 @@ export default function MainChart() {
 
             <Show when={status() == AppStatus.OFF}>
                 <rect
-                    opacity={0.8}
                     fill="#22c55e"
                     x={xScale(0)}
                     y={marginTop}
                     width={xScale(dryingPhase().time) - xScale(0)}
-                    height={20}
+                    height={4}
                 >
                 </rect>
                 <Show when={dryingPhase().time > 0}>
-                    <g
-                        fill="black"
-                        text-anchor="start">
-                        <text
-                            x={xScale(0)}
-                            y={marginTop + 10}
-                            dy="-2"
-                            dx="2"
-                            font-size="0.5em">
-                            {dryingPhase().percent.toFixed(1) + "%"}
-                        </text>
-                        <text
-                            x={xScale(0)}
-                            y={marginTop + 10}
-                            dy="1em"
-                            dx="2"
-                            font-size="0.5em">
-                            {timestamp_format(dryingPhase().time) + ", " + dryingPhase().temp_rise.toFixed(1) + "°"}
-                        </text>
-                    </g>
+                    <text
+                        text-anchor="middle"
+                        x={xScale(0) +
+                            (xScale(dryingPhase().time) - xScale(0)) / 2}
+                        y={marginTop + 10}
+                        dy="4"
+                        dx="0"
+                        font-size="0.6em">
+                        {dryingPhase().percent.toFixed(1) + "%, " + timestamp_format(dryingPhase().time) + ", " + dryingPhase().temp_rise.toFixed(1) + "°"}
+                    </text>
                 </Show>
                 <rect
-                    opacity={0.8}
                     fill="#ea580c"
                     x={xScale(dryingPhase().time)}
                     y={marginTop}
                     width={xScale(maillardPhase().time) - xScale(0)}
-                    height={20}
+                    height={4}
                 >
                 </rect>
                 <Show when={maillardPhase().time > 0}>
-                    <g
-                        fill="black"
-                        text-anchor="start">
-                        <text
-                            x={xScale(dryingPhase().time)}
-                            y={marginTop + 10}
-                            dy="-2"
-                            dx="2"
-                            font-size="0.5em">
-                            {maillardPhase().percent.toFixed(1) + "%"}
-                        </text>
-                        <text
-                            x={xScale(dryingPhase().time)}
-                            y={marginTop + 10}
-                            dy="1em"
-                            dx="2"
-                            font-size="0.5em">
-                            {timestamp_format(maillardPhase().time) + ", " + maillardPhase().temp_rise.toFixed(1) + "°"}
-                        </text>
-                    </g>
+                    <text
+                        text-anchor="middle"
+                        x={xScale(dryingPhase().time)
+                            + (xScale(maillardPhase().time) - xScale(0)) / 2}
+                        y={marginTop + 10}
+                        dy="4"
+                        dx="0"
+                        font-size="0.6em">
+                        {maillardPhase().percent.toFixed(1) + "%, " + timestamp_format(maillardPhase().time) + ", " + maillardPhase().temp_rise.toFixed(1) + "°"}
+                    </text>
                 </Show>
                 <rect
-                    opacity={0.8}
                     fill="#991b1b"
                     x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)}
                     y={marginTop}
                     width={xScale(developPhase().time) - xScale(0)}
-                    height={20}
+                    height={4}
                 >
                 </rect>
                 <Show when={developPhase().time > 0}>
-                    <g
-                        fill="black"
-                        text-anchor="start">
-                        <text
-                            x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)}
-                            y={marginTop + 10}
-                            dy="-2"
-                            dx="2"
-                            font-size="0.5em">
-                            {developPhase().percent.toFixed(1) + "%"}
-                        </text>
-                        <text
-                            x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)}
-                            y={marginTop + 10}
-                            dy="1em"
-                            dx="2"
-                            font-size="0.5em">
-                            {timestamp_format(developPhase().time) + ", " + developPhase().temp_rise.toFixed(1) + "°"}
-                        </text>
-                    </g>
+                    <text
+                        text-anchor="middle"
+                        x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)
+                            + (xScale(developPhase().time) - xScale(0)) / 2}
+                        y={marginTop + 10}
+                        dy="4"
+                        dx="0"
+                        font-size="0.6em">
+                        {developPhase().percent.toFixed(1) + "%, " + timestamp_format(developPhase().time) + ", " + developPhase().temp_rise.toFixed(1) + "°"}
+                    </text>
                 </Show>
             </Show>
         </svg >
