@@ -17,6 +17,9 @@ export default function MainChart() {
     const [timer, _setTimer] = appState().timerSig;
     const [timeDelta, _setTimeDelta] = appState().timeDeltaSig;
     const [channelArr, _setChannelArr] = appState().channelArrSig;
+    const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
+    const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
+    const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
     const [cursorLineX, setCursorLineX] = appState().cursorLineXSig;
     const [cursorTimestamp, setCursorTimestamp] = appState().cursorTimestampSig;
     const [roastEvents, _setRoastEvents] = appState().roastEventsSig;
@@ -327,8 +330,101 @@ export default function MainChart() {
                 </Show>
             </g>
 
-
-
+            <Show when={status() == AppStatus.OFF}>
+                <rect
+                    opacity={0.8}
+                    fill="#22c55e"
+                    x={xScale(0)}
+                    y={marginTop}
+                    width={xScale(dryingPhase().time) - xScale(0)}
+                    height={20}
+                >
+                </rect>
+                <Show when={dryingPhase().time > 0}>
+                    <g
+                        fill="black"
+                        text-anchor="start">
+                        <text
+                            x={xScale(0)}
+                            y={marginTop + 10}
+                            dy="-2"
+                            dx="2"
+                            font-size="0.5em">
+                            {dryingPhase().percent.toFixed(1) + "%"}
+                        </text>
+                        <text
+                            x={xScale(0)}
+                            y={marginTop + 10}
+                            dy="1em"
+                            dx="2"
+                            font-size="0.5em">
+                            {timestamp_format(dryingPhase().time) + ", " + dryingPhase().temp_rise.toFixed(1) + "°"}
+                        </text>
+                    </g>
+                </Show>
+                <rect
+                    opacity={0.8}
+                    fill="#ea580c"
+                    x={xScale(dryingPhase().time)}
+                    y={marginTop}
+                    width={xScale(maillardPhase().time) - xScale(0)}
+                    height={20}
+                >
+                </rect>
+                <Show when={maillardPhase().time > 0}>
+                    <g
+                        fill="black"
+                        text-anchor="start">
+                        <text
+                            x={xScale(dryingPhase().time)}
+                            y={marginTop + 10}
+                            dy="-2"
+                            dx="2"
+                            font-size="0.5em">
+                            {maillardPhase().percent.toFixed(1) + "%"}
+                        </text>
+                        <text
+                            x={xScale(dryingPhase().time)}
+                            y={marginTop + 10}
+                            dy="1em"
+                            dx="2"
+                            font-size="0.5em">
+                            {timestamp_format(maillardPhase().time) + ", " + maillardPhase().temp_rise.toFixed(1) + "°"}
+                        </text>
+                    </g>
+                </Show>
+                <rect
+                    opacity={0.8}
+                    fill="#991b1b"
+                    x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)}
+                    y={marginTop}
+                    width={xScale(developPhase().time) - xScale(0)}
+                    height={20}
+                >
+                </rect>
+                <Show when={developPhase().time > 0}>
+                    <g
+                        fill="black"
+                        text-anchor="start">
+                        <text
+                            x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)}
+                            y={marginTop + 10}
+                            dy="-2"
+                            dx="2"
+                            font-size="0.5em">
+                            {developPhase().percent.toFixed(1) + "%"}
+                        </text>
+                        <text
+                            x={xScale(dryingPhase().time) + xScale(maillardPhase().time) - xScale(0)}
+                            y={marginTop + 10}
+                            dy="1em"
+                            dx="2"
+                            font-size="0.5em">
+                            {timestamp_format(developPhase().time) + ", " + developPhase().temp_rise.toFixed(1) + "°"}
+                        </text>
+                    </g>
+                </Show>
+            </Show>
         </svg >
     );
 }
