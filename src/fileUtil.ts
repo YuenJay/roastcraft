@@ -84,24 +84,26 @@ export async function openFile() {
         appState().moistureRoastedSig[SET](loadObject.moistureRoasted);
         appState().colorWholeSig[SET](loadObject.colorWhole);
         appState().colorGroundSig[SET](loadObject.colorGround);
-        appState().flavorListSig[SET](loadObject.flavorList);
 
-        function updateFlavorWheel(f: any) {
-            if (loadObject.flavorList.includes(f.name)) {
-                f.checked = true;
+        if (loadObject.flavorList != undefined) {
+            appState().flavorListSig[SET](loadObject.flavorList);
+            function updateFlavorWheel(f: any) {
+                if (loadObject.flavorList.includes(f.name)) {
+                    f.checked = true;
+                }
+                if (f.children != undefined) {
+                    f.children.forEach(
+                        (element: any) => {
+                            updateFlavorWheel(element);
+                        }
+                    );
+                }
             }
-            if (f.children != undefined) {
-                f.children.forEach(
-                    (element: any) => {
-                        updateFlavorWheel(element);
-                    }
-                );
-            }
+
+            let flavorWheel = init_flavorWheel();
+            updateFlavorWheel(flavorWheel);
+            appState().flavorWheelSig[SET](flavorWheel);
         }
-
-        let flavorWheel = init_flavorWheel();
-        updateFlavorWheel(flavorWheel);
-        appState().flavorWheelSig[SET](flavorWheel);
 
         setLogArr([...logArr(), "opened file: " + filepath.replace(/^.*[\\/]/, '')]);
     } catch (e) {
