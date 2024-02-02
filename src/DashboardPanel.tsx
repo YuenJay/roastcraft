@@ -3,7 +3,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { For, Show, } from "solid-js";
 import { GET, SET, BT, AppStatus, RoastEventId, appStateSig, resetChannels, RoastEvent, Channel, resetNotes } from "./AppState";
-import { timestamp_format } from "./calculate";
+import { calculatePhases, timestamp_format } from "./calculate";
 import WorkerFactory from "./WorkerFactory";
 import timerWorker from "./timer.worker";
 import RangeInput from "./RangeInput";
@@ -16,9 +16,9 @@ const [channelArr, _setChannelArr] = appState().channelArrSig;
 const [logArr, setLogArr] = appState().logArrSig;
 const [roastEvents, setRoastEvents] = appState().roastEventsSig;
 const [manualChannelArr, _setManualChannelArr] = appState().manualChannelArrSig;
-const [dryingPhase, _setDryingPhase] = appState().dryingPhaseSig;
-const [maillardPhase, _setMaillardPhase] = appState().maillardPhaseSig;
-const [developPhase, _setDevelopPhase] = appState().developPhaseSig;
+const [dryingPhase, setDryingPhase] = appState().dryingPhaseSig;
+const [maillardPhase, setMaillardPhase] = appState().maillardPhaseSig;
+const [developPhase, setDevelopPhase] = appState().developPhaseSig;
 const [ghost, _setGhost] = appState().ghostSig;
 const bt = channelArr().find(c => c.id == BT) as Channel;
 let timer_worker: Worker;
@@ -292,7 +292,7 @@ export default function DashboardPanel() {
                                     hidden={(roastEvents() as any)[key] == undefined}
                                     value={key}
                                 >
-                                    {key + " label"}
+                                    {key}
                                 </option>
                             }
                         }}
@@ -312,6 +312,15 @@ export default function DashboardPanel() {
                             bt.dataArr()[index - 1].value);
 
                         setRoastEvents(newRoastEvents);
+
+                        if (select_value == RoastEventId.CHARGE) {
+                            appState().timeDeltaSig[SET](- bt.dataArr()[index - 1].timestamp);
+                        }
+
+                        let result = calculatePhases(timer(), bt.currentDataSig[GET](), roastEvents());
+                        setDryingPhase(result.dry);
+                        setMaillardPhase(result.mai);
+                        setDevelopPhase(result.dev);
                     }
                 }}>
                     &lt;
@@ -330,6 +339,15 @@ export default function DashboardPanel() {
                             bt.dataArr()[index + 1].value);
 
                         setRoastEvents(newRoastEvents);
+
+                        if (select_value == RoastEventId.CHARGE) {
+                            appState().timeDeltaSig[SET](- bt.dataArr()[index + 1].timestamp);
+                        }
+
+                        let result = calculatePhases(timer(), bt.currentDataSig[GET](), roastEvents());
+                        setDryingPhase(result.dry);
+                        setMaillardPhase(result.mai);
+                        setDevelopPhase(result.dev);
                     }
                 }}>
                     &gt;
