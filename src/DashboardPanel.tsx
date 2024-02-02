@@ -276,6 +276,48 @@ export default function DashboardPanel() {
                     <RangeInput channel_id={mc.id}></RangeInput>
                 )}
             </For>
+            <div class="flex flex-wrap gap-1">
+                <select class="select select-bordered select-sm ">
+                    <option disabled selected>Select Event</option>
+                    <option>Han Solo</option>
+                    <option>Greedo</option>
+                </select>
+
+                <button class="btn btn-sm btn-square" onClick={() => {
+                    let charge = roastEvents().CHARGE;
+
+                    if (charge != undefined) {
+                        let index = bt.dataArr().findIndex((element) => element.timestamp == charge!.timestamp);
+                        setRoastEvents({
+                            ...roastEvents(),
+                            CHARGE: new RoastEvent(
+                                RoastEventId.CHARGE,
+                                bt.dataArr()[index - 1].timestamp,
+                                bt.dataArr()[index - 1].value)
+                        });
+                    }
+                }}>
+                    &lt;
+                </button>
+                <span></span>
+                <button class="btn btn-sm btn-square" onClick={() => {
+                    let charge = roastEvents().CHARGE;
+
+                    if (charge != undefined) {
+                        let index = bt.dataArr().findIndex((element) => element.timestamp == charge!.timestamp);
+                        setRoastEvents({
+                            ...roastEvents(),
+                            CHARGE: new RoastEvent(
+                                RoastEventId.CHARGE,
+                                bt.dataArr()[index + 1].timestamp,
+                                bt.dataArr()[index + 1].value)
+                        });
+                    }
+                }}>
+                    &gt;
+                </button>
+
+            </div>
             <Show when={logArr().length > 0}>
 
                 <div class="text-sm">
