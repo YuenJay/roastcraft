@@ -277,41 +277,59 @@ export default function DashboardPanel() {
                 )}
             </For>
             <div class="flex flex-wrap gap-1">
-                <select class="select select-bordered select-sm ">
+                <select
+                    class="select select-bordered select-sm"
+                    id="event_select"
+                // onChange={(e) => {
+                //     console.log(e.currentTarget.value);
+                // }}
+                >
                     <option disabled selected>Select Event</option>
-                    <option>Han Solo</option>
-                    <option>Greedo</option>
+                    <For each={Object.keys(roastEvents())}>
+                        {(key) => {
+                            if (key != undefined) {
+                                return <option
+                                    hidden={(roastEvents() as any)[key] == undefined}
+                                    value={key}
+                                >
+                                    {key + " label"}
+                                </option>
+                            }
+                        }}
+                    </For>
                 </select>
 
                 <button class="btn btn-sm btn-square" onClick={() => {
-                    let charge = roastEvents().CHARGE;
+                    let select_value = (document.getElementById("event_select") as HTMLSelectElement).value;
+                    let target = (roastEvents() as any)[select_value];
 
-                    if (charge != undefined) {
-                        let index = bt.dataArr().findIndex((element) => element.timestamp == charge!.timestamp);
-                        setRoastEvents({
-                            ...roastEvents(),
-                            CHARGE: new RoastEvent(
-                                RoastEventId.CHARGE,
-                                bt.dataArr()[index - 1].timestamp,
-                                bt.dataArr()[index - 1].value)
-                        });
+                    if (target != undefined) {
+                        let index = bt.dataArr().findIndex((element) => element.timestamp == target!.timestamp);
+                        let newRoastEvents = { ...roastEvents() };
+                        (newRoastEvents as any)[select_value] = new RoastEvent(
+                            select_value as any,
+                            bt.dataArr()[index - 1].timestamp,
+                            bt.dataArr()[index - 1].value);
+
+                        setRoastEvents(newRoastEvents);
                     }
                 }}>
                     &lt;
                 </button>
                 <span></span>
                 <button class="btn btn-sm btn-square" onClick={() => {
-                    let charge = roastEvents().CHARGE;
+                    let select_value = (document.getElementById("event_select") as HTMLSelectElement).value;
+                    let target = (roastEvents() as any)[select_value];
 
-                    if (charge != undefined) {
-                        let index = bt.dataArr().findIndex((element) => element.timestamp == charge!.timestamp);
-                        setRoastEvents({
-                            ...roastEvents(),
-                            CHARGE: new RoastEvent(
-                                RoastEventId.CHARGE,
-                                bt.dataArr()[index + 1].timestamp,
-                                bt.dataArr()[index + 1].value)
-                        });
+                    if (target != undefined) {
+                        let index = bt.dataArr().findIndex((element) => element.timestamp == target!.timestamp);
+                        let newRoastEvents = { ...roastEvents() };
+                        (newRoastEvents as any)[select_value] = new RoastEvent(
+                            select_value as any,
+                            bt.dataArr()[index + 1].timestamp,
+                            bt.dataArr()[index + 1].value);
+
+                        setRoastEvents(newRoastEvents);
                     }
                 }}>
                     &gt;
