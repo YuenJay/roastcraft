@@ -592,6 +592,7 @@ export function resetChannels() {
     appState().toggleShowRorFilteredSig[SET](false);
     appState().toggleShowRorOutlierSig[SET](false);
     appState().alarmsArrSig[GET]().forEach((alarm: any) => { alarm.triggeredSig[SET](false) });
+    (document.getElementById("event_select") as HTMLSelectElement).value = "";
 
 }
 

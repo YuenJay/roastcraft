@@ -284,7 +284,7 @@ export default function DashboardPanel() {
                 //     console.log(e.currentTarget.value);
                 // }}
                 >
-                    <option disabled selected>Select Event</option>
+                    <option value="" disabled selected>Select Event</option>
                     <For each={Object.keys(roastEvents())}>
                         {(key) => {
                             if (key != undefined) {
@@ -326,7 +326,7 @@ export default function DashboardPanel() {
                 }}>
                     &lt;
                 </button>
-                <span></span>
+
                 <button class="btn btn-sm btn-square" onClick={() => {
                     let select_value = (document.getElementById("event_select") as HTMLSelectElement).value;
                     let target = (roastEvents() as any)[select_value];
