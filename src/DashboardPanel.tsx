@@ -186,7 +186,7 @@ export default function DashboardPanel() {
             <div class="flex flex-wrap gap-1">
                 <For each={appState().alarmsArrSig[GET]()}>
                     {(alarm) => (
-                        <div class={`badge badge-secondary ${alarm.triggeredSig[GET]() ? "" : "badge-outline"}`}>{alarm.temperature}</div>
+                        <div class={`badge badge-secondary ${alarm.triggeredSig[GET]() ? "" : "badge-outline"}`}>{alarm.temperature + "°"}</div>
                     )}
                 </For>
             </div>
