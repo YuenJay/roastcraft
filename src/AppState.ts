@@ -291,24 +291,24 @@ export class Phase {
 
 export enum RoastEventId {
     CHARGE = 'CHARGE',
+    TP = 'TP',
     DRY_END = 'DRY_END',
     FC_START = 'FC_START',
     FC_END = 'FC_END',
     SC_START = 'SC_START',
     SC_END = 'SC_END',
     DROP = 'DROP',
-    TP = 'TP',
 }
 
 export interface RoastEvents {
     CHARGE: RoastEvent | undefined,
+    TP: RoastEvent | undefined,
     DRY_END: RoastEvent | undefined,
     FC_START: RoastEvent | undefined,
     FC_END: RoastEvent | undefined,
     SC_START: RoastEvent | undefined,
     SC_END: RoastEvent | undefined,
     DROP: RoastEvent | undefined,
-    TP: RoastEvent | undefined,
 }
 
 export enum AppStatus {
@@ -503,13 +503,13 @@ async function init_appStateSig() {
         logArrSig: createSignal(new Array<string>()),
         roastEventsSig: createSignal({
             CHARGE: undefined,
+            TP: undefined,
             DRY_END: undefined,
             FC_START: undefined,
             FC_END: undefined,
             SC_START: undefined,
             SC_END: undefined,
             DROP: undefined,
-            TP: undefined,
         } as RoastEvents),
         dryingPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),
         maillardPhaseSig: createSignal(new Phase(0, 0.0, 0.0)),

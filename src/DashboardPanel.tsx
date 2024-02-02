@@ -304,7 +304,8 @@ export default function DashboardPanel() {
                     let target = (roastEvents() as any)[select_value];
 
                     if (target != undefined) {
-                        let index = bt.dataArr().findIndex((element) => element.timestamp == target!.timestamp);
+                        // use >= because target timestamp might be in between dataArr points
+                        let index = bt.dataArr().findIndex((element) => element.timestamp >= target!.timestamp);
                         let newRoastEvents = { ...roastEvents() };
                         (newRoastEvents as any)[select_value] = new RoastEvent(
                             select_value as any,
@@ -331,7 +332,7 @@ export default function DashboardPanel() {
                     let target = (roastEvents() as any)[select_value];
 
                     if (target != undefined) {
-                        let index = bt.dataArr().findIndex((element) => element.timestamp == target!.timestamp);
+                        let index = bt.dataArr().findIndex((element) => element.timestamp >= target!.timestamp);
                         let newRoastEvents = { ...roastEvents() };
                         (newRoastEvents as any)[select_value] = new RoastEvent(
                             select_value as any,

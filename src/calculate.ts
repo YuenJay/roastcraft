@@ -428,7 +428,7 @@ export function detectAlarm() {
     if (roastEvents().TP != undefined) {
         let alarms = appState().alarmsArrSig[GET]().filter((a: any) => a.triggeredSig[GET]() == false);
 
-        if (alarms[0] != undefined && bt.currentDataSig[GET]() > alarms[0].temperature) {
+        if (alarms[0] != undefined && bt.currentDataSig[GET]() >= alarms[0].temperature) {
 
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(alarms[0]?.temperature.toString()));
             alarms[0].triggeredSig[SET](true);
