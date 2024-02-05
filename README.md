@@ -5,6 +5,14 @@ Roastcraft is a cross-platform software to log and analyze coffee roasting, much
 
 ![](https://raw.githubusercontent.com/chihpingkuo/roastcraft/main/web_assets/screen_shot_2024_01_16_104349.png)
 
+# Instruction
+## Windows, using TASI TA612C thermometer for example
+1. download "roastcraft.exe"
+2. download /machines/tasi/ta612c.toml, put it in the same folder with "roastcraft.exe"
+3. rename "ta612c.toml" to "roastcraft.toml"
+4. change port setting in "roastcraft.toml", and other settings, if necessary
+5. double click "roastcraft.exe" to execute
+
 # Features
 ## small footprint (~10mb)
   - single, standalone executable
