@@ -1,7 +1,8 @@
 version = "v1"
-brand = "roastcraft"
-model = "modbus"
-
+brand   = "kapok"
+model   = "501"
+temperature_unit = "C" # C or F
+alarms = [160, 170, 180, 190, 200]
 
 [serial]
     port      = "COM4"
@@ -15,36 +16,54 @@ model = "modbus"
         protocol = "modbus-ascii"
 
         [[serial.modbus.slave]]
-            channel_id = "exhaust_temp"
-            id         = 1
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+            channel_id  = "ET"
+            label       = "exhaust temp"
+            color       = "#ff0000"
+            id          = 1
+            function    = 3
+            registry    = 18176     # = 4700h
+            divisor     = 10        # 1, 10, 100
+            decode_type = "u16"     # u16, u32, i16, i32, f32
 
         [[serial.modbus.slave]]
-            channel_id = "bean_temp"
-            id         = 2
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+            channel_id  = "BT"
+            label       = "bean temp"
+            color       = "#191970"
+            ror_color   = "#4169E1" # BT only
+            id          = 2
+            function    = 3
+            registry    = 18176     # = 4700h
+            divisor     = 10        # 1, 10, 100
+            decode_type = "u16"     # u16, u32, i16, i32, f32
 
         [[serial.modbus.slave]]
-            channel_id = "inlet_temp"
-            id         = 3
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+            channel_id  = "inlet"
+            label       = "inlet temp"
+            color       = "#2E8B57"
+            id          = 3
+            function    = 3
+            registry    = 18176     # = 4700h
+            divisor     = 10        # 1, 10, 100
+            decode_type = "u16"     # u16, u32, i16, i32, f32
 
-[tcp]
-    ip   = "127.0.0.1"
-    port = 502
+[[manual_channel]]
+    channel_id  = "gas"
+    label       = "Gas"
+    unit        = "mmHg"
+    color       = "#007f00"
+    min         = 0
+    max         = 100
+    step        = 10        
+    default_value     = 20
 
-    [tcp.modbus]
-        protocol = "modbus-tcp"
+[[manual_channel]]
+    channel_id  = "airflow"
+    label       = "Airflow"
+    unit        = "Pa"
+    color       = "#007f00"
+    min         = 28
+    max         = 42
+    step        = 1         
+    default_value     = 32
 
-        [[tcp.modbus.slave]]
-            channel_id = "air"
-            id         = 4
-            function   = 3
-            registry   = 18176
-            multiplier = 0.1
+# you CANNOT write top level keys after array of tables

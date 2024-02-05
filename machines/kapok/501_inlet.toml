@@ -1,6 +1,8 @@
 version = "v1"
-brand   = "roastcraft"
-model   = "modbus"
+brand   = "kapok"
+model   = "501"
+temperature_unit = "C" # C or F
+alarms = [160, 170, 180, 190, 200]
 
 [serial]
     port      = "COM4"
@@ -16,7 +18,6 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "ET"
             label       = "exhaust temp"
-            unit        = "celcius"
             color       = "#ff0000"
             id          = 1
             function    = 3
@@ -27,7 +28,6 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "BT"
             label       = "bean temp"
-            unit        = "celcius"
             color       = "#191970"
             ror_color   = "#4169E1" # BT only
             id          = 2
@@ -39,7 +39,6 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "inlet"
             label       = "inlet temp"
-            unit        = "celcius"
             color       = "#2E8B57"
             id          = 3
             function    = 3
@@ -54,7 +53,7 @@ model   = "modbus"
     color       = "#007f00"
     min         = 0
     max         = 100
-    step        = 10        # 0 means no steps
+    step        = 10        
     default_value     = 20
 
 [[manual_channel]]
@@ -62,7 +61,9 @@ model   = "modbus"
     label       = "Airflow"
     unit        = "Pa"
     color       = "#007f00"
-    min         = 20
-    max         = 50
-    step        = 5         # 0 means no steps
-    default_value     = 30
+    min         = 28
+    max         = 42
+    step        = 1         
+    default_value     = 32
+
+# you CANNOT write top level keys after array of tables

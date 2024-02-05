@@ -7,10 +7,11 @@ pub struct Config {
     pub version: String,
     pub brand: String,
     pub model: String,
+    pub temperature_unit: String,
+    pub alarms: Vec<i32>,
     pub serial: Option<Serial>,
     pub tcp: Option<Tcp>,
     pub manual_channel: Option<Vec<ManualChannel>>,
-    pub alarms: Vec<i32>,
 }
 
 impl Config {
@@ -19,10 +20,11 @@ impl Config {
             version: String::new(),
             brand: String::new(),
             model: String::new(),
+            temperature_unit: String::new(),
+            alarms: Vec::new(),
             serial: None,
             tcp: None,
             manual_channel: None,
-            alarms: Vec::new(),
         }
     }
 }
@@ -72,7 +74,6 @@ pub struct Http {
 pub struct Channel {
     pub channel_id: String,
     pub label: String,
-    pub unit: String,
     pub color: String,
     pub ror_color: Option<String>,
 }
@@ -82,7 +83,6 @@ pub struct Channel {
 pub struct Slave {
     pub channel_id: String,        // Channel
     pub label: String,             // Channel
-    pub unit: String,              // Channel
     pub color: String,             // Channel
     pub ror_color: Option<String>, // Channel
     pub id: u16,

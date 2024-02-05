@@ -1,28 +1,30 @@
 version = "v1"
-brand = "tasi"
-model = "ta612c"
+brand   = "rc-http-sim"
+model   = "http"
 temperature_unit = "C" # C or F
 alarms = [160, 170, 180, 190, 200]
 
-[serial]
-    port      = "COM5"
-    baud_rate = 9600
-    data_bits = 8
-    parity    = "none"
-    stop_bits = 1
+[tcp]
+    ip = "127.0.0.1"
+    port = 502
+          
+    [tcp.http]
 
-    [serial.ta612c]
-
-        [[serial.ta612c.channel]]
+        [[tcp.http.channel]]
             channel_id  = "BT"
             label       = "bean temp"
             color       = "#191970"
             ror_color   = "#4169E1" # BT only
 
-        [[serial.ta612c.channel]]
+        [[tcp.http.channel]]
             channel_id  = "ET"
             label       = "exhaust temp"
             color       = "#ff0000"
+            
+        [[tcp.http.channel]]
+            channel_id  = "inlet"
+            label       = "inlet temp"
+            color       = "#2E8B57"
 
 [[manual_channel]]
     channel_id  = "gas"

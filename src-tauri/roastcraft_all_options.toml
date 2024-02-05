@@ -1,6 +1,10 @@
 version = "v1"
 brand   = "roastcraft"
 model   = "modbus"
+temperature_unit = "C" # C or F
+# pnpm tauri dev -- -- --config=../machines/kapok/501_inlet_rtu.toml
+
+alarms = [160, 170, 180, 190, 200]
 
 [serial]
     port      = "COM4"
@@ -16,7 +20,6 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "ET"
             label       = "exhaust temp"
-            unit        = "celcius"
             color       = "#ff0000"
             id          = 1
             function    = 3
@@ -27,7 +30,6 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "BT"
             label       = "bean temp"
-            unit        = "celcius"
             color       = "#191970"
             ror_color   = "#4169E1" # BT only
             id          = 2
@@ -39,7 +41,6 @@ model   = "modbus"
         [[serial.modbus.slave]]
             channel_id  = "inlet"
             label       = "inlet temp"
-            unit        = "celcius"
             color       = "#2E8B57"
             id          = 3
             function    = 3
@@ -52,14 +53,12 @@ model   = "modbus"
         [[serial.ta612c.channel]]
             channel_id  = "BT"
             label       = "bean temp"
-            unit        = "celcius"
             color       = "#00007f"
             ror_color   = "#dd0000" # BT only
 
         [[serial.ta612c.channel]]
             channel_id  = "ET"
             label       = "exhaust temp"
-            unit        = "celcius"
             color       = "#00007f"
 
 [tcp]
@@ -87,20 +86,17 @@ model   = "modbus"
         [[tcp.http.channel]]
             channel_id  = "BT"
             label       = "bean temp"
-            unit        = "celcius"
             color       = "#191970"
             ror_color   = "#4169E1" # BT only
 
         [[tcp.http.channel]]
             channel_id  = "ET"
             label       = "exhaust temp"
-            unit        = "celcius"
             color       = "#ff0000"
             
         [[tcp.http.channel]]
             channel_id  = "inlet"
             label       = "inlet temp"
-            unit        = "celcius"
             color       = "#2E8B57"
             
 [[manual_channel]]
@@ -122,3 +118,5 @@ model   = "modbus"
     max         = 50
     step        = 5         # 0 means no steps
     default_value     = 30
+
+# you CANNOT write top level keys after array of tables

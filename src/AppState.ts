@@ -216,7 +216,6 @@ export class Point {
 export class Channel {
     id: string;
     label: string;
-    unit: string;
     color: string;
     rorColor: string;
     currentDataSig: Signal<number>;    // current 
@@ -234,7 +233,6 @@ export class Channel {
     constructor(
         id: string,
         label: string,
-        unit: string,
         color: string,
         rorColor: string,
         currentDataSig: Signal<number>,
@@ -250,7 +248,6 @@ export class Channel {
     ) {
         this.id = id;
         this.label = label;
-        this.unit = unit;
         this.color = color;
         this.rorColor = rorColor;
         this.currentDataSig = currentDataSig;
@@ -437,31 +434,50 @@ async function init_appStateSig() {
 
     let channelArr: Channel[];
     if (config.serial != null) {
-        channelArr = config.serial.modbus.slave.map((s: any) =>
-            new Channel(
-                s.channel_id,    // id
-                s.label,         // label 
-                s.unit,          // unit
-                s.color,         // color
-                s.ror_color,     // ror_color
-                createSignal(0), //currentDataSig
-                createSignal(0), //currentRorSig
-                [], //data_window
-                createSignal(new Array<Point>()), // dataSig
-                createSignal(new Array<Point>()), // rorSig
-                createSignal(new Array<Point>()), // rorOutlierSig
-                createSignal(new Array<Point>()), // rorFilteredSig
-                createSignal(new Array<Point>()), // rorConvolveSig
-                createSignal(0),
-                createSignal(-100),
-            )
-        );
+        if (config.serial.modbus != null) {
+            channelArr = config.serial.modbus.slave.map((s: any) =>
+                new Channel(
+                    s.channel_id,    // id
+                    s.label,         // label 
+                    s.color,         // color
+                    s.ror_color,     // ror_color
+                    createSignal(0), //currentDataSig
+                    createSignal(0), //currentRorSig
+                    [], //data_window
+                    createSignal(new Array<Point>()), // dataSig
+                    createSignal(new Array<Point>()), // rorSig
+                    createSignal(new Array<Point>()), // rorOutlierSig
+                    createSignal(new Array<Point>()), // rorFilteredSig
+                    createSignal(new Array<Point>()), // rorConvolveSig
+                    createSignal(0),
+                    createSignal(-100),
+                )
+            );
+        } else {
+            channelArr = config.serial.ta612c.channel.map((s: any) =>
+                new Channel(
+                    s.channel_id,    // id
+                    s.label,         // label 
+                    s.color,         // color
+                    s.ror_color,     // ror_color
+                    createSignal(0), //currentDataSig
+                    createSignal(0), //currentRorSig
+                    [], //data_window
+                    createSignal(new Array<Point>()), // dataSig
+                    createSignal(new Array<Point>()), // rorSig
+                    createSignal(new Array<Point>()), // rorOutlierSig
+                    createSignal(new Array<Point>()), // rorFilteredSig
+                    createSignal(new Array<Point>()), // rorConvolveSig
+                    createSignal(0),
+                    createSignal(-100),
+                )
+            );
+        }
     } else {
         channelArr = config.tcp.http.channel.map((s: any) =>
             new Channel(
                 s.channel_id,    // id
                 s.label,         // label 
-                s.unit,          // unit
                 s.color,         // color
                 s.ror_color,     // ror_color
                 createSignal(0), // currentDataSig

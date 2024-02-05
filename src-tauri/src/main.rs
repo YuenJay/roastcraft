@@ -51,10 +51,15 @@ async fn button_on_clicked(app: tauri::AppHandle) -> () {
                 let mut device: Box<dyn Device + Send>;
 
                 // serial has priority over tcp
-                match config.serial {
-                    Some(_) => {
-                        device = Box::new(devices::modbus::ModbusDevice::new(config));
-                    }
+                match config.serial.clone() {
+                    Some(serial) => match serial.modbus {
+                        Some(_) => {
+                            device = Box::new(devices::modbus::ModbusDevice::new(config));
+                        }
+                        None => {
+                            device = Box::new(devices::ta612c::Ta612cDevice::new(config));
+                        }
+                    },
                     None => {
                         device = Box::new(devices::http::HttpDevice::new(config));
                     }

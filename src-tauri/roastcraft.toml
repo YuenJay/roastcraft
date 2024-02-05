@@ -1,8 +1,9 @@
 version = "v1"
 brand   = "rc-http-sim"
 model   = "http"
-
+temperature_unit = "C" # C or F
 # pnpm tauri dev -- -- --config=../machines/kapok/501_inlet_rtu.toml
+# pnpm tauri dev -- -- --config=../machines/tasi/ta612c.toml
 
 alarms = [160, 170, 180, 190, 200]
 
@@ -15,20 +16,17 @@ alarms = [160, 170, 180, 190, 200]
         [[tcp.http.channel]]
             channel_id  = "BT"
             label       = "bean temp"
-            unit        = "celcius"
             color       = "#191970"
             ror_color   = "#4169E1" # BT only
 
         [[tcp.http.channel]]
             channel_id  = "ET"
             label       = "exhaust temp"
-            unit        = "celcius"
             color       = "#ff0000"
             
         [[tcp.http.channel]]
             channel_id  = "inlet"
             label       = "inlet temp"
-            unit        = "celcius"
             color       = "#2E8B57"
 
 [[manual_channel]]
