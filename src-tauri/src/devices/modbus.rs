@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use async_trait::async_trait;
-use log::{debug, error, trace};
+use log::error;
 use rmodbus::{
     client::ModbusRequest, generate_ascii_frame, guess_response_frame_len, parse_ascii_frame,
     ModbusProto,
@@ -50,7 +50,7 @@ impl ModbusDevice {
             stop_bits = StopBits::Two;
         }
 
-        let mut stream = serialport::new(&serial.port, serial.baud_rate as u32)
+        let stream = serialport::new(&serial.port, serial.baud_rate as u32)
             .data_bits(data_bits)
             .parity(parity)
             .stop_bits(stop_bits)
@@ -148,8 +148,8 @@ impl Device for ModbusDevice {
             let slaves = &modbus.slave;
 
             for slave in slaves {
-                let mut rounded_number: f64;
-                if (modbus.protocol == "modbus-rtu") {
+                let rounded_number: f64;
+                if modbus.protocol == "modbus-rtu" {
                     rounded_number = rtu(slave, &mut self.stream).await;
                 } else {
                     rounded_number = ascii(slave, &mut self.stream).await;

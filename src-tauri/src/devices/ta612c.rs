@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use async_trait::async_trait;
-use log::{debug, error, trace};
+use log::error;
 use serde_json::{to_value, Map, Value};
 use serialport::{DataBits, Parity, SerialPort, StopBits};
 use std::{
@@ -11,7 +11,7 @@ use std::{
 use tokio::time;
 
 use super::Device;
-use crate::config::{Config, Slave};
+use crate::config::Config;
 
 pub struct Ta612cDevice {
     config: Config,
@@ -46,7 +46,7 @@ impl Ta612cDevice {
             stop_bits = StopBits::Two;
         }
 
-        let mut stream = serialport::new(&serial.port, serial.baud_rate as u32)
+        let stream = serialport::new(&serial.port, serial.baud_rate as u32)
             .data_bits(data_bits)
             .parity(parity)
             .stop_bits(stop_bits)
@@ -71,40 +71,40 @@ impl Device for Ta612cDevice {
             let channels = &ta612c.channel;
 
             let request: [u8; 5] = [0xAA, 0x55, 0x01, 0x03, 0x03];
-            self.stream.write(&request);
+            let _ = self.stream.write(&request);
 
             let mut response: [u8; 13] = [0; 13];
 
             match self.stream.read(response.as_mut_slice()) {
                 Ok(_) => {
-                    let T1 = u16::from_ne_bytes(response[4..6].try_into().unwrap()) as f32 / 10.0;
-                    let T2 = u16::from_ne_bytes(response[6..8].try_into().unwrap()) as f32 / 10.0;
-                    let T3 = u16::from_ne_bytes(response[8..10].try_into().unwrap()) as f32 / 10.0;
-                    let T4 = u16::from_ne_bytes(response[10..12].try_into().unwrap()) as f32 / 10.0;
+                    let t1 = u16::from_ne_bytes(response[4..6].try_into().unwrap()) as f32 / 10.0;
+                    let t2 = u16::from_ne_bytes(response[6..8].try_into().unwrap()) as f32 / 10.0;
+                    let t3 = u16::from_ne_bytes(response[8..10].try_into().unwrap()) as f32 / 10.0;
+                    let t4 = u16::from_ne_bytes(response[10..12].try_into().unwrap()) as f32 / 10.0;
 
                     for (i, c) in channels.iter().enumerate() {
                         if i == 0 {
                             map.insert(
                                 c.channel_id.clone(),
-                                to_value(T1).expect("Conversion failed"),
+                                to_value(t1).expect("Conversion failed"),
                             );
                         }
                         if i == 1 {
                             map.insert(
                                 c.channel_id.clone(),
-                                to_value(T2).expect("Conversion failed"),
+                                to_value(t2).expect("Conversion failed"),
                             );
                         }
                         if i == 2 {
                             map.insert(
                                 c.channel_id.clone(),
-                                to_value(T3).expect("Conversion failed"),
+                                to_value(t3).expect("Conversion failed"),
                             );
                         }
                         if i == 3 {
                             map.insert(
                                 c.channel_id.clone(),
-                                to_value(T4).expect("Conversion failed"),
+                                to_value(t4).expect("Conversion failed"),
                             );
                         }
                     }

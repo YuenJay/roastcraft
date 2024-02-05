@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use async_trait::async_trait;
-use log::{debug, error, info};
-use serde_json::{Map, Value};
+use log::error;
+use serde_json::Value;
 use std::io::{Error, ErrorKind};
 use tokio::time;
 
@@ -25,7 +25,6 @@ impl HttpDevice {
 #[async_trait]
 impl Device for HttpDevice {
     async fn read(self: &mut Self) -> Result<Value, Error> {
-        let mut map = Map::new();
         let mut res_json: Value = Value::Null;
 
         // 10 seconds timeout

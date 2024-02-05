@@ -1,6 +1,6 @@
 {
   "name": "roastcraft",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Roastcraft is a cross-platform software to log and analyze coffee roasting, much like the amazing Artisan, but implemented in modern Web Technology",
   "scripts": {
     "start": "vite",

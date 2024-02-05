@@ -16,7 +16,7 @@ Roastcraft is a cross-platform software to log and analyze coffee roasting, much
 ## supported roaster
   - Kapok K501
 
-## supported meter (developing)
+## supported meter 
   - TASI TA612C thermometer
 
 ## supported microcontroller unit (developing)
